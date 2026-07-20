@@ -15,7 +15,7 @@ export interface UploadProgress {
   providedIn: 'root'
 })
 export class UploadService {
-  private apiUrl = 'http://localhost:5000/api/uploads';
+  private apiUrl = 'https://wall-painter.onrender.com/api/uploads';
 
   constructor(private http: HttpClient, private authService: AuthService) {}
 

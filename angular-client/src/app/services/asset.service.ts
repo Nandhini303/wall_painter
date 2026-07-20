@@ -21,7 +21,7 @@ export interface CloudinaryAsset {
   providedIn: 'root'
 })
 export class AssetService {
-  private apiUrl = 'http://localhost:5000/api/uploads';
+  private apiUrl = 'https://wall-painter.onrender.com/api/uploads';
   
   assets = signal<CloudinaryAsset[]>([]);
   isLoading = signal(false);

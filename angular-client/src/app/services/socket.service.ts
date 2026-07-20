@@ -7,7 +7,7 @@ import { Observable } from 'rxjs';
 })
 export class SocketService {
   private socket!: Socket;
-  private serverUrl = 'http://localhost:5000';
+  private serverUrl = 'https://wall-painter.onrender.com';
 
   constructor() {
     this.connect();

@@ -16,7 +16,7 @@ export interface AuditLog {
   providedIn: 'root'
 })
 export class AdminService {
-  private apiUrl = 'http://localhost:5000/api/admin';
+  private apiUrl = 'https://wall-painter.onrender.com/api/admin';
 
   constructor(private http: HttpClient, private authService: AuthService) {}
 

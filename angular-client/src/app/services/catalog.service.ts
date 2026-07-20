@@ -28,7 +28,7 @@ export interface PaintTexture {
   providedIn: 'root'
 })
 export class CatalogService {
-  private apiUrl = 'http://localhost:5000/api/catalog';
+  private apiUrl = 'https://wall-painter.onrender.com/api/catalog';
 
   constructor(private http: HttpClient, private authService: AuthService) {}
 

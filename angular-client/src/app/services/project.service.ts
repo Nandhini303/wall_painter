@@ -18,7 +18,7 @@ export interface Project {
   providedIn: 'root'
 })
 export class ProjectService {
-  private apiUrl = 'http://localhost:5000/api/projects';
+  private apiUrl = 'https://wall-painter.onrender.com/api/projects';
 
   constructor(private http: HttpClient, private authService: AuthService) {}
 

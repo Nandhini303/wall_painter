@@ -242,7 +242,7 @@ export class AdminComponent implements OnInit {
   }
 
   setupSocket(): void {
-    this.socket = io('http://localhost:5000');
+    this.socket = io('https://wall-painter.onrender.com');
     this.socket.on('admin:users:updated', () => {
       // Background refresh so we don't flash loading skeleton
       this.adminService.listUsers().subscribe({

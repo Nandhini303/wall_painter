@@ -17,7 +17,7 @@ export interface User {
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = 'http://localhost:5000/api/auth';
+  private apiUrl = 'https://wall-painter.onrender.com/api/auth';
   
   // State management using Angular Signals
   private currentUserSignal = signal<User | null>(null);
