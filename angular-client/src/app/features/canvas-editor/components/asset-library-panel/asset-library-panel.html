@@ -1,11 +1,11 @@
 <div class="panel-container" [class.expanded]="isExpanded()">
   <div class="panel-header" (click)="isExpanded.set(!isExpanded())">
     <div class="panel-title">
-      <app-icon name="image" [size]="16"></app-icon>
+      <span class="icon">🖼️</span>
       <h3>Asset Library</h3>
     </div>
     <button class="toggle-btn">
-      <app-icon [name]="isExpanded() ? 'chevron-down' : 'chevron-up'" [size]="16"></app-icon>
+      <span class="icon">{{ isExpanded() ? '▼' : '▲' }}</span>
     </button>
   </div>
 
@@ -24,7 +24,7 @@
             </div>
           </div>
         } @else {
-          <app-icon name="upload" [size]="20"></app-icon>
+          <span class="icon">📤</span>
           <span>Drag & Drop or Click</span>
         }
         <input #fileInput type="file" accept="image/png, image/jpeg, image/webp, image/svg+xml" style="display: none" (change)="onFileSelected($event)">
@@ -47,8 +47,8 @@
             <div class="asset-tile" draggable="true" (dragstart)="onDragStartAsset($event, asset)" [title]="asset.name">
               <div class="asset-thumb" [style.background-image]="'url(' + (asset.thumbnailUrl || asset.secureUrl) + ')'"></div>
               <div class="asset-overlay">
-                <button (click)="copyUrl(asset.secureUrl, $event)" title="Copy URL"><app-icon name="copy" [size]="14"></app-icon></button>
-                <button (click)="deleteAsset(asset.publicId, $event)" class="danger" title="Delete"><app-icon name="trash" [size]="14"></app-icon></button>
+                <button (click)="copyUrl(asset.secureUrl, $event)" title="Copy URL">📋</button>
+                <button (click)="deleteAsset(asset.publicId, $event)" class="danger" title="Delete">🗑️</button>
               </div>
             </div>
           }

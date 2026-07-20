@@ -63,4 +63,10 @@ export class SocketService {
       });
     });
   }
+
+  on(eventName: string, callback: any): void {
+    if (this.socket) {
+      this.socket.on(eventName, callback);
+    }
+  }
 }

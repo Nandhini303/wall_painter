@@ -5,12 +5,11 @@ import { AssetService, CloudinaryAsset } from '../../../../services/asset.servic
 import { UploadService, UploadProgress } from '../../../../services/upload.service';
 import { ToastService } from '../../../../services/toast.service';
 import { SocketService } from '../../../../services/socket.service';
-import { IconComponent } from '../../../../shared/components/icon/icon.component';
 
 @Component({
   selector: 'app-asset-library-panel',
   standalone: true,
-  imports: [CommonModule, FormsModule, IconComponent],
+  imports: [CommonModule, FormsModule],
   templateUrl: './asset-library-panel.html',
   styleUrls: ['./asset-library-panel.scss']
 })
@@ -78,7 +77,7 @@ export class AssetLibraryPanelComponent implements OnInit {
 
   handleUpload(file: File) {
     if (!['image/jpeg', 'image/png', 'image/webp', 'image/svg+xml'].includes(file.type)) {
-      this.toastService.showError('Invalid file type.');
+      this.toastService.error('Invalid file type.');
       return;
     }
     
@@ -91,10 +90,10 @@ export class AssetLibraryPanelComponent implements OnInit {
           this.uploadProgress.set(res.progress);
         } else if (res.status === 'done') {
           this.uploading.set(false);
-          this.toastService.showSuccess('Asset uploaded');
+          this.toastService.success('Asset uploaded');
         } else if (res.status === 'error') {
           this.uploading.set(false);
-          this.toastService.showError('Upload failed');
+          this.toastService.error('Upload failed');
         }
       }
     });
@@ -103,15 +102,15 @@ export class AssetLibraryPanelComponent implements OnInit {
   deleteAsset(publicId: string, event: Event) {
     event.stopPropagation();
     this.uploadService.deleteAsset(publicId).subscribe({
-      next: () => this.toastService.showSuccess('Asset deleted'),
-      error: () => this.toastService.showError('Failed to delete')
+      next: () => this.toastService.success('Asset deleted'),
+      error: () => this.toastService.error('Failed to delete')
     });
   }
 
   copyUrl(url: string, event: Event) {
     event.stopPropagation();
     navigator.clipboard.writeText(url);
-    this.toastService.showSuccess('URL Copied');
+    this.toastService.success('URL Copied');
   }
 
   onDragStartAsset(event: DragEvent, asset: CloudinaryAsset) {

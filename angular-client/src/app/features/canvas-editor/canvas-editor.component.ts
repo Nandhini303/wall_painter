@@ -27,10 +27,10 @@ export class CanvasEditorComponent implements OnInit, OnDestroy {
   @ViewChild('container', { static: true }) containerRef!: ElementRef;
 
   project = signal<Project | null>(null);
-  
+
   // Editor State
   activeTool = signal<'brush' | 'bucket' | 'polygon' | 'eraser' | 'select'>('select');
-    floodTolerance = 40;
+  floodTolerance = 40;
   showGrid = signal(false);
   showShareModal = signal(false);
   shareUrl = signal('');
@@ -90,7 +90,7 @@ export class CanvasEditorComponent implements OnInit, OnDestroy {
     private socketService: SocketService,
     public toastService: ToastService,
     public studio: ColorStudioService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
@@ -205,13 +205,13 @@ export class CanvasEditorComponent implements OnInit, OnDestroy {
             draggable: true,
             name: 'polygon-shape'
           });
-          
+
           this.currentPolygon.on('click tap', (evt) => {
             if (this.activeTool() !== 'select') return;
             evt.cancelBubble = true;
             this.selectObject(evt.target);
           });
-          
+
           this.paintLayer.add(this.currentPolygon);
         } else {
           this.polygonPoints.push(pos.x, pos.y);
@@ -314,7 +314,7 @@ export class CanvasEditorComponent implements OnInit, OnDestroy {
     }
     console.log('Publishing project:', this.project()!._id);
     this.performAutoSave();
-    
+
     this.projectService.publishProject(this.project()!._id).subscribe({
       next: (updated) => {
         console.log('Publish success:', updated);
@@ -375,7 +375,7 @@ export class CanvasEditorComponent implements OnInit, OnDestroy {
   @HostListener('window:keydown', ['$event'])
   handleKeyboardShortcuts(event: KeyboardEvent): void {
     const isCtrl = event.ctrlKey || event.metaKey;
-    
+
     if (isCtrl && event.key.toLowerCase() === 'z' && !event.shiftKey) {
       event.preventDefault();
       if (this.canUndo()) this.undo();
@@ -414,7 +414,7 @@ export class CanvasEditorComponent implements OnInit, OnDestroy {
   renderPolygonAnchors(polygon: Konva.Line) {
     this.clearPolygonAnchors();
     const points = polygon.points();
-    
+
     for (let i = 0; i < points.length; i += 2) {
       const anchor = new Konva.Circle({
         x: points[i],
@@ -424,7 +424,7 @@ export class CanvasEditorComponent implements OnInit, OnDestroy {
         stroke: '#ffffff',
         strokeWidth: 2,
         draggable: true,
-        name: `anchor-${i/2}`
+        name: `anchor-${i / 2}`
       });
 
       anchor.on('dragmove', (e) => {
@@ -452,7 +452,7 @@ export class CanvasEditorComponent implements OnInit, OnDestroy {
 
       this.polygonAnchorsLayer.add(anchor);
     }
-    
+
     // Add logic to insert new vertices on polygon click
     polygon.off('dblclick dbltap').on('dblclick dbltap', (e) => {
       const pos = this.stage.getPointerPosition();
@@ -465,7 +465,7 @@ export class CanvasEditorComponent implements OnInit, OnDestroy {
       this.saveHistory();
       this.triggerUnsavedState();
     });
-    
+
     this.polygonAnchorsLayer.batchDraw();
   }
 
@@ -506,14 +506,14 @@ export class CanvasEditorComponent implements OnInit, OnDestroy {
   onDrop(event: DragEvent) {
     event.preventDefault();
     this.stage.setPointersPositions(event);
-    
+
     const assetJson = event.dataTransfer?.getData('application/json');
     if (!assetJson) return;
 
     try {
       const asset = JSON.parse(assetJson);
       const pos = this.stage.getPointerPosition();
-      
+
       const imgObj = new Image();
       imgObj.crossOrigin = 'Anonymous';
       imgObj.src = asset.secureUrl;
@@ -527,11 +527,11 @@ export class CanvasEditorComponent implements OnInit, OnDestroy {
           draggable: true,
           name: 'asset-image'
         });
-        
+
         konvaImg.on('dragend transformend', () => {
           this.triggerUnsavedState();
         });
-        
+
         konvaImg.on('click tap', (e) => {
           if (this.activeTool() !== 'select') return;
           e.cancelBubble = true;
@@ -543,7 +543,7 @@ export class CanvasEditorComponent implements OnInit, OnDestroy {
         this.saveHistory();
         this.triggerUnsavedState();
       };
-    } catch (e) {}
+    } catch (e) { }
   }
 
   // Object-Level Undo / Redo History Engine (Preserves Base Image Layer)
@@ -576,18 +576,7 @@ export class CanvasEditorComponent implements OnInit, OnDestroy {
     }
   }
 
-  clearSelectedObject(): void {
-    if (this.paintLayer && this.paintLayer.getChildren().length > 0) {
-      const children = this.paintLayer.getChildren();
-      const last = children[children.length - 1];
-      if (last) {
-        last.destroy();
-        this.paintLayer.batchDraw();
-        this.triggerUnsavedState();
-        this.toastService.info('Selected stroke removed');
-      }
-    }
-  }
+
 
   // Working Export Options
   exportPNG(): void {
