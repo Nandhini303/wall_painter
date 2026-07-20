@@ -1,0 +1,35 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Dependencies
+node_modules/
+express-server/node_modules/
+angular-client/node_modules/
+
+# Secrets and environment variables
+.env
+.env.*
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+apikey.md
+express-server/apikey.md
+secret*
+*.pem
+*.key
+
+# Build directories
+dist/
+out/
+build/
+express-server/dist/
+angular-client/dist/
+
+# OS metadata
+.DS_Store
+Thumbs.db
