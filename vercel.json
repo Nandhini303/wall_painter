@@ -1,0 +1,33 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "express-server/src/index.ts",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "angular-client/package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "dist/angular-client/browser"
+      }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "express-server/src/index.ts"
+    },
+    {
+      "src": "/socket.io/(.*)",
+      "dest": "express-server/src/index.ts"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "angular-client/$1"
+    }
+  ],
+  "env": {
+    "NODE_ENV": "production"
+  }
+}

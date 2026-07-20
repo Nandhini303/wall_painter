@@ -1,0 +1,25 @@
+@if (modalService.isOpen()) {
+  <div class="modal-backdrop" (click)="modalService.handleCancel()">
+    <div class="glass-modal-card" (click)="$event.stopPropagation()" [class]="modalService.options().variant || 'danger'">
+      <div class="modal-icon-badge">
+        @if (modalService.options().variant === 'danger') { <app-icon name="warning" [size]="24" color="#ef4444"></app-icon> }
+        @else if (modalService.options().variant === 'warning') { <app-icon name="warning" [size]="24" color="#f59e0b"></app-icon> }
+        @else { <app-icon name="info" [size]="24" color="#2563eb"></app-icon> }
+      </div>
+
+      <div class="modal-content-body">
+        <h2>{{ modalService.options().title }}</h2>
+        <p>{{ modalService.options().message }}</p>
+      </div>
+
+      <div class="modal-actions-row">
+        <button (click)="modalService.handleCancel()" class="btn-secondary">
+          {{ modalService.options().cancelText || 'Cancel' }}
+        </button>
+        <button (click)="modalService.handleConfirm()" class="btn-primary" [class]="modalService.options().variant || 'danger'">
+          {{ modalService.options().confirmText || 'Confirm' }}
+        </button>
+      </div>
+    </div>
+  </div>
+}

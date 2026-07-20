@@ -1,0 +1,74 @@
+<div class="panel-section">
+  <div class="panel-header search-header">
+    <h3>Wall Textures</h3>
+    <input 
+      type="text" 
+      class="oc-search-input" 
+      placeholder="Search textures..." 
+      [ngModel]="searchQuery()" 
+      (ngModelChange)="searchQuery.set($event)"
+    />
+  </div>
+
+  <div class="panel-body">
+    <!-- Category Chips -->
+    <div class="category-scroll">
+      @for (cat of categories; track cat) {
+        <button 
+          class="cat-chip" 
+          [class.active]="selectedCategory() === cat"
+          (click)="selectedCategory.set(cat)"
+        >
+          {{ cat }}
+        </button>
+      }
+    </div>
+    
+    <!-- Texture Grid -->
+    <div class="texture-grid">
+      @for (tex of filteredTextures(); track tex.id) {
+        <div 
+          class="texture-card" 
+          [class.active]="studio.activeTexture()?.id === tex.id"
+          (click)="selectTexture(tex)"
+        >
+          <div class="tex-thumb" [style.background-image]="'url(' + tex.imageUri + ')'">
+            @if (studio.activeTexture()?.id === tex.id) {
+              <div class="check-overlay">✓</div>
+            }
+          </div>
+          <span class="tex-name">{{ tex.name }}</span>
+        </div>
+      }
+      
+      @if (filteredTextures().length === 0) {
+        <div class="empty-state">No textures found.</div>
+      }
+      </div>
+
+      <div class="texture-controls">
+        <div class="control-group">
+          <label>Scale: {{ studio.textureScale() }}x</label>
+          <input type="range" min="0.1" max="3" step="0.1" [ngModel]="studio.textureScale()" (ngModelChange)="studio.textureScale.set($event)">
+        </div>
+        <div class="control-group">
+          <label>Rotation: {{ studio.textureRotation() }}°</label>
+          <input type="range" min="0" max="360" step="1" [ngModel]="studio.textureRotation()" (ngModelChange)="studio.textureRotation.set($event)">
+        </div>
+        <div class="control-group">
+          <label>Opacity: {{ studio.textureOpacity() }}</label>
+          <input type="range" min="0" max="1" step="0.01" [ngModel]="studio.textureOpacity()" (ngModelChange)="studio.textureOpacity.set($event)">
+        </div>
+        <div class="control-group">
+          <label>Blend Mode</label>
+          <select [ngModel]="studio.textureBlendMode()" (ngModelChange)="studio.textureBlendMode.set($event)">
+            <option value="multiply">Multiply</option>
+            <option value="screen">Screen</option>
+            <option value="overlay">Overlay</option>
+            <option value="hard-light">Hard Light</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

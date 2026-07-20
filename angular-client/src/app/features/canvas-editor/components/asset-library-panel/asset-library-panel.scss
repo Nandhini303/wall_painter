@@ -1,0 +1,121 @@
+.panel-container {
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+
+  .panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    cursor: pointer;
+    user-select: none;
+    
+    .panel-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      h3 { margin: 0; font-size: 0.85rem; font-weight: 600; color: var(--text-primary); text-transform: uppercase; letter-spacing: 0.5px; }
+      color: var(--text-secondary);
+    }
+
+    .toggle-btn {
+      background: none; border: none; padding: 4px; color: var(--text-muted); cursor: pointer;
+      display: flex; align-items: center; justify-content: center; border-radius: 4px;
+      &:hover { background: var(--bg-hover); color: var(--text-primary); }
+    }
+    
+    &:hover { background: var(--bg-hover); }
+  }
+
+  .panel-content {
+    padding: 0 16px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+}
+
+.upload-zone {
+  border: 2px dashed var(--border-color);
+  border-radius: 8px;
+  padding: 20px;
+  text-align: center;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  position: relative;
+  overflow: hidden;
+
+  &:hover {
+    border-color: var(--primary-color);
+    background: rgba(59, 130, 246, 0.05);
+    color: var(--primary-color);
+  }
+
+  span { font-size: 0.85rem; font-weight: 500; }
+}
+
+.upload-progress-overlay {
+  position: absolute; inset: 0; background: var(--bg-surface);
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px;
+  
+  .progress-bar {
+    width: 80%; height: 6px; background: var(--bg-hover); border-radius: 3px; overflow: hidden;
+    .progress-fill { height: 100%; background: var(--primary-color); transition: width 0.2s; }
+  }
+}
+
+.asset-filters {
+  display: flex; flex-direction: column; gap: 8px;
+  .search-input {
+    width: 100%; padding: 6px 10px; border-radius: 6px;
+    border: 1px solid var(--border-color); background: var(--bg-hover);
+    color: var(--text-primary); font-size: 0.8rem;
+    &:focus { outline: none; border-color: var(--primary-color); }
+  }
+  .filter-chips {
+    display: flex; gap: 6px;
+    button {
+      background: var(--bg-hover); border: 1px solid transparent; border-radius: 12px;
+      padding: 4px 10px; font-size: 0.75rem; color: var(--text-secondary); cursor: pointer;
+      &.active { background: rgba(59, 130, 246, 0.1); color: var(--primary-color); border-color: var(--primary-color); }
+    }
+  }
+}
+
+.assets-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; max-height: 250px; overflow-y: auto;
+  &::-webkit-scrollbar { width: 6px; }
+  &::-webkit-scrollbar-track { background: transparent; }
+  &::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 3px; }
+
+  .asset-tile {
+    aspect-ratio: 1; border-radius: 6px; overflow: hidden; position: relative; cursor: grab;
+    background: var(--bg-hover);
+    
+    .asset-thumb { width: 100%; height: 100%; background-size: cover; background-position: center; }
+    
+    .asset-overlay {
+      position: absolute; inset: 0; background: rgba(0,0,0,0.5);
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+      opacity: 0; transition: opacity 0.2s;
+      
+      button {
+        background: rgba(255,255,255,0.2); border: none; padding: 4px; border-radius: 4px;
+        color: white; cursor: pointer; display: flex; align-items: center; justify-content: center;
+        &:hover { background: white; color: black; }
+        &.danger:hover { background: #ef4444; color: white; }
+      }
+    }
+    
+    &:hover .asset-overlay { opacity: 1; }
+  }
+}
+
+.loading-state, .empty-state { text-align: center; padding: 20px; color: var(--text-muted); font-size: 0.85rem; }

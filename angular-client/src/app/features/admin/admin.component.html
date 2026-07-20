@@ -1,0 +1,781 @@
+<div class="admin-shell">
+  <!-- Global Confirm Glassmorphic Dialog -->
+  <app-confirm-dialog></app-confirm-dialog>
+
+  <!-- Toast Notification Stack -->
+  <div class="toast-stack">
+    @for (toast of toastService.toasts(); track toast.id) {
+      <div class="toast-item" [class]="toast.type">
+        <span class="toast-text">{{ toast.message }}</span>
+      </div>
+    }
+  </div>
+
+  <!-- ============================================= -->
+  <!-- LEFT ADMIN SIDEBAR (Dark Navy #0f172a)       -->
+  <!-- ============================================= -->
+  <aside class="admin-sidebar" [class.collapsed]="sidebarCollapsed()">
+    <!-- Sidebar Header -->
+    <div class="sidebar-header">
+      <div class="admin-brand">
+        <div class="brand-mark">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="m12 3-1.9 5.8a2 2 0 0 1-1.28 1.28L3 12l5.8 1.9a2 2 0 0 1 1.28 1.28L12 21l1.9-5.8a2 2 0 0 1 1.28-1.28L21 12l-5.8-1.9a2 2 0 0 1-1.28-1.28Z"/>
+          </svg>
+        </div>
+        @if (!sidebarCollapsed()) {
+          <div class="brand-text">
+            <span class="brand-name">LuminaPaint</span>
+            <span class="admin-badge">Admin Portal</span>
+          </div>
+        }
+      </div>
+      <button (click)="sidebarCollapsed.set(!sidebarCollapsed())" class="collapse-toggle">
+        <app-icon [name]="sidebarCollapsed() ? 'chevron-right' : 'chevron-left'" [size]="16"></app-icon>
+      </button>
+    </div>
+
+    <!-- Admin User Badge -->
+    @if (!sidebarCollapsed()) {
+      <div class="admin-user-badge">
+        <div class="user-avatar-sm">{{ authService.currentUser()?.firstName?.charAt(0) || 'A' }}</div>
+        <div class="user-badge-info">
+          <span class="user-badge-name">{{ authService.currentUser()?.firstName }} {{ authService.currentUser()?.lastName }}</span>
+          <span class="user-badge-role">{{ authService.currentUser()?.role || 'Admin' }}</span>
+        </div>
+      </div>
+    }
+
+    <!-- Navigation Items -->
+    <nav class="admin-nav">
+      @for (item of navItems; track item.id) {
+        <button
+          (click)="setSection(item.id)"
+          class="admin-nav-item"
+          [class.active]="activeSection() === item.id"
+          [title]="item.label"
+        >
+          <app-icon [name]="item.icon" [size]="18"></app-icon>
+          @if (!sidebarCollapsed()) {
+            <span>{{ item.label }}</span>
+          }
+        </button>
+      }
+    </nav>
+
+    <!-- Sign Out -->
+    <div class="sidebar-footer">
+      <button (click)="authService.logout()" class="back-to-site" style="width: 100%; border: none; cursor: pointer; text-align: left; font-family: inherit; background: transparent;">
+        <app-icon name="user" [size]="16"></app-icon>
+        @if (!sidebarCollapsed()) {
+          <span>Sign Out</span>
+        }
+      </button>
+    </div>
+  </aside>
+
+  <!-- ============================================= -->
+  <!-- RIGHT CONTENT AREA                           -->
+  <!-- ============================================= -->
+  <div class="admin-content-area">
+    <!-- Top Admin Navbar -->
+    <header class="admin-topbar">
+      <div class="topbar-left">
+        <span class="breadcrumb-text">Home / Admin / <strong>{{ breadcrumbLabel() }}</strong></span>
+      </div>
+      <div class="topbar-right">
+        <div class="admin-search-box">
+          <app-icon name="search" [size]="16"></app-icon>
+          <input
+            type="text"
+            placeholder="Filter records..."
+            [ngModel]="searchQuery()"
+            (ngModelChange)="searchQuery.set($event)"
+          />
+        </div>
+        <div class="admin-avatar-badge">
+          <div class="avatar-circle-sm">{{ authService.currentUser()?.firstName?.charAt(0) || 'A' }}</div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content Body -->
+    <main class="admin-main">
+
+      <!-- ========== OVERVIEW ========== -->
+      @if (activeSection() === 'overview') {
+        <section class="admin-section">
+          <h1 class="section-heading">Admin Overview</h1>
+          <p class="section-subtext">Content management summary for the LuminaPaint platform.</p>
+
+          <div class="overview-cards-grid">
+            <div class="overview-card">
+              <div class="ov-icon blue"><app-icon name="grid" [size]="20"></app-icon></div>
+              <div class="ov-data">
+                <span class="ov-value">{{ templates().length }}</span>
+                <span class="ov-label">Total Templates</span>
+              </div>
+            </div>
+            <div class="overview-card">
+              <div class="ov-icon purple"><app-icon name="canvas" [size]="20"></app-icon></div>
+              <div class="ov-data">
+                <span class="ov-value">{{ colors().length > 0 ? colors().length : '6' }}</span>
+                <span class="ov-label">Color Palettes</span>
+              </div>
+            </div>
+            <div class="overview-card">
+              <div class="ov-icon emerald"><app-icon name="brush" [size]="20"></app-icon></div>
+              <div class="ov-data">
+                <span class="ov-value">{{ textures().length > 0 ? textures().length : '12' }}</span>
+                <span class="ov-label">Textures & Materials</span>
+              </div>
+            </div>
+            <div class="overview-card">
+              <div class="ov-icon orange"><app-icon name="select" [size]="20"></app-icon></div>
+              <div class="ov-data">
+                <span class="ov-value">{{ brushPresets().length }}</span>
+                <span class="ov-label">Brush Presets</span>
+              </div>
+            </div>
+            <div class="overview-card">
+              <div class="ov-icon blue"><app-icon name="user" [size]="20"></app-icon></div>
+              <div class="ov-data">
+                <span class="ov-value">{{ users().length > 0 ? users().length : '—' }}</span>
+                <span class="ov-label">Active Users</span>
+              </div>
+            </div>
+            <div class="overview-card">
+              <div class="ov-icon purple"><app-icon name="save" [size]="20"></app-icon></div>
+              <div class="ov-data">
+                <span class="ov-value">4.2 GB</span>
+                <span class="ov-label">Storage Used</span>
+              </div>
+            </div>
+          </div>
+        </section>
+      }
+
+      
+      <!-- ========== STORAGE & ASSETS ========== -->
+      @if (activeSection() === 'storage') {
+        <section class="admin-section">
+          <div class="section-header-row">
+            <div>
+              <h1 class="section-heading">Storage & Assets</h1>
+              <p class="section-subtext">Manage cloud storage quota and uploaded assets.</p>
+            </div>
+            <button class="primary-action-btn">+ Upload Asset</button>
+          </div>
+
+          <!-- Cloud Storage Quota Widget -->
+          <div class="admin-table-card" style="margin-bottom: 24px; padding: 24px;">
+            <div class="card-title-row">
+              <h3>Cloud Storage & Quota</h3>
+              <span class="count-badge">Pro Plan</span>
+            </div>
+            @if (storageMetrics()) {
+              <div class="storage-telemetry-body">
+                <div class="quota-row" style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                  <span>Storage Used</span>
+                  <strong>{{ storageMetrics()!.totalUsedStr }}</strong>
+                </div>
+                <div class="storage-bar" style="width: 100%; height: 8px; background: #e2e8f0; border-radius: 4px; margin-bottom: 16px; overflow: hidden;">
+                  <div class="storage-fill" [style.width.%]="storageMetrics()!.usagePercentage" style="height: 100%; background: #3b82f6;"></div>
+                </div>
+                <div class="storage-breakdown" style="display: flex; gap: 16px; font-size: 13px; color: #64748b;">
+                  <span>📷 Images: {{ storageMetrics()!.imageStr }}</span>
+                  <span>🎨 Canvas Design Maps: {{ storageMetrics()!.mapStr }}</span>
+                  <span>📦 Assets: {{ storageMetrics()!.assetStr }}</span>
+                </div>
+              </div>
+            } @else {
+              <div style="padding: 24px; text-align: center; color: #64748b;">Loading metrics...</div>
+            }
+          </div>
+
+          <!-- Data Management Table -->
+          <div class="admin-table-card">
+            <div style="padding: 16px 24px; border-bottom: 1px solid #e2e8f0;">
+              <h3>Asset Management Data</h3>
+            </div>
+            <table class="admin-data-table">
+              <thead>
+                <tr>
+                  <th>FILE NAME</th>
+                  <th>TYPE</th>
+                  <th>SIZE</th>
+                  <th>UPLOAD DATE</th>
+                  <th>ACTIONS</th>
+                </tr>
+              </thead>
+              <tbody>
+                @if (storageMetrics()) {
+                  @for (asset of storageMetrics()!.assets; track asset.id) {
+                    <tr>
+                      <td><strong>{{ asset.name }}</strong></td>
+                      <td><span class="category-tag">{{ asset.type }}</span></td>
+                      <td>{{ (asset.sizeBytes / (1024 * 1024)).toFixed(2) }} MB</td>
+                      <td>{{ asset.date | date:'mediumDate' }}</td>
+                      <td>
+                        <div class="action-btns-row">
+                          <button class="action-btn-sm">View</button>
+                          <button class="action-btn-sm">Edit</button>
+                          <button class="action-btn-sm danger">Delete</button>
+                        </div>
+                      </td>
+                    </tr>
+                  }
+                }
+              </tbody>
+            </table>
+          </div>
+        </section>
+      }
+
+      <!-- ========== TEMPLATE MANAGER ========== -->
+      @if (activeSection() === 'templates') {
+        <section class="admin-section">
+          <div class="section-header-row">
+            <div>
+              <h1 class="section-heading">Template Manager</h1>
+              <p class="section-subtext">Manage wall templates available to all users.</p>
+            </div>
+            <button (click)="openTemplateUploadModal()" class="primary-action-btn">+ Upload New Template</button>
+          </div>
+
+          <div class="admin-table-card">
+            <table class="admin-data-table">
+              <thead>
+                <tr>
+                  <th>TEMPLATE</th>
+                  <th>CATEGORY</th>
+                  <th>USAGE</th>
+                  <th>STATUS</th>
+                  <th>ACTIONS</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (tmpl of filteredTemplates(); track tmpl.id) {
+                  <tr>
+                    <td>
+                      <div class="template-cell">
+                        <div class="tmpl-thumb" [style.background-image]="'url(' + tmpl.imageUri + ')'"></div>
+                        <div class="tmpl-cell-info">
+                          <span class="tmpl-name">{{ tmpl.name }}</span>
+                          <span class="tmpl-desc">{{ tmpl.description }}</span>
+                        </div>
+                      </div>
+                    </td>
+                    <td><span class="category-tag">{{ tmpl.category }}</span></td>
+                    <td>{{ tmpl.usageCount }} uses</td>
+                    <td>
+                      <span class="status-pill" [class.published]="tmpl.status === 'Published'" [class.draft]="tmpl.status === 'Draft'">
+                        {{ tmpl.status }}
+                      </span>
+                    </td>
+                    <td>
+                      <div class="action-btns-row">
+                        <button (click)="toggleTemplateStatus(tmpl.id)" class="action-btn-sm">{{ tmpl.status === 'Published' ? 'Unpublish' : 'Publish' }}</button>
+                        <button (click)="deleteTemplate(tmpl.id)" class="action-btn-sm danger">Delete</button>
+                      </div>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </section>
+      }
+
+      <!-- ========== COLOR COLLECTIONS ========== -->
+      @if (activeSection() === 'collections') {
+        <section class="admin-section">
+          <div class="section-header-row">
+            <div>
+              <h1 class="section-heading">Color Collections</h1>
+              <p class="section-subtext">Manage curated color palette collections.</p>
+            </div>
+            <button class="primary-action-btn">+ Create New Collection</button>
+          </div>
+
+          <div class="admin-table-card">
+            <div class="colors-cms-grid">
+              @for (color of filteredColors(); track color._id) {
+                <div class="color-cms-tile">
+                  <div class="color-preview-box" [style.background-color]="color.hexCode || color.hex || '#2563eb'"></div>
+                  <div class="color-cms-info">
+                    <h4>{{ color.name }}</h4>
+                    <p>{{ color.brandName }} • {{ color.colorCode }}</p>
+                    <span class="hex-lbl">{{ color.hexCode || color.hex }}</span>
+                  </div>
+                </div>
+              }
+              @if (filteredColors().length === 0) {
+                <div class="empty-state-inline">No colors loaded from catalog API.</div>
+              }
+            </div>
+          </div>
+        </section>
+      }
+
+      <!-- ========== CUSTOM COLORS ========== -->
+      @if (activeSection() === 'customColors') {
+        <section class="admin-section">
+          <div class="section-header-row">
+            <div>
+              <h1 class="section-heading">Custom Colors</h1>
+              <p class="section-subtext">Define and approve platform-wide custom paint colors.</p>
+            </div>
+          </div>
+
+          <div class="admin-two-col">
+            <!-- Add Color Form -->
+            <div class="admin-form-card">
+              <h3>+ Add Custom Color</h3>
+              <div class="form-group">
+                <label>BRAND / MANUFACTURER</label>
+                <input type="text" [(ngModel)]="newColor.brandName" placeholder="Sherwin-Williams" class="form-control" />
+              </div>
+              <div class="form-group">
+                <label>COLOR CODE</label>
+                <input type="text" [(ngModel)]="newColor.colorCode" placeholder="SW-7005" class="form-control" />
+              </div>
+              <div class="form-group">
+                <label>COLOR NAME</label>
+                <input type="text" [(ngModel)]="newColor.name" placeholder="Pure White" class="form-control" />
+              </div>
+              <div class="form-group">
+                <label>HEX COLOR</label>
+                <div class="hex-picker-row">
+                  <input type="color" [(ngModel)]="newColor.hexCode" (change)="onHexChange()" class="color-picker-input" />
+                  <input type="text" [(ngModel)]="newColor.hexCode" (keyup)="onHexChange()" class="form-control" />
+                </div>
+              </div>
+              <button (click)="addColor()" class="primary-action-btn">+ Add Paint Color</button>
+            </div>
+
+            <!-- Colors Table -->
+            <div class="admin-table-card">
+              <div class="table-header-row">
+                <h3>Catalog Colors ({{ filteredColors().length }})</h3>
+              </div>
+              <div class="colors-cms-grid">
+                @for (color of filteredColors(); track color._id) {
+                  <div class="color-cms-tile">
+                    <div class="color-preview-box" [style.background-color]="color.hexCode || color.hex || '#2563eb'"></div>
+                    <div class="color-cms-info">
+                      <h4>{{ color.name }}</h4>
+                      <p>{{ color.brandName }} • {{ color.colorCode }}</p>
+                    </div>
+                  </div>
+                }
+              </div>
+            </div>
+          </div>
+        </section>
+      }
+
+      <!-- ========== TEXTURES & MATERIALS ========== -->
+      @if (activeSection() === 'textures') {
+        <section class="admin-section">
+          <div class="section-header-row">
+            <div>
+              <h1 class="section-heading">Textures & Materials</h1>
+              <p class="section-subtext">Manage wall textures and material finish libraries.</p>
+            </div>
+          </div>
+
+          <div class="admin-two-col">
+            <!-- Add Texture Form -->
+            <div class="admin-form-card">
+              <h3>+ Upload New Texture</h3>
+              <div class="form-group">
+                <label>TEXTURE NAME</label>
+                <input type="text" [(ngModel)]="newTexture.name" placeholder="Venetian Plaster" class="form-control" />
+              </div>
+              <div class="form-group">
+                <label>TEXTURE IMAGE</label>
+                <div 
+                  class="drag-drop-zone" 
+                  (dragover)="onDragOver($event, 'texture')" 
+                  (dragleave)="onDragLeave($event, 'texture')" 
+                  (drop)="onDrop($event, 'texture')"
+                  (click)="textureFileInput.click()"
+                >
+                  @if (newTexture.imageUri) {
+                    <div class="preview-img" [style.background-image]="'url(' + newTexture.imageUri + ')'"></div>
+                  } @else {
+                    <div class="upload-placeholder">
+                      <app-icon name="upload" [size]="20"></app-icon>
+                      <span style="font-size: 0.75rem;">Upload Image</span>
+                    </div>
+                  }
+                </div>
+                <input #textureFileInput type="file" accept="image/*" style="display: none;" (change)="onFileSelected($event, 'texture')" />
+              </div>
+              <button (click)="addTexture()" class="primary-action-btn">+ Add Texture</button>
+            </div>
+
+            <!-- Textures Grid -->
+            <div class="admin-table-card">
+              <div class="table-header-row">
+                <h3>Texture Library ({{ filteredTextures().length }})</h3>
+              </div>
+              <div class="textures-cms-grid">
+                @for (tex of filteredTextures(); track tex._id) {
+                  <div class="texture-cms-tile">
+                    <div class="tex-img-preview" [style.background-image]="'url(' + tex.imageUri + ')'"></div>
+                    <h4>{{ tex.name }}</h4>
+                  </div>
+                }
+                @if (filteredTextures().length === 0) {
+                  <div class="empty-state-inline">No textures loaded from catalog API.</div>
+                }
+              </div>
+            </div>
+          </div>
+        </section>
+      }
+
+      <!-- ========== BRUSH LIBRARY ========== -->
+      @if (activeSection() === 'brushes') {
+        <section class="admin-section">
+          <div class="section-header-row">
+            <div>
+              <h1 class="section-heading">Brush Library</h1>
+              <p class="section-subtext">Configure canvas brush presets and tool defaults.</p>
+            </div>
+            <button (click)="openBrushPresetModal()" class="primary-action-btn">+ Add Brush Preset</button>
+          </div>
+
+          <div class="admin-table-card">
+            <table class="admin-data-table">
+              <thead>
+                <tr>
+                  <th>BRUSH NAME</th>
+                  <th>TYPE</th>
+                  <th>SIZE</th>
+                  <th>HARDNESS</th>
+                  <th>OPACITY</th>
+                  <th>ACTIONS</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (brush of brushPresets(); track brush.id) {
+                  <tr>
+                    <td><strong>{{ brush.name }}</strong></td>
+                    <td><span class="category-tag">{{ brush.type }}</span></td>
+                    <td>{{ brush.defaultSize }}px</td>
+                    <td>{{ brush.defaultHardness }}%</td>
+                    <td>{{ brush.defaultOpacity }}%</td>
+                    <td>
+                      <button (click)="deleteBrush(brush.id)" class="action-btn-sm danger">Delete</button>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </section>
+      }
+
+      <!-- ========== USERS & WORKSPACES ========== -->
+      @if (activeSection() === 'users') {
+        <section class="admin-section">
+          <div class="section-header-row">
+            <div>
+              <h1 class="section-heading">Users & Workspaces</h1>
+              <p class="section-subtext">Manage user accounts, roles, and workspace permissions.</p>
+            </div>
+          </div>
+
+          <div class="admin-table-card">
+            <div class="table-header-row" style="margin-bottom: 20px; display: flex; justify-content: flex-end;">
+              <button (click)="openInviteUserModal()" class="primary-action-btn">+ Invite User</button>
+            </div>
+            <table class="admin-data-table">
+              <thead>
+                <tr>
+                  <th>USER</th>
+                  <th>EMAIL</th>
+                  <th>ROLE</th>
+                  <th>STATUS</th>
+                  <th>ACTIONS</th>
+                </tr>
+              </thead>
+              <tbody>
+                @if (isLoading()) {
+                  <tr><td colspan="5" style="text-align: center; padding: 30px; color: #94a3b8;">Loading users...</td></tr>
+                } @else {
+                  @for (user of filteredUsers(); track user._id || user.id) {
+                    <tr>
+                      <td>
+                        <div class="user-cell">
+                          <div class="user-avatar-sm">{{ user.firstName?.charAt(0) || 'U' }}</div>
+                          <span>{{ user.firstName }} {{ user.lastName }}</span>
+                        </div>
+                      </td>
+                      <td>{{ user.email }}</td>
+                      <td><span class="role-badge" [class]="user.role.toLowerCase()">{{ user.role }}</span></td>
+                      <td>
+                        <div style="display: flex; align-items: center; gap: 6px;">
+                          <span class="status-dot" [style.background]="(user.status || 'Active') === 'Active' ? '#10b981' : '#cbd5e1'" style="width: 8px; height: 8px; border-radius: 50%; display: inline-block;"></span>
+                          <span>{{ user.status || 'Active' }}</span>
+                        </div>
+                      </td>
+                      <td>
+                        <div style="display: flex; gap: 8px;">
+                          <button (click)="changeRole(user._id || user.id || '', user.role)" class="action-btn-sm" title="Toggle Role">
+                            <app-icon name="user" [size]="16"></app-icon>
+                          </button>
+                          <button class="action-btn-sm danger" title="Deactivate">
+                            <app-icon name="close" [size]="16"></app-icon>
+                          </button>
+                          <button class="action-btn-sm" title="Reset Password">
+                            <app-icon name="refresh" [size]="16"></app-icon>
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  } @empty {
+                    <tr>
+                      <td colspan="5">
+                        <div class="empty-state-inline">No users found matching your criteria.</div>
+                      </td>
+                    </tr>
+                  }
+                }
+              </tbody>
+            </table>
+          </div>
+        </section>
+      }
+
+      <!-- ========== PLATFORM SETTINGS ========== -->
+      @if (activeSection() === 'settings') {
+        <section class="admin-section">
+          <h1 class="section-heading">Platform Settings</h1>
+          <p class="section-subtext">Configure LuminaPaint platform preferences and policies.</p>
+
+          <div class="settings-cards-grid">
+            @for (section of settingsSections; track section.id) {
+              <div class="settings-card" [class.has-changes]="section.hasChanges">
+                <div class="settings-card-header">
+                  <h3>{{ section.label }}</h3>
+                  @if (section.hasChanges) {
+                    <span class="unsaved-dot"></span>
+                  }
+                </div>
+                <p class="settings-desc">{{ section.description }}</p>
+                <button (click)="saveSettings(section.id)" class="settings-save-btn" [disabled]="!section.hasChanges">Save Changes</button>
+              </div>
+            }
+          </div>
+        </section>
+      }
+
+      <!-- ========== AUDIT LOGS ========== -->
+      @if (activeSection() === 'auditLogs') {
+        <section class="admin-section">
+          <h1 class="section-heading">Audit Logs</h1>
+          <p class="section-subtext">Chronological record of administrative actions and system events.</p>
+
+          <div class="admin-table-card">
+            <table class="admin-data-table">
+              <thead>
+                <tr>
+                  <th>ACTION</th>
+                  <th>IP ADDRESS</th>
+                  <th>DETAILS</th>
+                  <th>TIMESTAMP</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (log of filteredAuditLogs(); track log._id) {
+                  <tr>
+                    <td><span class="action-pill">{{ log.action }}</span></td>
+                    <td><code>{{ log.ipAddress }}</code></td>
+                    <td>{{ log.details }}</td>
+                    <td>{{ log.timestamp | date:'medium' }}</td>
+                  </tr>
+                }
+                @if (filteredAuditLogs().length === 0) {
+                  <tr><td colspan="4" class="empty-state-inline">No audit log entries found.</td></tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </section>
+      }
+
+      <!-- ========== SYSTEM HEALTH ========== -->
+      @if (activeSection() === 'systemHealth') {
+        <section class="admin-section">
+          <h1 class="section-heading">System Health</h1>
+          <p class="section-subtext">Real-time infrastructure status and connectivity checks.</p>
+
+          <div class="health-card">
+            <div class="health-header">
+              <app-icon name="admin" [size]="24" color="#10b981"></app-icon>
+              <h3>All Systems Operational</h3>
+            </div>
+            <p class="health-subtext">Real-time monitoring synced via Socket.IO. Last checked: just now.</p>
+
+            <div class="health-rows">
+              @for (check of healthChecks(); track check.name) {
+                <div class="health-row">
+                  <span class="health-dot" [class.operational]="check.status === 'operational'" [class.degraded]="check.status === 'degraded'" [class.down]="check.status === 'down'"></span>
+                  <span class="health-name">{{ check.name }}</span>
+                  <span class="health-latency">{{ check.latency }}</span>
+                  <span class="health-status-label" [class]="check.status">{{ check.status | titlecase }}</span>
+                </div>
+              }
+            </div>
+          </div>
+        </section>
+      }
+
+    </main>
+  </div>
+
+  <!-- ========== TEMPLATE UPLOAD MODAL ========== -->
+  @if (showTemplateUploadModal()) {
+    <div class="modal-backdrop" (click)="closeTemplateUploadModal()">
+      <div class="modal-card" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h2>Upload New Template</h2>
+          <button (click)="closeTemplateUploadModal()" class="close-btn">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label>TEMPLATE NAME</label>
+            <input type="text" [(ngModel)]="newTemplate.name" placeholder="e.g., Luxury Villa Living Room" class="form-control" />
+          </div>
+          <div class="form-group">
+            <label>CATEGORY</label>
+            <select [(ngModel)]="newTemplate.category" class="form-control">
+              <option value="Residential">Residential</option>
+              <option value="Commercial">Commercial</option>
+              <option value="Kitchen & Dining">Kitchen & Dining</option>
+              <option value="Exterior">Exterior</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>TAGS (comma-separated)</label>
+            <input type="text" [(ngModel)]="newTemplate.tags" placeholder="living, warm, modern" class="form-control" />
+          </div>
+          <div class="form-group">
+            <label>DESCRIPTION</label>
+            <textarea [(ngModel)]="newTemplate.description" placeholder="Describe this template..." class="form-control" rows="3"></textarea>
+          </div>
+          <div class="form-group">
+            <label>TEMPLATE IMAGE</label>
+            <div 
+              class="drag-drop-zone" 
+              (dragover)="onDragOver($event, 'template')" 
+              (dragleave)="onDragLeave($event, 'template')" 
+              (drop)="onDrop($event, 'template')"
+              (click)="templateFileInput.click()"
+            >
+              @if (newTemplate.imageUri) {
+                <div class="preview-img" [style.background-image]="'url(' + newTemplate.imageUri + ')'"></div>
+                <div class="overlay-text">Click or drag to replace</div>
+              } @else {
+                <div class="upload-placeholder">
+                  <app-icon name="upload" [size]="24"></app-icon>
+                  <span>Drag & Drop image here or click to browse</span>
+                </div>
+              }
+            </div>
+            <input #templateFileInput type="file" accept="image/*" style="display: none;" (change)="onFileSelected($event, 'template')" />
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button (click)="closeTemplateUploadModal()" class="btn-cancel">Cancel</button>
+          <button (click)="submitNewTemplate()" class="btn-submit">Save as Draft</button>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- ========== BRUSH PRESET MODAL ========== -->
+  @if (showBrushPresetModal()) {
+    <div class="modal-backdrop" (click)="closeBrushPresetModal()">
+      <div class="modal-card" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h2>Add Brush Preset</h2>
+          <button (click)="closeBrushPresetModal()" class="close-btn">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label>BRUSH NAME</label>
+            <input type="text" [(ngModel)]="newBrush.name" placeholder="e.g., Soft Round" class="form-control" />
+          </div>
+          <div class="form-group">
+            <label>TYPE</label>
+            <select [(ngModel)]="newBrush.type" class="form-control">
+              <option value="Round">Round</option>
+              <option value="Textured">Textured</option>
+              <option value="Spray">Spray</option>
+              <option value="Blend">Blend</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>DEFAULT SIZE ({{ newBrush.defaultSize }}px)</label>
+            <input type="range" [(ngModel)]="newBrush.defaultSize" min="1" max="100" class="slider-input" />
+          </div>
+          <div class="form-group">
+            <label>DEFAULT HARDNESS ({{ newBrush.defaultHardness }}%)</label>
+            <input type="range" [(ngModel)]="newBrush.defaultHardness" min="0" max="100" class="slider-input" />
+          </div>
+          <div class="form-group">
+            <label>DEFAULT OPACITY ({{ newBrush.defaultOpacity }}%)</label>
+            <input type="range" [(ngModel)]="newBrush.defaultOpacity" min="0" max="100" class="slider-input" />
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button (click)="closeBrushPresetModal()" class="btn-cancel">Cancel</button>
+          <button (click)="submitNewBrush()" class="btn-submit">+ Add Preset</button>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- ========== INVITE USER MODAL ========== -->
+  @if (showInviteUserModal()) {
+    <div class="modal-backdrop" (click)="closeInviteUserModal()">
+      <div class="modal-card" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h2>Invite User</h2>
+          <button (click)="closeInviteUserModal()" class="close-btn">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label>EMAIL ADDRESS</label>
+            <input type="email" [(ngModel)]="newInvite.email" placeholder="colleague@company.com" class="form-control" />
+          </div>
+          <div class="form-group">
+            <label>SYSTEM ROLE</label>
+            <select [(ngModel)]="newInvite.role" class="form-control">
+              <option value="Admin">Admin</option>
+              <option value="Designer">Designer</option>
+              <option value="User">User</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>WORKSPACE ASSIGNMENT</label>
+            <select [(ngModel)]="newInvite.workspace" class="form-control">
+              @for (ws of workspaceService.workspaces(); track ws.id) {
+                <option [value]="ws.id">{{ ws.name }}</option>
+              }
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button (click)="closeInviteUserModal()" class="btn-cancel">Cancel</button>
+          <button (click)="submitInviteUser()" class="btn-submit">Send Invitation</button>
+        </div>
+      </div>
+    </div>
+  }
+</div>

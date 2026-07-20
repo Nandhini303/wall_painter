@@ -1,0 +1,125 @@
+<div class="panel-section">
+  <div class="panel-header search-header">
+    <h3>Colors</h3>
+    <input 
+      type="text" 
+      class="oc-search-input" 
+      placeholder="Search..." 
+      [ngModel]="searchQuery()" 
+      (ngModelChange)="searchQuery.set($event)"
+    />
+  </div>
+
+  <div class="panel-body scrollable-body">
+    
+    <!-- Favorites Section -->
+    @if (studio.favoriteColors().length > 0) {
+      <div class="sub-section">
+        <div class="sub-header">
+          <h4>Favorites</h4>
+        </div>
+        <div class="swatches-grid">
+          @for (color of studio.favoriteColors(); track color.hex) {
+            <div 
+              class="swatch-wrapper"
+              [class.active]="studio.activeColor().hex === color.hex"
+            >
+              <div 
+                class="color-swatch-circle"
+                [style.background-color]="color.hex"
+                (click)="selectColor(color)"
+                [title]="color.name || color.hex"
+              ></div>
+              <button class="star-btn active" (click)="studio.toggleFavorite(color)">★</button>
+            </div>
+          }
+        </div>
+      </div>
+      <div class="dropdown-divider"></div>
+    }
+
+    <!-- Recent Colors Section -->
+    @if (studio.recentColors().length > 0 && !searchQuery()) {
+      <div class="sub-section">
+        <div class="sub-header">
+          <h4>Recents</h4>
+          <button class="text-btn" (click)="studio.clearRecents()">Clear</button>
+        </div>
+        <div class="swatches-grid">
+          @for (color of studio.recentColors(); track color.hex) {
+            <div 
+              class="swatch-wrapper"
+              [class.active]="studio.activeColor().hex === color.hex"
+            >
+              <div 
+                class="color-swatch-circle"
+                [style.background-color]="color.hex"
+                (click)="selectColor(color)"
+                [title]="color.name || color.hex"
+              ></div>
+            </div>
+          }
+        </div>
+      </div>
+      <div class="dropdown-divider"></div>
+    }
+
+    <!-- Main Open Color Library -->
+    <div class="sub-section">
+      <div class="sub-header">
+        <h4>Open Color Library</h4>
+      </div>
+      
+      @if (searchQuery()) {
+        <div class="swatches-grid">
+          @for (color of allColors(); track color.hex) {
+            <div 
+              class="swatch-wrapper"
+              [class.active]="studio.activeColor().hex === color.hex"
+            >
+              <div 
+                class="color-swatch-circle"
+                [style.background-color]="color.hex"
+                (click)="selectColor(color)"
+                [title]="color.name"
+              ></div>
+              <button 
+                class="star-btn" 
+                [class.active]="studio.isFavorite(color.hex)" 
+                (click)="studio.toggleFavorite(color)"
+              >★</button>
+            </div>
+          }
+        </div>
+      } @else {
+        <!-- Grouped by Hue -->
+        <div class="palette-hue-group">
+          @for (key of openColorKeys; track key) {
+            <div class="hue-row">
+              <span class="hue-label">{{ key | titlecase }}</span>
+              <div class="hue-swatches">
+                @for (shade of shades; track shade) {
+                  @if (allColors() | selectHue:key:shade; as color) {
+                    <div 
+                      class="swatch-wrapper mini"
+                      [class.active]="studio.activeColor().hex === color.hex"
+                    >
+                      <div 
+                        class="color-swatch-rect"
+                        [style.background-color]="color.hex"
+                        (click)="selectColor(color)"
+                        [title]="color.name"
+                        (dblclick)="studio.toggleFavorite(color)"
+                      ></div>
+                    </div>
+                  }
+                }
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </div>
+
+  </div>
+</div>

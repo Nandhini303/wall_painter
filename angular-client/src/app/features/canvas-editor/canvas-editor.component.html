@@ -1,0 +1,181 @@
+<div class="editor-layout">
+  <!-- Top Navigation Header -->
+  <header class="editor-header">
+    <div class="header-left">
+      <a routerLink="/dashboard" class="back-btn" title="Back to Dashboard">←</a>
+      <div class="project-title-box">
+        <h2>{{ project()?.name || 'Untitled Project' }}</h2>
+        <!-- Autosave Status Indicator Pill -->
+        <span class="save-status-pill" [class]="saveStatus()">
+          @if (saveStatus() === 'saving') { ⏳ Saving... }
+          @else if (saveStatus() === 'saved') { ✓ Saved }
+          @else { • Unsaved Changes }
+        </span>
+      </div>
+    </div>
+
+    <div class="header-center">
+      <!-- Room Templates Switcher -->
+      <div class="template-selector">
+        <label for="tmplSelect">Room:</label>
+        <select id="tmplSelect" [ngModel]="selectedTemplateId()" (ngModelChange)="switchTemplate($event)">
+          @for (tmpl of roomTemplates; track tmpl.id) {
+            <option [value]="tmpl.id">{{ tmpl.name }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- Undo / Redo Controls -->
+      <button (click)="undo()" [disabled]="!canUndo()" class="tool-btn" title="Undo"><app-icon name="undo" [size]="16"></app-icon></button>
+      <button (click)="redo()" [disabled]="!canRedo()" class="tool-btn" title="Redo"><app-icon name="redo" [size]="16"></app-icon></button>
+      <div class="divider"></div>
+      
+      <!-- Zoom & View Controls -->
+      <button (click)="setZoom(-10)" class="tool-btn" title="Zoom Out"><app-icon name="zoom-out" [size]="16"></app-icon></button>
+      <span class="zoom-text">{{ zoomLevel() }}%</span>
+      <button (click)="setZoom(10)" class="tool-btn" title="Zoom In"><app-icon name="zoom-in" [size]="16"></app-icon></button>
+      <button (click)="toggleGrid()" [class.active]="showGrid()" class="tool-btn" title="Toggle Grid Overlay"><app-icon name="grid" [size]="16"></app-icon> Grid</button>
+      <button (click)="toggleCompareMode()" [class.active]="isCompareMode()" class="tool-btn" title="Compare Original vs Painted"><app-icon name="compare" [size]="16"></app-icon> Compare</button>
+    </div>
+
+    <div class="header-right">
+      <!-- Export Dropdown -->
+      <div class="export-dropdown-wrapper">
+        <button (click)="exportPNG()" class="secondary-btn">Export PNG</button>
+        <button (click)="exportJPG()" class="secondary-btn">Export JPG</button>
+        <button (click)="exportJSON()" class="secondary-btn">Export JSON</button>
+      </div>
+
+      <!-- Share CTA -->
+      <button (click)="openShareModal()" class="share-btn"><app-icon name="share" [size]="16"></app-icon> Share</button>
+
+      <!-- Save & Publish Buttons -->
+      <button (click)="saveDraft()" class="secondary-btn">Save Draft</button>
+      <button (click)="publishProject()" class="primary-btn">Publish</button>
+    </div>
+  </header>
+
+  <div class="editor-workspace">
+    <!-- Left Floating Tool Palette -->
+    <aside class="tool-palette">
+      <button 
+        (click)="activeTool.set('select')" 
+        [class.active]="activeTool() === 'select'" 
+        class="palette-btn" 
+        title="Select & Move"
+      ><app-icon name="select" [size]="18"></app-icon></button>
+
+      <button 
+        (click)="activeTool.set('brush')" 
+        [class.active]="activeTool() === 'brush'" 
+        class="palette-btn" 
+        title="Paint Brush"
+      ><app-icon name="brush" [size]="18"></app-icon></button>
+
+      <button 
+        (click)="activeTool.set('bucket')" 
+        [class.active]="activeTool() === 'bucket'" 
+        class="palette-btn" 
+        title="Color Fill Bucket"
+      ><app-icon name="fill" [size]="18"></app-icon></button>
+
+      <button 
+        (click)="activeTool.set('polygon')" 
+        [class.active]="activeTool() === 'polygon'" 
+        class="palette-btn" 
+        title="Polygon Mask"
+      ><app-icon name="polygon" [size]="18"></app-icon></button>
+
+      <button 
+        (click)="activeTool.set('eraser')" 
+        [class.active]="activeTool() === 'eraser'" 
+        class="palette-btn" 
+        title="Eraser"
+      ><app-icon name="eraser" [size]="18"></app-icon></button>
+    </aside>
+
+    <!-- Infinite White Canvas Center -->
+    <main class="canvas-viewport">
+      <div #container class="konva-container"></div>
+    </main>
+
+    <!-- Right Inspector Panel -->
+    <aside class="right-inspector">
+      <app-tool-properties></app-tool-properties>
+      <app-color-swatch-panel></app-color-swatch-panel>
+      <app-custom-color-popover></app-custom-color-popover>
+      <app-texture-library-panel></app-texture-library-panel>
+      <app-asset-library-panel></app-asset-library-panel>
+      <!-- Layers Management Panel -->
+      <div class="inspector-section flex-1">
+        <div class="section-title-row">
+          <h3>Layers Stack ({{ layers().length }})</h3>
+          <button (click)="addLayer()" class="add-layer-btn">+ Add Layer</button>
+        </div>
+
+        <div class="layers-list">
+          @for (layer of layers(); track layer.id; let idx = $index) {
+            <div 
+              (click)="selectedLayerId.set(layer.id)" 
+              [class.active]="selectedLayerId() === layer.id" 
+              class="layer-item-row"
+            >
+              <button (click)="toggleVisibility(layer, $event)" class="layer-action-icon" [title]="layer.visible ? 'Hide Layer' : 'Show Layer'">
+                {{ layer.visible ? '👁️' : '🙈' }}
+              </button>
+
+              <span class="layer-name">{{ layer.name }}</span>
+
+              <div class="layer-actions">
+                <button (click)="toggleLock(layer, $event)" class="layer-action-icon" [title]="layer.locked ? 'Unlock Layer' : 'Lock Layer'">
+                  {{ layer.locked ? '🔒' : '🔓' }}
+                </button>
+                <button (click)="duplicateLayer(layer, $event)" class="layer-action-icon" title="Duplicate Layer">📋</button>
+                <button (click)="moveLayerUp(idx, $event)" [disabled]="idx <= 1" class="layer-action-icon" title="Move Up">↑</button>
+                <button (click)="moveLayerDown(idx, $event)" [disabled]="idx === 0 || idx >= layers().length - 1" class="layer-action-icon" title="Move Down">↓</button>
+                @if (layer.id !== 'base-layer') {
+                  <button (click)="deleteLayer(layer.id, $event)" class="layer-action-icon delete" title="Delete Layer">🗑️</button>
+                }
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <!-- Bottom Status Bar -->
+  <footer class="editor-status-bar">
+    <div class="status-left">
+      <span>Active Tool: <strong>{{ activeTool() | titlecase }}</strong></span>
+      <span class="sep">•</span>
+      <span>Color: <strong>{{ studio.activeColor()?.name || studio.activeColor()?.hex }}</strong></span>
+    </div>
+
+    <div class="status-right">
+      <span>Socket.IO Sync: <strong class="text-emerald">Active Room</strong></span>
+    </div>
+  </footer>
+
+  <!-- Share Link Modal -->
+  @if (showShareModal()) {
+    <div class="modal-backdrop">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h2>Share Visualizer Project</h2>
+          <button (click)="closeShareModal()" class="close-btn">&times;</button>
+        </div>
+
+        <div class="modal-body">
+          <p class="share-sub">Copy the direct share URL to collaborate or showcase this paint visualizer design:</p>
+          <div class="share-input-group">
+            <input type="text" [value]="shareUrl()" readonly class="share-input" />
+            <button (click)="copyShareLink()" class="primary-btn">Copy Link</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+</div>

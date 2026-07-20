@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>LuminaPaint | Enterprise Color Visualization</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Plus+Jakarta+Sans:wght@600;700;800&amp;display=swap" rel="stylesheet"/>
+<style>
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+        
+        .glass-border-gradient {
+            border-image: linear-gradient(to bottom right, rgba(255,255,255,0.15), rgba(255,255,255,0.05)) 1;
+        }
+
+        .rim-light-primary:hover {
+            box-shadow: inset 0 0 15px rgba(190, 205, 164, 0.2), 0 0 20px rgba(190, 205, 164, 0.1);
+        }
+
+        .swatch-glow:hover {
+            transform: scale(1.05);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .visualizer-split {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .handle {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: #becda4;
+            cursor: ew-resize;
+            z-index: 10;
+        }
+
+        @keyframes pulse-slow {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.6; }
+        }
+
+        .animate-pulse-slow {
+            animation: pulse-slow 4s infinite ease-in-out;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "outline-variant": "#45483f",
+                        "tertiary-fixed": "#dce1ff",
+                        "on-tertiary-fixed": "#00164e",
+                        "on-secondary-fixed-variant": "#7c2e19",
+                        "error-container": "#93000a",
+                        "outline": "#909287",
+                        "on-primary-container": "#384425",
+                        "secondary": "#ffb4a1",
+                        "primary-container": "#a3b18a",
+                        "inverse-primary": "#566342",
+                        "primary-fixed": "#dae8be",
+                        "background": "#131411",
+                        "secondary-container": "#7f301b",
+                        "surface-container-lowest": "#0e0e0c",
+                        "surface": "#131411",
+                        "surface-container": "#1f201d",
+                        "surface-variant": "#353532",
+                        "on-background": "#e4e2dd",
+                        "tertiary-fixed-dim": "#b6c4ff",
+                        "surface-dim": "#131411",
+                        "on-primary-fixed": "#141f05",
+                        "error": "#ffb4ab",
+                        "surface-container-high": "#2a2a27",
+                        "on-error": "#690005",
+                        "on-secondary-fixed": "#3c0800",
+                        "inverse-on-surface": "#30312d",
+                        "primary-fixed-dim": "#becca3",
+                        "primary": "#becda4",
+                        "inverse-surface": "#e4e2dd",
+                        "surface-bright": "#393936",
+                        "on-surface-variant": "#c6c8bb",
+                        "secondary-fixed-dim": "#ffb4a1",
+                        "on-surface": "#e4e2dd",
+                        "on-primary-fixed-variant": "#3f4b2c",
+                        "on-primary": "#293417",
+                        "on-tertiary": "#05297a",
+                        "tertiary-container": "#90a8ff",
+                        "on-tertiary-fixed-variant": "#264191",
+                        "on-secondary-container": "#ffa087",
+                        "surface-tint": "#becca3",
+                        "on-tertiary-container": "#1e3a8a",
+                        "surface-container-highest": "#353532",
+                        "surface-container-low": "#1b1c19",
+                        "tertiary": "#b7c5ff",
+                        "on-error-container": "#ffdad6",
+                        "secondary-fixed": "#ffdbd2",
+                        "on-secondary": "#5d1805"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "stack-gap": "12px",
+                        "container-margin": "24px",
+                        "unit": "8px",
+                        "gutter": "16px"
+                    },
+                    "fontFamily": {
+                        "body-md": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "headline-md": ["Plus Jakarta Sans"],
+                        "display-lg": ["Plus Jakarta Sans"],
+                        "display-lg-mobile": ["Plus Jakarta Sans"]
+                    },
+                    "fontSize": {
+                        "body-md": ["16px", {"lineHeight": "1.5", "letterSpacing": "0em", "fontWeight": "400"}],
+                        "body-lg": ["18px", {"lineHeight": "1.6", "letterSpacing": "0em", "fontWeight": "400"}],
+                        "label-sm": ["12px", {"lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                        "headline-md": ["24px", {"lineHeight": "1.3", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                        "display-lg": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.04em", "fontWeight": "700"}],
+                        "display-lg-mobile": ["32px", {"lineHeight": "1.2", "letterSpacing": "-0.03em", "fontWeight": "700"}]
+                    }
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-background text-on-surface font-body-md overflow-x-hidden selection:bg-primary selection:text-on-primary">
+<!-- Top Navigation Bar -->
+<nav class="fixed top-0 w-full z-50 bg-surface/60 backdrop-blur-xl border-b border-white/10 shadow-2xl">
+<div class="flex justify-between items-center px-container-margin py-4 max-w-screen-2xl mx-auto">
+<div class="font-headline-md text-headline-md font-bold text-on-surface tracking-tight">
+                LuminaPaint
+            </div>
+<div class="hidden md:flex gap-8 items-center">
+<a class="text-on-surface-variant font-medium hover:text-primary transition-colors duration-300" href="#">Features</a>
+<a class="text-on-surface-variant font-medium hover:text-primary transition-colors duration-300" href="#">Solutions</a>
+<a class="text-on-surface-variant font-medium hover:text-primary transition-colors duration-300" href="#">Catalog</a>
+<a class="text-on-surface-variant font-medium hover:text-primary transition-colors duration-300" href="#">Enterprise</a>
+</div>
+<button class="bg-primary text-on-primary px-6 py-2 rounded-full font-bold hover:scale-95 transition-transform duration-200 shadow-lg shadow-primary/20">
+                Start Visualizing
+            </button>
+</div>
+</nav>
+<main class="relative pt-20">
+<!-- Hero Section -->
+<section class="relative min-h-[921px] flex flex-col items-center justify-center px-container-margin overflow-hidden">
+
+<div class="relative z-10 text-center max-w-4xl mx-auto mb-16">
+<h1 class="font-display-lg text-display-lg md:text-display-lg mb-6 leading-none">
+                    The Future of <span class="text-primary">Color Visualization</span>
+</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant mb-10 max-w-2xl mx-auto">
+                    Experience precision like never before. Our AI-driven engine renders obsidian depths and terracota warmth with physical accuracy.
+                </p>
+<div class="flex flex-col sm:flex-row gap-4 justify-center">
+<button class="bg-primary text-on-primary px-10 py-4 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-primary-container transition-all">
+                        Start Visualizing
+                        <span class="material-symbols-outlined">arrow_forward</span>
+</button>
+<button class="glass-panel text-on-surface border border-white/10 px-10 py-4 rounded-xl font-bold hover:bg-white/5 transition-all">
+                        Browse Paint Catalog
+                    </button>
+</div>
+</div>
+<!-- Visualizer Interface Mockup -->
+<div class="relative w-full max-w-6xl aspect-video glass-panel rounded-2xl overflow-hidden border border-white/20 shadow-2xl group">
+<!-- HUD Controls Left -->
+<div class="absolute left-6 top-1/2 -translate-y-1/2 z-20 flex flex-col gap-4">
+<div class="glass-panel p-2 rounded-full border border-white/10 flex flex-col gap-4">
+<button class="p-3 bg-primary text-on-primary rounded-full shadow-lg"><span class="material-symbols-outlined">brush</span></button>
+<button class="p-3 text-on-surface-variant hover:text-primary transition-colors"><span class="material-symbols-outlined">texture</span></button>
+<button class="p-3 text-on-surface-variant hover:text-primary transition-colors"><span class="material-symbols-outlined">layers</span></button>
+<button class="p-3 text-on-surface-variant hover:text-primary transition-colors"><span class="material-symbols-outlined">palette</span></button>
+</div>
+</div>
+<!-- HUD Info Top -->
+<div class="absolute top-6 left-1/2 -translate-x-1/2 z-20 flex gap-4">
+<div class="glass-panel px-6 py-2 rounded-full border border-white/10 flex items-center gap-2">
+<span class="w-3 h-3 rounded-full bg-secondary"></span>
+<span class="text-label-sm uppercase tracking-widest text-on-surface-variant">Active Color: Obsidian Blue</span>
+</div>
+</div>
+<!-- Split Screen Visualizer -->
+<div class="relative w-full h-full flex overflow-hidden">
+<!-- Before -->
+<div class="absolute inset-0 w-full h-full">
+<div class="w-full h-full bg-cover bg-center" data-alt="A high-end modern minimalist office space with plain white walls, concrete floors, large floor-to-ceiling windows showing a dusk cityscape, and designer furniture in neutral tones. The lighting is clinical and bright." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAfdWoFBm_qt22YRqk9nMAru5f7OFRDUivCICKJqjnOWvnSRw5fS7l1AFuASFED1denaB3aMog_B1gJCEw0gkL_F9P36RlzirjlB2R1Qy5Mg2KTA1nB6C2NbdoE8H7brPnOF0d2bzdXVb0gkARWlvNkMpcbn4uMnQPB_Ucuhw78oduTvpV8X2buNMB_Wu3Y_w3PFSs9fx5NsZF5FK43dm6441eMG8qCp2auxMZez_i1ZuGm981OdDhrgXnSdNt5lYhfRh_d78SAA3IQ')"></div>
+</div>
+<!-- After (Clipped) -->
+<div class="absolute inset-0 w-full h-full z-1" id="after-layer" style="clip-path: inset(0 0 0 50%)">
+<div class="w-full h-full bg-cover bg-center" data-alt="The same high-end modern office space but the main feature wall is now painted in a deep, luxurious Obsidian Blue with a matte velvet finish. The lighting is now warm and cinematic, highlighting the rich texture of the blue paint." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCpiz-kaG1vLc0UIzjHn2DHrv9cpjczlkqUA3bCNbFVhas50iKgH6op8iacOWa0Oxgd3X7O5VJjX2DLzkcG5UhVGWXV7zNK_-RPIli9i4cczUUipCPNn-gM1f9DNwnWRU1cOuS6KnZt3tVjMm-8EVNUiVgAgeerrxBwMgNUOYH172BvO7sCA1MZeW_uZtYEgVBuRJHmVKyl0zX0CzeD8usLykH0a9ELAGPCNkg5RFiybEXOfG_5fOjIwtuLJAxqhuT6A3G3LkFHqxHX')"></div>
+</div>
+<!-- Slider Handle -->
+<div class="absolute top-0 bottom-0 left-1/2 w-1 bg-primary z-10 cursor-ew-resize group-hover:scale-x-150 transition-transform" id="slider-handle">
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-primary text-on-primary flex items-center justify-center shadow-lg">
+<span class="material-symbols-outlined text-[18px]">unfold_more</span>
+</div>
+</div>
+</div>
+<!-- Bottom Status Bar -->
+<div class="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 flex gap-4">
+<div class="glass-panel px-4 py-2 rounded-lg flex items-center gap-3">
+<span class="material-symbols-outlined text-secondary text-[20px]">architecture</span>
+<span class="text-on-surface font-label-sm">Coverage: 450 sq ft</span>
+</div>
+<div class="glass-panel px-4 py-2 rounded-lg flex items-center gap-3">
+<span class="material-symbols-outlined text-secondary text-[20px]">precision_manufacturing</span>
+<span class="text-on-surface font-label-sm">AI Edge: 99.8%</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Enterprise Stats -->
+<section class="py-24 px-container-margin max-w-screen-2xl mx-auto">
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+<div class="glass-panel p-10 rounded-2xl border-white/5 text-center rim-light-primary transition-all">
+<h2 class="font-display-lg text-[64px] text-primary mb-2">99.8%</h2>
+<p class="text-on-surface-variant font-label-sm uppercase tracking-tighter">AI Edge Accuracy</p>
+</div>
+<div class="glass-panel p-10 rounded-2xl border-white/5 text-center rim-light-primary transition-all">
+<h2 class="font-display-lg text-[64px] text-secondary mb-2">40%</h2>
+<p class="text-on-surface-variant font-label-sm uppercase tracking-tighter">Higher Conversion</p>
+</div>
+<div class="glass-panel p-10 rounded-2xl border-white/5 text-center rim-light-primary transition-all">
+<h2 class="font-display-lg text-[64px] text-on-surface mb-2">15k+</h2>
+<p class="text-on-surface-variant font-label-sm uppercase tracking-tighter">Enterprise Partners</p>
+</div>
+</div>
+</section>
+<!-- Trending Palettes (Swatches) -->
+<section class="py-24 bg-surface-container-low/30 relative">
+<div class="px-container-margin max-w-screen-2xl mx-auto">
+<div class="mb-16">
+<h2 class="font-display-lg text-display-lg text-center mb-4">Trending Professional Palettes</h2>
+<p class="text-on-surface-variant text-center max-w-xl mx-auto">Curated designer-grade coatings for high-performance architectural environments.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-gutter">
+<!-- Swatch 1 -->
+<div class="glass-panel p-6 rounded-3xl group cursor-pointer swatch-glow">
+<div class="aspect-[4/5] rounded-2xl mb-6 relative overflow-hidden bg-[#a3b18a]">
+<div class="absolute inset-0 bg-gradient-to-tr from-black/20 to-white/20"></div>
+<div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="bg-surface/80 backdrop-blur-md px-6 py-2 rounded-full border border-white/10 text-on-surface">Select Color</button>
+</div>
+</div>
+<div class="flex justify-between items-end">
+<div>
+<h3 class="font-headline-md text-primary">Soft Sage</h3>
+<p class="text-on-surface-variant text-label-sm">Matte Architectural Finish</p>
+</div>
+<div class="text-on-surface-variant font-label-sm">#A3B18A</div>
+</div>
+</div>
+<!-- Swatch 2 -->
+<div class="glass-panel p-6 rounded-3xl group cursor-pointer swatch-glow">
+<div class="aspect-[4/5] rounded-2xl mb-6 relative overflow-hidden bg-[#7f301b]">
+<div class="absolute inset-0 bg-gradient-to-tr from-black/20 to-white/20"></div>
+<div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="bg-surface/80 backdrop-blur-md px-6 py-2 rounded-full border border-white/10 text-on-surface">Select Color</button>
+</div>
+</div>
+<div class="flex justify-between items-end">
+<div>
+<h3 class="font-headline-md text-secondary">Warm Terracotta</h3>
+<p class="text-on-surface-variant text-label-sm">Velvet Interior Coating</p>
+</div>
+<div class="text-on-surface-variant font-label-sm">#7F301B</div>
+</div>
+</div>
+<!-- Swatch 3 -->
+<div class="glass-panel p-6 rounded-3xl group cursor-pointer swatch-glow">
+<div class="aspect-[4/5] rounded-2xl mb-6 relative overflow-hidden bg-[#0f172a]">
+<div class="absolute inset-0 bg-gradient-to-tr from-black/10 to-white/10"></div>
+<div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="bg-surface/80 backdrop-blur-md px-6 py-2 rounded-full border border-white/10 text-on-surface">Select Color</button>
+</div>
+</div>
+<div class="flex justify-between items-end">
+<div>
+<h3 class="font-headline-md text-on-surface">Obsidian Blue</h3>
+<p class="text-on-surface-variant text-label-sm">Eggshell Executive Grade</p>
+</div>
+<div class="text-on-surface-variant font-label-sm">#0F172A</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Features Grid -->
+<section class="py-32 px-container-margin max-w-screen-2xl mx-auto">
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+<div>
+<h2 class="font-display-lg text-display-lg-mobile md:text-display-lg mb-12">Precision Tools for <br/><span class="text-primary">Enterprise Workflows</span></h2>
+<div class="grid grid-cols-1 gap-8">
+<div class="flex gap-6 group">
+<div class="w-16 h-16 shrink-0 glass-panel rounded-2xl flex items-center justify-center border-white/10 text-primary group-hover:bg-primary group-hover:text-on-primary transition-all duration-300">
+<span class="material-symbols-outlined text-[32px]">pentagon</span>
+</div>
+<div>
+<h4 class="font-headline-md mb-2">Vector Flood Fill</h4>
+<p class="text-on-surface-variant">Intelligent area mapping that accounts for complex textures, shadows, and occlusions in real-time.</p>
+</div>
+</div>
+<div class="flex gap-6 group">
+<div class="w-16 h-16 shrink-0 glass-panel rounded-2xl flex items-center justify-center border-white/10 text-secondary group-hover:bg-secondary group-hover:text-on-secondary transition-all duration-300">
+<span class="material-symbols-outlined text-[32px]">groups</span>
+</div>
+<div>
+<h4 class="font-headline-md mb-2">Real-time Collaboration</h4>
+<p class="text-on-surface-variant">Share visualizer sessions with stakeholders instantly. Sync color decisions across remote teams with 1ms latency.</p>
+</div>
+</div>
+<div class="flex gap-6 group">
+<div class="w-16 h-16 shrink-0 glass-panel rounded-2xl flex items-center justify-center border-white/10 text-on-surface group-hover:bg-on-surface group-hover:text-surface transition-all duration-300">
+<span class="material-symbols-outlined text-[32px]">auto_fix_high</span>
+</div>
+<div>
+<h4 class="font-headline-md mb-2">AI Wall Edge Detection</h4>
+<p class="text-on-surface-variant">Our proprietary NeuralMask technology ensures pixel-perfect masking around furniture, fixtures, and corners.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="relative">
+<div class="glass-panel aspect-square rounded-3xl p-2 border-white/10 overflow-hidden shadow-2xl relative">
+<div class="w-full h-full bg-cover bg-center rounded-2xl" data-alt="A macro close-up of digital design interface showing complex vector paths being generated over a photo of an ornate room corner. Glowing green lines trace the edges perfectly." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAQRv5bFs3eWDYI60zzn8FTzrOy9__RF9PNcOeN-RJ0r2AfVKc48g4FfrC3QzDUFgizfoDB2LSA1PHBe1L3A01K22K13zQ6qHjTN9q4v1h-Mbutxowgqa-Ggt74kwNpjKLCFCV9tPPhIitxL8SLA0mVlXzQ5RJ_L_Pdj1uCqcA84KOsi1myIHHVTiggnrnGkVnPtYUjcSnLa1ccid8nZhQbmKEBUVBmPlZu3Rd6GFACQLBbenw9_YGpmX1DTLHbUksfzqxf1xIeT4HM')"></div>
+<!-- Animated Overlay -->
+<div class="absolute inset-0 flex items-center justify-center">
+<div class="w-64 h-64 border-2 border-primary rounded-full animate-pulse-slow flex items-center justify-center">
+<div class="w-48 h-48 border border-primary/30 rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined text-primary text-[48px]">camping</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Final CTA -->
+<section class="py-24 px-container-margin">
+<div class="max-w-screen-2xl mx-auto glass-panel rounded-[40px] p-12 md:p-24 overflow-hidden relative border-white/10 text-center">
+<div class="relative z-10">
+<h2 class="font-display-lg text-display-lg md:text-[64px] mb-8 leading-tight">Ready to Transform<br/>Your Color Workflow?</h2>
+<p class="text-body-lg text-on-surface-variant max-w-2xl mx-auto mb-12">Join 15,000+ enterprise teams building the future of physical spaces through digital precision.</p>
+<div class="flex flex-col sm:flex-row gap-6 justify-center">
+<button class="bg-primary text-on-primary px-12 py-5 rounded-full font-bold text-lg hover:scale-105 transition-transform shadow-2xl shadow-primary/30">
+                            Book an Enterprise Demo
+                        </button>
+<button class="glass-panel border-white/10 px-12 py-5 rounded-full font-bold text-lg hover:bg-white/5 transition-colors">
+                            View Pricing Plans
+                        </button>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-surface-container-lowest border-t border-white/5 mt-24">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-stack-gap px-container-margin py-12 max-w-screen-2xl mx-auto">
+<div class="col-span-1 md:col-span-1">
+<div class="font-headline-md text-headline-md font-bold text-on-surface mb-6">LuminaPaint</div>
+<p class="text-on-surface-variant text-body-md pr-8">Redefining architectural visualization through AI-powered color precision and collaborative design workflows.</p>
+</div>
+<div class="flex flex-col gap-4">
+<h4 class="text-on-surface font-bold">Solutions</h4>
+<a class="text-on-surface-variant hover:text-primary transition-all" href="#">Interior Designers</a>
+<a class="text-on-surface-variant hover:text-primary transition-all" href="#">Architects</a>
+<a class="text-on-surface-variant hover:text-primary transition-all" href="#">Paint Manufacturers</a>
+</div>
+<div class="flex flex-col gap-4">
+<h4 class="text-on-surface font-bold">Company</h4>
+<a class="text-on-surface-variant hover:text-primary transition-all" href="#">About Us</a>
+<a class="text-on-surface-variant hover:text-primary transition-all" href="#">Careers</a>
+<a class="text-on-surface-variant hover:text-primary transition-all" href="#">Sustainability</a>
+</div>
+<div class="flex flex-col gap-4">
+<h4 class="text-on-surface font-bold">Connect</h4>
+<div class="flex gap-4">
+<button class="w-10 h-10 glass-panel rounded-full flex items-center justify-center hover:text-primary transition-colors"><span class="material-symbols-outlined text-[20px]">share</span></button>
+<button class="w-10 h-10 glass-panel rounded-full flex items-center justify-center hover:text-primary transition-colors"><span class="material-symbols-outlined text-[20px]">public</span></button>
+<button class="w-10 h-10 glass-panel rounded-full flex items-center justify-center hover:text-primary transition-colors"><span class="material-symbols-outlined text-[20px]">alternate_email</span></button>
+</div>
+<div class="mt-4">
+<p class="text-label-sm text-on-surface-variant opacity-60">© 2024 LuminaPaint Technologies. All rights reserved.</p>
+</div>
+</div>
+</div>
+<div class="px-container-margin py-6 border-t border-white/5 flex flex-wrap gap-6 justify-center text-label-sm text-on-surface-variant">
+<a class="hover:text-primary" href="#">Privacy Policy</a>
+<a class="hover:text-primary" href="#">Terms of Service</a>
+<a class="hover:text-primary" href="#">Contact Us</a>
+<a class="hover:text-primary" href="#">Press Kit</a>
+</div>
+</footer>
+<script>
+        // Visualizer Split-Screen Logic
+        const sliderHandle = document.getElementById('slider-handle');
+        const afterLayer = document.getElementById('after-layer');
+        const container = sliderHandle.parentElement;
+
+        let isDragging = false;
+
+        const moveSlider = (e) => {
+            if (!isDragging) return;
+            const rect = container.getBoundingClientRect();
+            let x = e.clientX - rect.left;
+            if (x < 0) x = 0;
+            if (x > rect.width) x = rect.width;
+            
+            const percent = (x / rect.width) * 100;
+            sliderHandle.style.left = `${percent}%`;
+            afterLayer.style.clipPath = `inset(0 0 0 ${percent}%)`;
+        };
+
+        sliderHandle.addEventListener('mousedown', () => isDragging = true);
+        window.addEventListener('mouseup', () => isDragging = false);
+        window.addEventListener('mousemove', moveSlider);
+
+        // Touch support
+        sliderHandle.addEventListener('touchstart', () => isDragging = true);
+        window.addEventListener('touchend', () => isDragging = false);
+        window.addEventListener('touchmove', (e) => {
+            if (!isDragging) return;
+            moveSlider(e.touches[0]);
+        });
+        
+        // Parallax effect for glass panels
+        document.addEventListener('mousemove', (e) => {
+            const panels = document.querySelectorAll('.glass-panel');
+            const x = e.clientX / window.innerWidth - 0.5;
+            const y = e.clientY / window.innerHeight - 0.5;
+
+            panels.forEach(panel => {
+                const speed = 10;
+                panel.style.transform = `translate(${x * speed}px, ${y * speed}px)`;
+            });
+        });
+    </script>
+</body></html>

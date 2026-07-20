@@ -1,0 +1,37 @@
+@if (paletteService.isOpen()) {
+  <div class="palette-backdrop" (click)="paletteService.close()">
+    <div class="palette-card" (click)="$event.stopPropagation()">
+      <!-- Search Input Box -->
+      <div class="palette-search-row">
+        <app-icon name="search" [size]="18"></app-icon>
+        <input 
+          type="text" 
+          placeholder="Type a command or search (Ctrl+K)..." 
+          [ngModel]="query()" 
+          (ngModelChange)="query.set($event)" 
+          autofocus
+        />
+        <span class="esc-badge">ESC</span>
+      </div>
+
+      <!-- Commands List -->
+      <div class="palette-commands-list">
+        @if (filteredCommands.length === 0) {
+          <div class="empty-cmd">No matching commands found.</div>
+        } @else {
+          @for (cmd of filteredCommands; track cmd.id) {
+            <div (click)="execute(cmd)" class="command-row-item">
+              <app-icon [name]="cmd.icon" [size]="18"></app-icon>
+              <span class="cmd-label">{{ cmd.label }}</span>
+              <span class="cmd-cat">{{ cmd.category }}</span>
+            </div>
+          }
+        }
+      </div>
+
+      <div class="palette-footer">
+        <span>Use <strong>↑</strong> <strong>↓</strong> to navigate, <strong>Enter</strong> to select</span>
+      </div>
+    </div>
+  </div>
+}

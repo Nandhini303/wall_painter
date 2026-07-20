@@ -1,0 +1,37 @@
+<div class="panel-section custom-color-panel">
+  <div class="panel-header">
+    <h3>Custom Color</h3>
+    <button class="eyedropper-btn" (click)="pickColor()" title="Pick color from screen">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg>
+    </button>
+  </div>
+  
+  <div class="panel-body">
+    <!-- Live Preview -->
+    <div class="color-preview-box">
+      <div class="preview-fill" [style.background-color]="customHex()"></div>
+    </div>
+    
+    <!-- Format Tabs -->
+    <div class="format-tabs">
+      <button [class.active]="activeTab() === 'HEX'" (click)="activeTab.set('HEX')">HEX</button>
+      <button [class.active]="activeTab() === 'RGB'" (click)="activeTab.set('RGB')">RGB</button>
+      <button [class.active]="activeTab() === 'HSL'" (click)="activeTab.set('HSL')">HSL</button>
+      <button [class.active]="activeTab() === 'HSV'" (click)="activeTab.set('HSV')">HSV</button>
+    </div>
+    
+    <!-- Input Fields -->
+    <div class="input-row">
+      @if (activeTab() === 'HEX') {
+        <input type="text" class="oc-input hex-input" [ngModel]="customHex()" (ngModelChange)="customHex.set($event)" />
+      } @else {
+        <div class="coming-soon">Format coming soon</div>
+      }
+    </div>
+    
+    <div class="action-row">
+      <button class="secondary-btn">Cancel</button>
+      <button class="primary-btn" (click)="applyColor()">Apply</button>
+    </div>
+  </div>
+</div>
