@@ -27,6 +27,11 @@ export const routes: Routes = [
     canActivate: [authGuard]
   },
   {
+    path: 'floorplan/:id',
+    loadComponent: () => import('./features/floorplan-studio/floorplan-studio').then(m => m.FloorplanStudio),
+    canActivate: [authGuard]
+  },
+  {
     path: 'admin',
     loadComponent: () => import('./features/admin/admin.component').then(m => m.AdminComponent),
     canActivate: [adminGuard]

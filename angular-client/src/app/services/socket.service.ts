@@ -48,6 +48,12 @@ export class SocketService {
     this.socket.emit('layer-update', { projectId, layerId, layers });
   }
 
+  sendFloorplanUpdate(data: any): void {
+    if (this.socket) {
+      this.socket.emit('floorplan:wall:updated', data);
+    }
+  }
+
   onDrawDelta(): Observable<any> {
     return new Observable<any>(observer => {
       this.socket.on('draw-delta-broadcast', (delta: any) => {
