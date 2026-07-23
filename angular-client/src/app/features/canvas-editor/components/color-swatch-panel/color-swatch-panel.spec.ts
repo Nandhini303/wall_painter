@@ -1,19 +1,19 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ColorSwatchPanel } from './color-swatch-panel';
+import { ColorSwatchPanelComponent } from './color-swatch-panel';
 
-describe('ColorSwatchPanel', () => {
-  let component: ColorSwatchPanel;
-  let fixture: ComponentFixture<ColorSwatchPanel>;
+describe('ColorSwatchPanelComponent', () => {
+  let component: ColorSwatchPanelComponent;
+  let fixture: ComponentFixture<ColorSwatchPanelComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ColorSwatchPanel],
+      imports: [ColorSwatchPanelComponent],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(ColorSwatchPanel);
+    fixture = TestBed.createComponent(ColorSwatchPanelComponent);
     component = fixture.componentInstance;
-    await fixture.whenStable();
+    fixture.detectChanges();
   });
 
   it('should create', () => {

@@ -1,19 +1,19 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { CustomColorPopover } from './custom-color-popover';
+import { CustomColorPopoverComponent } from './custom-color-popover';
 
-describe('CustomColorPopover', () => {
-  let component: CustomColorPopover;
-  let fixture: ComponentFixture<CustomColorPopover>;
+describe('CustomColorPopoverComponent', () => {
+  let component: CustomColorPopoverComponent;
+  let fixture: ComponentFixture<CustomColorPopoverComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [CustomColorPopover],
+      imports: [CustomColorPopoverComponent],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(CustomColorPopover);
+    fixture = TestBed.createComponent(CustomColorPopoverComponent);
     component = fixture.componentInstance;
-    await fixture.whenStable();
+    fixture.detectChanges();
   });
 
   it('should create', () => {

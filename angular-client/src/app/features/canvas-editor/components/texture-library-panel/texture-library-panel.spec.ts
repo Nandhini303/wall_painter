@@ -1,19 +1,19 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { TextureLibraryPanel } from './texture-library-panel';
+import { TextureLibraryPanelComponent } from './texture-library-panel';
 
-describe('TextureLibraryPanel', () => {
-  let component: TextureLibraryPanel;
-  let fixture: ComponentFixture<TextureLibraryPanel>;
+describe('TextureLibraryPanelComponent', () => {
+  let component: TextureLibraryPanelComponent;
+  let fixture: ComponentFixture<TextureLibraryPanelComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [TextureLibraryPanel],
+      imports: [TextureLibraryPanelComponent],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(TextureLibraryPanel);
+    fixture = TestBed.createComponent(TextureLibraryPanelComponent);
     component = fixture.componentInstance;
-    await fixture.whenStable();
+    fixture.detectChanges();
   });
 
   it('should create', () => {
