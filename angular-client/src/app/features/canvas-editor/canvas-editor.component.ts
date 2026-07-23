@@ -36,6 +36,7 @@ export class CanvasEditorComponent implements OnInit, OnDestroy {
   activeTool = signal<'select' | 'ai-wand' | 'wand' | 'polygon' | 'lasso' | 'brush' | 'eraser' | 'eyedropper' | 'hand'>('select');
   showGrid = signal(false);
   showShareModal = signal(false);
+  showExportMenu = signal(false);
   shareUrl = signal('');
   saveStatus = signal<'saved' | 'saving' | 'unsaved'>('saved');
 
