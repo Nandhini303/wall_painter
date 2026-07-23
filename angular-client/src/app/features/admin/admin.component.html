@@ -621,17 +621,142 @@
 
       <!-- ========== HELP & DOCS ========== -->
       @if (activeSection() === 'help') {
-        <section class="admin-section">
-          <h1 class="section-heading">Admin Help & Documentation</h1>
-          <p class="section-subtext">Guides and documentation for LuminaPaint platform management.</p>
+        <section class="admin-section help-section">
+          <div class="help-hero-banner">
+            <h1 class="section-heading">Documentation & Help Center</h1>
+            <p class="section-subtext">Everything you need to configure, manage, and scale the LuminaPaint platform.</p>
 
-          <div class="admin-card-section" style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 24px;">
-            <h3>Quick Guides</h3>
-            <ul>
-              <li><strong>User Management:</strong> How to invite users and assign system roles.</li>
-              <li><strong>Room Templates:</strong> Uploading custom interior and exterior photos.</li>
-              <li><strong>Color & Texture Swatches:</strong> Managing brand palettes and surface materials.</li>
-            </ul>
+            <div class="help-search-box">
+              <app-icon name="search" [size]="18" color="#64748b"></app-icon>
+              <input type="text" placeholder="Search documentation, guides, FAQs..." class="help-search-input" />
+            </div>
+          </div>
+
+          <!-- Documentation Categories Grid -->
+          <div class="docs-categories-grid">
+            <div class="doc-cat-card">
+              <div class="cat-icon-wrapper" style="background: rgba(37, 99, 235, 0.1); color: #2563eb;">
+                <app-icon name="users" [size]="20"></app-icon>
+              </div>
+              <h3>User Administration</h3>
+              <p>User roles, invitation links, access control, and password resets.</p>
+              <span class="cat-link">4 Articles &rarr;</span>
+            </div>
+
+            <div class="doc-cat-card">
+              <div class="cat-icon-wrapper" style="background: rgba(16, 185, 129, 0.1); color: #10b981;">
+                <app-icon name="layout-grid" [size]="20"></app-icon>
+              </div>
+              <h3>Room Templates</h3>
+              <p>Uploading interior photos, tagging categories, and template metadata.</p>
+              <span class="cat-link">6 Articles &rarr;</span>
+            </div>
+
+            <div class="doc-cat-card">
+              <div class="cat-icon-wrapper" style="background: rgba(168, 85, 247, 0.1); color: #a855f7;">
+                <app-icon name="palette" [size]="20"></app-icon>
+              </div>
+              <h3>Color & Brand Swatches</h3>
+              <p>Paint manufacturer collections, custom HEX codes, and RGB values.</p>
+              <span class="cat-link">5 Articles &rarr;</span>
+            </div>
+
+            <div class="doc-cat-card">
+              <div class="cat-icon-wrapper" style="background: rgba(245, 158, 11, 0.1); color: #f59e0b;">
+                <app-icon name="copy" [size]="20"></app-icon>
+              </div>
+              <h3>Wall Textures & Finishes</h3>
+              <p>Seamless texture image maps, plaster patterns, and scale factors.</p>
+              <span class="cat-link">3 Articles &rarr;</span>
+            </div>
+
+            <div class="doc-cat-card">
+              <div class="cat-icon-wrapper" style="background: rgba(236, 72, 153, 0.1); color: #ec4899;">
+                <app-icon name="brush" [size]="20"></app-icon>
+              </div>
+              <h3>Canvas Brushes & Magic Wand</h3>
+              <p>Brush hardness presets, wand tolerance, and feather refinement.</p>
+              <span class="cat-link">4 Articles &rarr;</span>
+            </div>
+
+            <div class="doc-cat-card">
+              <div class="cat-icon-wrapper" style="background: rgba(14, 165, 233, 0.1); color: #0ea5e9;">
+                <app-icon name="credit-card" [size]="20"></app-icon>
+              </div>
+              <h3>Billing & Storage Quotas</h3>
+              <p>Enterprise subscription plans, storage usage, and invoice receipts.</p>
+              <span class="cat-link">2 Articles &rarr;</span>
+            </div>
+          </div>
+
+          <!-- 2-Column Main Docs Layout: Article Content + Sticky Sidebar TOC -->
+          <div class="docs-layout-container">
+            <!-- Left Main Content Column -->
+            <div class="docs-main-content">
+              <article class="doc-article-card" id="quick-start">
+                <div class="article-header">
+                  <span class="article-tag">GUIDE</span>
+                  <h2>Quick Start Platform Setup</h2>
+                </div>
+                <p>Welcome to LuminaPaint Admin. Follow these 3 steps to configure your studio environment:</p>
+                <ol class="setup-steps-list">
+                  <li><strong>Import Paint Brand Libraries:</strong> Navigate to <em>Color Library</em> to populate paint collections from Sherwin-Williams or Dulux.</li>
+                  <li><strong>Upload Texture Maps:</strong> Add seamless tileable texture pattern images under <em>Textures & Surfaces</em> for plaster or marble wall finishes.</li>
+                  <li><strong>Invite Team Members:</strong> Go to <em>Users</em> and send invitation emails with assigned admin or designer roles.</li>
+                </ol>
+              </article>
+
+              <article class="doc-article-card" id="faqs">
+                <div class="article-header">
+                  <span class="article-tag">FAQS</span>
+                  <h2>Frequently Asked Questions</h2>
+                </div>
+                <div class="faqs-accordion">
+                  <div class="faq-item">
+                    <h4>How do I apply wall textures onto canvas selections?</h4>
+                    <p>Select any wall area using Lasso or Magic Wand in the Canvas Editor, open the right-side Texture Library panel, and click your desired texture swatch.</p>
+                  </div>
+                  <div class="faq-item">
+                    <h4>What photo resolutions are recommended for Room Templates?</h4>
+                    <p>For optimal visualization, upload JPEG or PNG photos at 1920x1080 resolution or higher (under 10MB file size).</p>
+                  </div>
+                  <div class="faq-item">
+                    <h4>How are user roles enforced?</h4>
+                    <p>Super Admins have full access to billing, platform settings, and user management. Workspace Admins can edit projects and upload room templates.</p>
+                  </div>
+                </div>
+              </article>
+
+              <article class="doc-article-card" id="changelog">
+                <div class="article-header">
+                  <span class="article-tag">CHANGELOG</span>
+                  <h2>Platform Release Notes (v2.4.0)</h2>
+                </div>
+                <ul class="changelog-list">
+                  <li>✨ <strong>Texture Pattern Blending Engine:</strong> Wall selections now support seamless texture filling for plaster, concrete, wood, and marble.</li>
+                  <li>🎨 <strong>Figma/Linear Toolbar Redesign:</strong> Unified 56px top header with single Export dropdown menu and icon action clusters.</li>
+                  <li>⚡ <strong>Grouped Admin Navigation:</strong> Streamlined 11-section sidebar with dark mode toggle and real-time Socket.IO status.</li>
+                </ul>
+              </article>
+            </div>
+
+            <!-- Right Sticky Table of Contents (TOC) Sidebar -->
+            <aside class="docs-toc-sidebar">
+              <div class="sticky-toc-card">
+                <h4 class="toc-heading">ON THIS PAGE</h4>
+                <nav class="toc-links">
+                  <a href="#quick-start" class="toc-link active">&bull; Quick Start Setup</a>
+                  <a href="#faqs" class="toc-link">&bull; FAQs</a>
+                  <a href="#changelog" class="toc-link">&bull; Release Notes v2.4</a>
+                </nav>
+
+                <div class="toc-help-box">
+                  <app-icon name="help-circle" [size]="18" color="#2563eb"></app-icon>
+                  <span>Need direct developer support?</span>
+                  <button class="support-btn">Contact Support</button>
+                </div>
+              </div>
+            </aside>
           </div>
         </section>
       }

@@ -248,23 +248,83 @@
 .sidebar-footer {
   padding: 12px 8px 16px;
   border-top: 1px solid rgba(255, 255, 255, 0.06);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.theme-toggle-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  color: #94a3b8;
+  font-size: 0.82rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+
+  .toggle-lbl {
+    flex: 1;
+    text-align: left;
+  }
+
+  .switch-track {
+    width: 32px;
+    height: 18px;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 10px;
+    position: relative;
+    transition: background 0.2s ease;
+
+    .switch-thumb {
+      width: 14px;
+      height: 14px;
+      background: #ffffff;
+      border-radius: 50%;
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      transition: transform 0.2s ease;
+    }
+
+    &.checked {
+      background: #2563eb;
+      .switch-thumb {
+        transform: translateX(14px);
+      }
+    }
+  }
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.06);
+    color: #f8fafc;
+  }
 }
 
 .back-to-site {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 10px 12px;
-  border-radius: 10px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
   color: #94a3b8;
-  font-size: 0.85rem;
+  font-size: 0.82rem;
   font-weight: 500;
-  text-decoration: none;
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
   transition: all 0.15s ease;
 
   &:hover {
-    background: rgba(255, 255, 255, 0.05);
-    color: #f1f5f9;
+    background: rgba(255, 255, 255, 0.06);
+    color: #f8fafc;
   }
 }
 
@@ -1062,17 +1122,10 @@
     position: absolute;
     bottom: 0;
     width: 100%;
-    background: rgba(15, 23, 42, 0.6);
-    color: white;
+    background: rgba(15, 23, 42, 0.7);
+    color: #ffffff;
+    font-size: 0.72rem;
+    padding: 4px 0;
     text-align: center;
-    padding: 6px 0;
-    font-size: 0.75rem;
-    font-weight: 500;
-    opacity: 0;
-    transition: opacity 0.2s ease;
-  }
-
-  &:hover .overlay-text {
-    opacity: 1;
   }
 }
