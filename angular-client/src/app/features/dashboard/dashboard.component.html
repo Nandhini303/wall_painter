@@ -20,11 +20,11 @@
     }
   </div>
 
-  <!-- Left Sidebar (Excel Home / Linear / Vercel style) -->
+  <!-- Left Sidebar (Excel Home Dark Green / Office Style Sidebar) -->
   <aside class="app-sidebar">
     <div class="sidebar-brand" (click)="toggleWorkspaceDropdown()">
       <div class="brand-logo">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
           <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
         </svg>
       </div>
@@ -52,18 +52,18 @@
 
     <!-- Main Sidebar Navigation -->
     <nav class="sidebar-nav">
-      <div class="nav-section">
+      <div class="nav-section top-navs">
         <a class="nav-item active" routerLink="/dashboard">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-          <span>Dashboard</span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          <span>Home</span>
         </a>
         <a class="nav-item" (click)="setFilter('all')">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
           <span>Projects</span>
           <span class="nav-count">{{ projects().length }}</span>
         </a>
         <a class="nav-item" (click)="openCreateModal()">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 17 22 12"/></svg>
           <span>Templates</span>
         </a>
         <a class="nav-item" (click)="toastService.info('Settings panel active')">
@@ -72,7 +72,7 @@
         </a>
       </div>
 
-      <div class="nav-section bottom-section">
+      <div class="nav-section bottom-navs">
         <a class="nav-item" (click)="showUserMenu.set(!showUserMenu())">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
           <span>Account</span>
@@ -85,24 +85,24 @@
     </nav>
   </aside>
 
-  <!-- Main Content Body -->
+  <!-- Main Wrapper -->
   <div class="main-wrapper">
-    <!-- Top Navbar Header -->
+    <!-- Excel Home Top Header -->
     <header class="top-navbar">
       <div class="navbar-left">
         <div class="greeting-box">
-          <h2>{{ greeting() }}, {{ authService.currentUser()?.firstName || 'Designer' }}</h2>
-          <span class="sub-greeting">Manage and visualize room paint projects</span>
+          <h2>{{ greeting() }}, {{ authService.currentUser()?.firstName || 'User' }}</h2>
+          <span class="sub-greeting">Smart Wall Paint Visualizer Enterprise Studio</span>
         </div>
       </div>
 
       <div class="navbar-right">
-        <!-- Global Search Bar / Command Palette Trigger -->
-        <div class="search-box" (click)="paletteService.open()" title="Click or press Ctrl+K to search">
+        <!-- Excel Style Search Box -->
+        <div class="search-box" (click)="paletteService.open()" title="Search commands or projects (Ctrl+K)">
           <span class="search-icon">🔍</span>
           <input 
             type="text" 
-            placeholder="Search projects..." 
+            placeholder="Search for a project..." 
             [ngModel]="searchQuery()" 
             (ngModelChange)="searchQuery.set($event)"
           />
@@ -145,13 +145,12 @@
       </div>
     </header>
 
-    <!-- Main Content Container -->
+    <!-- Content Body -->
     <main class="content-body">
-
-      <!-- Excel Home style "New" Templates Rail -->
+      <!-- Excel Home "New" Templates Rail -->
       <section class="templates-rail">
         <div class="rail-header">
-          3. New
+          New Project Templates
         </div>
         <div class="templates-grid">
           <div class="template-card blank" (click)="openCreateModal()">
@@ -176,7 +175,7 @@
         </div>
       </section>
 
-      <!-- Desktop Drag & Drop Upload Zone -->
+      <!-- Desktop Drag & Drop Upload Banner -->
       <section 
         class="dropzone-banner" 
         [class.drag-over]="isDragOver()"
@@ -200,11 +199,11 @@
         }
       </section>
 
-      <!-- Projects Gallery Header & Filters Toolbar -->
+      <!-- Projects Section -->
       <section class="projects-section">
         <div class="section-toolbar">
           <div class="toolbar-left">
-            <!-- Navigation Tabs (Excel Home / Notion / Linear style) -->
+            <!-- Tabs -->
             <div class="filter-tabs">
               <button 
                 (click)="setFilter('all')" 
@@ -233,7 +232,6 @@
           </div>
 
           <div class="toolbar-right">
-            <!-- Sort Selector -->
             <div class="sort-selector">
               <label for="sortSelect">Sort:</label>
               <select id="sortSelect" [ngModel]="sortBy()" (ngModelChange)="sortBy.set($event)">
@@ -243,7 +241,6 @@
               </select>
             </div>
 
-            <!-- View Mode Switcher -->
             <div class="view-toggle">
               <button 
                 (click)="setViewMode('grid')" 
@@ -281,7 +278,7 @@
         @else if (filteredProjects().length === 0) {
           <!-- Empty State -->
           <div class="empty-state">
-            <div class="empty-icon">📂</div>
+            <div class="empty-icon">📁</div>
             <h3>No projects available</h3>
             <p>Start a new project or select a template above to visualize wall paints.</p>
             <button (click)="openCreateModal()" class="btn-primary-action mt-4">+ Create First Project</button>
