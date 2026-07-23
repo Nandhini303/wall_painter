@@ -35,17 +35,6 @@
       </button>
     </div>
 
-    <!-- Admin User Badge -->
-    @if (!sidebarCollapsed()) {
-      <div class="admin-user-badge">
-        <div class="user-avatar-sm">{{ authService.currentUser()?.firstName?.charAt(0) || 'A' }}</div>
-        <div class="user-badge-info">
-          <span class="user-badge-name">{{ authService.currentUser()?.firstName }} {{ authService.currentUser()?.lastName }}</span>
-          <span class="user-badge-role">Super Admin</span>
-        </div>
-      </div>
-    }
-
     <!-- Navigation Groups -->
     <nav class="admin-nav custom-scrollbar">
       @for (group of navGroups; track group.title) {
@@ -515,29 +504,6 @@
                 }
               </tbody>
             </table>
-          </div>
-        </section>
-      }
-
-      <!-- ========== ADMIN SETTINGS ========== -->
-      @if (activeSection() === 'settings') {
-        <section class="admin-section">
-          <h1 class="section-heading">Admin Platform Settings</h1>
-          <p class="section-subtext">Configure global system parameters, upload quotas, and security policies.</p>
-
-          <div class="settings-cards-grid">
-            @for (section of settingsSections; track section.id) {
-              <div class="settings-card" [class.has-changes]="section.hasChanges">
-                <div class="settings-card-header">
-                  <h3>{{ section.label }}</h3>
-                  @if (section.hasChanges) {
-                    <span class="unsaved-dot"></span>
-                  }
-                </div>
-                <p class="settings-desc">{{ section.description }}</p>
-                <button (click)="saveSettings(section.id)" class="settings-save-btn" [disabled]="!section.hasChanges">Save Changes</button>
-              </div>
-            }
           </div>
         </section>
       }

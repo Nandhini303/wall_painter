@@ -22,7 +22,6 @@ export type AdminSection =
   | 'textures'
   | 'brushes'
   | 'billing'
-  | 'settings'
   | 'profile'
   | 'help';
 
@@ -54,13 +53,6 @@ export interface BrushPreset {
   defaultSize: number;
   defaultHardness: number;
   defaultOpacity: number;
-}
-
-export interface SettingsSection {
-  id: string;
-  label: string;
-  description: string;
-  hasChanges: boolean;
 }
 
 @Component({
@@ -98,7 +90,6 @@ export class AdminComponent implements OnInit {
       title: 'Settings & Account',
       items: [
         { id: 'billing', label: 'Billing & Plans', icon: 'credit-card' },
-        { id: 'settings', label: 'Admin Settings', icon: 'settings' },
         { id: 'profile', label: 'My Profile', icon: 'user' },
         { id: 'help', label: 'Help & Docs', icon: 'help-circle' }
       ]
@@ -209,16 +200,6 @@ export class AdminComponent implements OnInit {
     { id: 'b4', name: 'Fine Spray', type: 'Spray', defaultSize: 32, defaultHardness: 30, defaultOpacity: 70 },
     { id: 'b5', name: 'Smooth Blend', type: 'Blend', defaultSize: 20, defaultHardness: 40, defaultOpacity: 60 }
   ]);
-
-  // --- Settings Sections ---
-  settingsSections: SettingsSection[] = [
-    { id: 'general', label: 'General', description: 'Platform name, default units, default color format', hasChanges: false },
-    { id: 'uploads', label: 'Uploads', description: 'Max file size, allowed formats, storage quota per plan', hasChanges: false },
-    { id: 'realtime', label: 'Realtime Sync', description: 'Socket.IO connection status, reconnect settings', hasChanges: false },
-    { id: 'notifications', label: 'Notifications', description: 'Email templates, in-app notification toggles', hasChanges: false },
-    { id: 'security', label: 'Security', description: 'Session timeout, 2FA requirement, password policy', hasChanges: false },
-    { id: 'branding', label: 'Branding', description: 'Logo upload, primary/accent color override for white-label', hasChanges: false }
-  ];
 
   // --- Color Form ---
   newColor = { brandName: '', colorCode: '', name: '', hexCode: '#2563EB', r: 37, g: 99, b: 235 };
@@ -560,22 +541,6 @@ export class AdminComponent implements OnInit {
     if (confirmed) {
       this.brushPresets.update(list => list.filter(b => b.id !== id));
       this.toastService.success('Brush preset deleted.');
-    }
-  }
-
-  // --- Settings Actions ---
-  saveSettings(sectionId: string): void {
-    const idx = this.settingsSections.findIndex(s => s.id === sectionId);
-    if (idx >= 0) {
-      this.settingsSections[idx].hasChanges = false;
-    }
-    this.toastService.success(`${this.settingsSections[idx]?.label || 'Settings'} saved.`);
-  }
-
-  markSettingsChanged(sectionId: string): void {
-    const idx = this.settingsSections.findIndex(s => s.id === sectionId);
-    if (idx >= 0) {
-      this.settingsSections[idx].hasChanges = true;
     }
   }
 
