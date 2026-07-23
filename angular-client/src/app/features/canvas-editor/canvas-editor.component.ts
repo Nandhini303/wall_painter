@@ -805,36 +805,78 @@ export class CanvasEditorComponent implements OnInit, OnDestroy {
       return;
     }
 
-    ctx.putImageData(maskData, 0, 0);
-    const maskUrl = offscreen.toDataURL();
+    const finishMaskRendering = () => {
+      const maskUrl = offscreen.toDataURL();
+      const maskImgObj = new Image();
+      maskImgObj.onload = () => {
+        const konvaMaskImg = new Konva.Image({
+          image: maskImgObj,
+          x: 0,
+          y: 0,
+          width: width,
+          height: height,
+          globalCompositeOperation: this.studio.activeBlendMode() as any,
+          opacity: 1,
+          draggable: true,
+          name: 'ai-mask-shape'
+        });
 
-    const maskImgObj = new Image();
-    maskImgObj.onload = () => {
-      const konvaMaskImg = new Konva.Image({
-        image: maskImgObj,
-        x: 0,
-        y: 0,
-        width: width,
-        height: height,
-        globalCompositeOperation: this.studio.activeBlendMode() as any,
-        opacity: 1,
-        draggable: true,
-        name: 'ai-mask-shape'
-      });
+        konvaMaskImg.on('click tap', (evt) => {
+          if (this.activeTool() !== 'select') return;
+          evt.cancelBubble = true;
+          this.selectObject(konvaMaskImg);
+        });
 
-      konvaMaskImg.on('click tap', (evt) => {
-        if (this.activeTool() !== 'select') return;
-        evt.cancelBubble = true;
-        this.selectObject(konvaMaskImg);
-      });
-
-      this.paintLayer.add(konvaMaskImg);
-      this.paintLayer.batchDraw();
-      this.saveHistory();
-      this.triggerUnsavedState();
-      this.toastService.success(isAiAutoSelect ? 'AI Wall Mask generated!' : 'Magic Wand mask created!');
+        this.paintLayer.add(konvaMaskImg);
+        this.paintLayer.batchDraw();
+        this.saveHistory();
+        this.triggerUnsavedState();
+        this.toastService.success(
+          isAiAutoSelect 
+            ? (activeTex ? `AI Wall Mask applied with ${activeTex.name} texture!` : 'AI Wall Mask generated!') 
+            : (activeTex ? `Magic Wand mask applied with ${activeTex.name} texture!` : 'Magic Wand mask created!')
+        );
+      };
+      maskImgObj.src = maskUrl;
     };
-    maskImgObj.src = maskUrl;
+
+    const activeTex = this.studio.activeTexture();
+    if (activeTex) {
+      const texImg = new Image();
+      texImg.crossOrigin = 'Anonymous';
+      texImg.src = activeTex.imageUri;
+      texImg.onload = () => {
+        const patternCanvas = document.createElement('canvas');
+        patternCanvas.width = width;
+        patternCanvas.height = height;
+        const pCtx = patternCanvas.getContext('2d');
+        if (pCtx) {
+          const pattern = pCtx.createPattern(texImg, 'repeat');
+          if (pattern) {
+            pCtx.fillStyle = pattern;
+            pCtx.fillRect(0, 0, width, height);
+            const texData = pCtx.getImageData(0, 0, width, height).data;
+            for (let i = 0; i < maskPixels.length; i += 4) {
+              if (maskPixels[i + 3] > 0) {
+                // Tint texture with active color
+                maskPixels[i] = Math.round((maskPixels[i] + texData[i]) / 2);
+                maskPixels[i + 1] = Math.round((maskPixels[i + 1] + texData[i + 1]) / 2);
+                maskPixels[i + 2] = Math.round((maskPixels[i + 2] + texData[i + 2]) / 2);
+              }
+            }
+          }
+        }
+        ctx.putImageData(maskData, 0, 0);
+        finishMaskRendering();
+      };
+      texImg.onerror = () => {
+        ctx.putImageData(maskData, 0, 0);
+        finishMaskRendering();
+      };
+    } else {
+      ctx.putImageData(maskData, 0, 0);
+      finishMaskRendering();
+    }
   }
 
   private hexToRgb(hex: string): { r: number, g: number, b: number } {
