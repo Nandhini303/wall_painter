@@ -15,24 +15,14 @@ import { io, Socket } from 'socket.io-client';
 
 export type AdminSection =
   | 'overview'
-  | 'analytics'
   | 'users'
-  | 'roles'
-  | 'workspaces'
-  | 'projects'
   | 'templates'
   | 'storage'
-  | 'collections'
   | 'colorLibrary'
-  | 'customColors'
   | 'textures'
   | 'brushes'
-  | 'aiModels'
-  | 'auditLogs'
-  | 'systemHealth'
-  | 'notifications'
-  | 'apiKeys'
   | 'billing'
+  | 'settings'
   | 'profile'
   | 'help';
 
@@ -66,12 +56,6 @@ export interface BrushPreset {
   defaultOpacity: number;
 }
 
-export interface HealthCheck {
-  name: string;
-  status: 'operational' | 'degraded' | 'down';
-  latency?: string;
-}
-
 export interface SettingsSection {
   id: string;
   label: string;
@@ -94,19 +78,10 @@ export class AdminComponent implements OnInit {
 
   navGroups: AdminNavGroup[] = [
     {
-      title: 'Overview & Insights',
+      title: 'Core Administration',
       items: [
         { id: 'overview', label: 'Dashboard', icon: 'activity' },
-        { id: 'analytics', label: 'Analytics', icon: 'activity', badge: 'Live' }
-      ]
-    },
-    {
-      title: 'Users & Workspaces',
-      items: [
-        { id: 'users', label: 'Users', icon: 'users' },
-        { id: 'roles', label: 'Roles & Permissions', icon: 'shield' },
-        { id: 'workspaces', label: 'Workspaces', icon: 'layers' },
-        { id: 'projects', label: 'Projects', icon: 'folder' }
+        { id: 'users', label: 'Users', icon: 'users' }
       ]
     },
     {
@@ -116,23 +91,15 @@ export class AdminComponent implements OnInit {
         { id: 'storage', label: 'Storage & Assets', icon: 'download' },
         { id: 'colorLibrary', label: 'Color Library', icon: 'palette' },
         { id: 'textures', label: 'Textures & Surfaces', icon: 'copy' },
-        { id: 'brushes', label: 'Brush Library', icon: 'copy' }
+        { id: 'brushes', label: 'Brush Library', icon: 'brush' }
       ]
     },
     {
-      title: 'System & AI Engine',
-      items: [
-        { id: 'aiModels', label: 'AI Models (SAM 2)', icon: 'sparkles', badge: 'v2.1' },
-        { id: 'auditLogs', label: 'Audit Logs', icon: 'file-text' },
-        { id: 'notifications', label: 'Notifications Hub', icon: 'bell' },
-        { id: 'apiKeys', label: 'Developer API Keys', icon: 'key' }
-      ]
-    },
-    {
-      title: 'Admin Settings & Billing',
+      title: 'Settings & Account',
       items: [
         { id: 'billing', label: 'Billing & Plans', icon: 'credit-card' },
-        { id: 'profile', label: 'My Admin Profile', icon: 'user' },
+        { id: 'settings', label: 'Admin Settings', icon: 'settings' },
+        { id: 'profile', label: 'My Profile', icon: 'user' },
         { id: 'help', label: 'Help & Docs', icon: 'help-circle' }
       ]
     }

@@ -466,6 +466,33 @@
         </section>
       }
 
+      <!-- ========== COLOR LIBRARY ========== -->
+      @if (activeSection() === 'colorLibrary') {
+        <section class="admin-section">
+          <h1 class="section-heading">Color Collections & Paint Swatches</h1>
+          <p class="section-subtext">Curated paint brands and custom color palettes.</p>
+
+          <div class="admin-table-card">
+            <div class="table-header-row">
+              <h3>Paint Collections</h3>
+            </div>
+            <div class="swatch-collections-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; padding: 16px;">
+              @for (col of colorCollections; track col.name) {
+                <div class="swatch-card" style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px;">
+                  <h4 style="margin: 0 0 6px;">{{ col.name }}</h4>
+                  <span style="font-size: 0.8rem; color: #64748b;">{{ col.count }}</span>
+                  <div style="display: flex; gap: 4px; margin-top: 12px;">
+                    @for (hex of col.colors; track hex) {
+                      <div [style.background-color]="hex" style="width: 24px; height: 24px; border-radius: 6px; border: 1px solid rgba(0,0,0,0.1);"></div>
+                    }
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+        </section>
+      }
+
       <!-- ========== BRUSH LIBRARY ========== -->
       @if (activeSection() === 'brushes') {
         <section class="admin-section">
@@ -738,64 +765,6 @@
         </section>
       }
 
-      <!-- ========== PROJECTS ========== -->
-      @if (activeSection() === 'projects') {
-        <section class="admin-section">
-          <h1 class="section-heading">Global Projects Repository</h1>
-          <p class="section-subtext">Overview of all user wall visualizer projects across the platform.</p>
-
-          <div class="admin-table-card">
-            <table class="admin-data-table">
-              <thead>
-                <tr>
-                  <th>PROJECT NAME</th>
-                  <th>CREATED BY</th>
-                  <th>LAST MODIFIED</th>
-                  <th>STATUS</th>
-                </tr>
-              </thead>
-              <tbody>
-                @for (proj of favoriteTemplates; track proj.id) {
-                  <tr>
-                    <td><strong>{{ proj.name }}</strong></td>
-                    <td>System User</td>
-                    <td>Today</td>
-                    <td><span class="category-tag">Published</span></td>
-                  </tr>
-                }
-              </tbody>
-            </table>
-          </div>
-        </section>
-      }
-
-      <!-- ========== COLOR LIBRARY ========== -->
-      @if (activeSection() === 'colorLibrary') {
-        <section class="admin-section">
-          <h1 class="section-heading">Color Collections & Paint Swatches</h1>
-          <p class="section-subtext">Curated paint brands and custom color palettes.</p>
-
-          <div class="admin-table-card">
-            <div class="table-header-row">
-              <h3>Paint Collections</h3>
-            </div>
-            <div class="swatch-collections-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; padding: 16px;">
-              @for (col of colorCollections; track col.name) {
-                <div class="swatch-card" style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px;">
-                  <h4 style="margin: 0 0 6px;">{{ col.name }}</h4>
-                  <span style="font-size: 0.8rem; color: #64748b;">{{ col.count }}</span>
-                  <div style="display: flex; gap: 4px; margin-top: 12px;">
-                    @for (hex of col.colors; track hex) {
-                      <div [style.background-color]="hex" style="width: 24px; height: 24px; border-radius: 6px; border: 1px solid rgba(0,0,0,0.1);"></div>
-                    }
-                  </div>
-                </div>
-              }
-            </div>
-          </div>
-        </section>
-      }
-
       <!-- ========== AI MODELS ========== -->
       @if (activeSection() === 'aiModels') {
         <section class="admin-section">
@@ -829,64 +798,25 @@
         </section>
       }
 
-      <!-- ========== NOTIFICATIONS HUB ========== -->
-      @if (activeSection() === 'notifications') {
+      <!-- ========== ADMIN SETTINGS ========== -->
+      @if (activeSection() === 'settings') {
         <section class="admin-section">
-          <h1 class="section-heading">Notifications & Broadcast Hub</h1>
-          <p class="section-subtext">Administrative system alerts and user broadcast notifications.</p>
+          <h1 class="section-heading">Admin Platform Settings</h1>
+          <p class="section-subtext">Configure global system parameters, upload quotas, and security policies.</p>
 
-          <div class="admin-table-card">
-            <table class="admin-data-table">
-              <thead>
-                <tr>
-                  <th>TITLE</th>
-                  <th>MESSAGE</th>
-                  <th>TIME</th>
-                  <th>TYPE</th>
-                </tr>
-              </thead>
-              <tbody>
-                @for (n of notificationsList(); track n.id) {
-                  <tr>
-                    <td><strong>{{ n.title }}</strong></td>
-                    <td>{{ n.message }}</td>
-                    <td>{{ n.time }}</td>
-                    <td><span class="category-tag">{{ n.type | uppercase }}</span></td>
-                  </tr>
-                }
-              </tbody>
-            </table>
-          </div>
-        </section>
-      }
-
-      <!-- ========== API KEYS ========== -->
-      @if (activeSection() === 'apiKeys') {
-        <section class="admin-section">
-          <h1 class="section-heading">Developer API Keys</h1>
-          <p class="section-subtext">Manage authentication tokens and API rate limits for third-party integrations.</p>
-
-          <div class="admin-table-card">
-            <table class="admin-data-table">
-              <thead>
-                <tr>
-                  <th>KEY NAME</th>
-                  <th>TOKEN SECRET</th>
-                  <th>CREATED</th>
-                  <th>STATUS</th>
-                </tr>
-              </thead>
-              <tbody>
-                @for (k of apiKeys(); track k.id) {
-                  <tr>
-                    <td><strong>{{ k.name }}</strong></td>
-                    <td><code>{{ k.key }}</code></td>
-                    <td>{{ k.created }}</td>
-                    <td><span class="status-dot operational" style="width:8px; height:8px; display:inline-block; border-radius:50%; background:#10b981;"></span> {{ k.status }}</td>
-                  </tr>
-                }
-              </tbody>
-            </table>
+          <div class="settings-cards-grid">
+            @for (section of settingsSections; track section.id) {
+              <div class="settings-card" [class.has-changes]="section.hasChanges">
+                <div class="settings-card-header">
+                  <h3>{{ section.label }}</h3>
+                  @if (section.hasChanges) {
+                    <span class="unsaved-dot"></span>
+                  }
+                </div>
+                <p class="settings-desc">{{ section.description }}</p>
+                <button (click)="saveSettings(section.id)" class="settings-save-btn" [disabled]="!section.hasChanges">Save Changes</button>
+              </div>
+            }
           </div>
         </section>
       }
@@ -977,9 +907,9 @@
           <div class="admin-card-section" style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 24px;">
             <h3>Quick Guides</h3>
             <ul>
-              <li><strong>User Management:</strong> How to invite users and assign roles.</li>
-              <li><strong>Wall Textures:</strong> Uploading seamless texture pattern images.</li>
-              <li><strong>AI Engine (SAM 2):</strong> Monitoring worker GPU memory and latency.</li>
+              <li><strong>User Management:</strong> How to invite users and assign system roles.</li>
+              <li><strong>Room Templates:</strong> Uploading custom interior and exterior photos.</li>
+              <li><strong>Color & Texture Swatches:</strong> Managing brand palettes and surface materials.</li>
             </ul>
           </div>
         </section>
