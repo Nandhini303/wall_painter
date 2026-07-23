@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ColorStudioService } from '../../../../services/color-studio';
@@ -12,6 +12,7 @@ import { ColorStudioService } from '../../../../services/color-studio';
 })
 export class CustomColorPopoverComponent {
   studio = inject(ColorStudioService);
+  @Output() onApply = new EventEmitter<void>();
   
   activeTab = signal<'HEX' | 'RGB' | 'HSL' | 'HSV'>('HEX');
   customHex = signal('#000000');
@@ -38,5 +39,6 @@ export class CustomColorPopoverComponent {
   
   applyColor() {
     this.studio.setActiveColor({ hex: this.customHex(), name: 'Custom' });
+    this.onApply.emit();
   }
 }

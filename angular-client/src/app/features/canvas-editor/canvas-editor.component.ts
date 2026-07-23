@@ -361,6 +361,8 @@ export class CanvasEditorComponent implements OnInit, OnDestroy {
         this.currentLassoLine = null;
 
         const colorHex = this.studio.activeColor().hex;
+        const activeTex = this.studio.activeTexture();
+
         const lassoMask = new Konva.Line({
           points: this.lassoPoints,
           fill: colorHex,
@@ -371,6 +373,23 @@ export class CanvasEditorComponent implements OnInit, OnDestroy {
           globalCompositeOperation: this.studio.activeBlendMode() as any,
           draggable: true,
           name: 'lasso-shape'
+        });
+
+        if (activeTex) {
+          const texImg = new Image();
+          texImg.crossOrigin = 'Anonymous';
+          texImg.src = activeTex.imageUri;
+          texImg.onload = () => {
+            lassoMask.fillPriority('pattern');
+            lassoMask.fillPatternImage(texImg);
+            this.paintLayer.batchDraw();
+          };
+        }
+
+        lassoMask.on('click tap', (evt) => {
+          if (this.activeTool() !== 'select') return;
+          evt.cancelBubble = true;
+          this.selectObject(lassoMask);
         });
 
         this.paintLayer.add(lassoMask);
@@ -384,6 +403,58 @@ export class CanvasEditorComponent implements OnInit, OnDestroy {
         this.triggerUnsavedState();
       }
     });
+  }
+
+  // Apply current active texture & color to active selection or all shapes on canvas
+  applyCurrentTextureAndColorToSelection(): void {
+    if (!this.paintLayer) return;
+    const activeTex = this.studio.activeTexture();
+    const activeColor = this.studio.activeColor().hex;
+
+    let targetNodes = this.transformer ? this.transformer.nodes() : [];
+    if (targetNodes.length === 0) {
+      targetNodes = this.paintLayer.getChildren().filter((n: any) => n !== this.transformer);
+    }
+
+    if (targetNodes.length === 0) {
+      this.toastService.info('Select or draw a wall mask area to apply textures.');
+      return;
+    }
+
+    if (activeTex) {
+      const texImgObj = new Image();
+      texImgObj.crossOrigin = 'Anonymous';
+      texImgObj.src = activeTex.imageUri;
+      texImgObj.onload = () => {
+        targetNodes.forEach((node: any) => {
+          if (node instanceof Konva.Line || node instanceof Konva.Shape) {
+            node.fillPriority('pattern');
+            node.fillPatternImage(texImgObj);
+            node.fillPatternRepeat('repeat');
+            node.stroke(activeColor);
+            node.globalCompositeOperation(this.studio.activeBlendMode() as any);
+          } else if (node instanceof Konva.Image) {
+            node.globalCompositeOperation(this.studio.activeBlendMode() as any);
+          }
+        });
+        this.paintLayer.batchDraw();
+        this.saveHistory();
+        this.triggerUnsavedState();
+        this.toastService.success(`Applied ${activeTex.name} texture to selected wall!`);
+      };
+    } else {
+      targetNodes.forEach((node: any) => {
+        if (node instanceof Konva.Line || node instanceof Konva.Shape) {
+          node.fillPriority('color');
+          node.fill(activeColor);
+          node.stroke(activeColor);
+        }
+      });
+      this.paintLayer.batchDraw();
+      this.saveHistory();
+      this.triggerUnsavedState();
+      this.toastService.success(`Applied ${activeColor} color to wall selection!`);
+    }
   }
 
   // Real-Time 3-Second Auto-Save Loop

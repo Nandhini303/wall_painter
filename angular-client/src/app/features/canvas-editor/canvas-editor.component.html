@@ -146,8 +146,8 @@
     <aside class="right-inspector">
       <app-tool-properties></app-tool-properties>
       <app-color-swatch-panel></app-color-swatch-panel>
-      <app-custom-color-popover></app-custom-color-popover>
-      <app-texture-library-panel></app-texture-library-panel>
+      <app-custom-color-popover (onApply)="applyCurrentTextureAndColorToSelection()"></app-custom-color-popover>
+      <app-texture-library-panel (onApplyTexture)="applyCurrentTextureAndColorToSelection()"></app-texture-library-panel>
       <app-asset-library-panel></app-asset-library-panel>
 
       <!-- Layers Management Panel -->

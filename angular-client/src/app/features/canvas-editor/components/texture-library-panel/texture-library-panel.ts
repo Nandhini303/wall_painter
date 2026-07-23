@@ -1,4 +1,4 @@
-import { Component, inject, signal, computed } from '@angular/core';
+import { Component, inject, signal, computed, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ColorStudioService, StudioTexture } from '../../../../services/color-studio';
@@ -12,6 +12,7 @@ import { ColorStudioService, StudioTexture } from '../../../../services/color-st
 })
 export class TextureLibraryPanelComponent {
   studio = inject(ColorStudioService);
+  @Output() onApplyTexture = new EventEmitter<void>();
   
   searchQuery = signal('');
   selectedCategory = signal('All');
@@ -49,5 +50,6 @@ export class TextureLibraryPanelComponent {
     } else {
       this.studio.setActiveTexture(tex);
     }
+    this.onApplyTexture.emit();
   }
 }
