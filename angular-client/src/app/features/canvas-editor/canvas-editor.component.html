@@ -98,6 +98,18 @@
 
     <!-- Infinite White Canvas Center -->
     <main class="canvas-viewport">
+      @if (isLoadingImage()) {
+        <div class="canvas-loading-overlay">
+          <div class="spinner"></div>
+          <span>Rendering Room Image...</span>
+        </div>
+      }
+      @if (imageError()) {
+        <div class="canvas-error-overlay">
+          <span>⚠️ Failed to load original room image.</span>
+          <button (click)="loadProjectData(project()?._id!)" class="retry-btn">Retry</button>
+        </div>
+      }
       <div #container class="konva-container"></div>
     </main>
 

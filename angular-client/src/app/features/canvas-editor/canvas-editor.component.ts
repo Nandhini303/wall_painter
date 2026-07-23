@@ -130,6 +130,9 @@ export class CanvasEditorComponent implements OnInit, OnDestroy {
     });
   }
 
+  isLoadingImage = signal(true);
+  imageError = signal(false);
+
   loadCatalogs(): void {
     // Left empty since we moved to local ColorStudioService
   }
@@ -155,21 +158,75 @@ export class CanvasEditorComponent implements OnInit, OnDestroy {
     this.stage.add(this.gridLayer);
     this.stage.add(this.polygonAnchorsLayer);
 
-    const imgObj = new Image();
-    imgObj.crossOrigin = 'Anonymous';
-    imgObj.src = imageUri;
-    imgObj.onload = () => {
-      this.baseImage = new Konva.Image({
-        image: imgObj,
-        x: 0,
-        y: 0,
-        width: width,
-        height: height
-      });
-      this.baseLayer.add(this.baseImage);
-      this.baseLayer.draw();
-      this.saveHistory();
+    const fallbackUrl = 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=1200&q=80';
+    const targetUri = imageUri || fallbackUrl;
+
+    this.isLoadingImage.set(true);
+    this.imageError.set(false);
+
+    const loadRoomImage = (url: string, tryCrossOrigin: boolean = true, isFallbackAttempt: boolean = false) => {
+      const imgObj = new Image();
+      if (tryCrossOrigin && !url.startsWith('data:')) {
+        imgObj.crossOrigin = 'Anonymous';
+      }
+
+      imgObj.onload = () => {
+        const imgWidth = imgObj.width || width;
+        const imgHeight = imgObj.height || height;
+        
+        let drawW = width;
+        let drawH = height;
+        const containerAspect = width / height;
+        const imgAspect = imgWidth / imgHeight;
+
+        if (imgAspect > containerAspect) {
+          drawW = width;
+          drawH = width / imgAspect;
+        } else {
+          drawH = height;
+          drawW = height * imgAspect;
+        }
+
+        const offsetX = (width - drawW) / 2;
+        const offsetY = (height - drawH) / 2;
+
+        if (this.baseImage) {
+          this.baseImage.destroy();
+        }
+
+        this.baseImage = new Konva.Image({
+          image: imgObj,
+          x: offsetX,
+          y: offsetY,
+          width: drawW,
+          height: drawH
+        });
+
+        this.baseLayer.add(this.baseImage);
+        this.baseLayer.batchDraw();
+        this.stage.batchDraw();
+        this.isLoadingImage.set(false);
+        this.saveHistory();
+      };
+
+      imgObj.onerror = () => {
+        if (tryCrossOrigin) {
+          // Retry without crossOrigin
+          loadRoomImage(url, false, isFallbackAttempt);
+        } else if (!isFallbackAttempt && url !== fallbackUrl) {
+          // Try fallback room image
+          loadRoomImage(fallbackUrl, true, true);
+        } else {
+          this.isLoadingImage.set(false);
+          this.imageError.set(true);
+          this.toastService.error('Could not render room image.');
+        }
+      };
+
+      imgObj.src = url;
     };
+
+    loadRoomImage(targetUri, true, false);
 
     this.setupDrawingEvents();
     this.setupAutoSaveLoop();

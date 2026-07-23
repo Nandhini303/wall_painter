@@ -18,14 +18,15 @@ export class ProjectService {
         });
         imageUrl = uploadResult.secure_url;
         
-        // Clean up temp file
         if (fs.existsSync(file.path)) {
           fs.unlinkSync(file.path);
         }
       } catch (err) {
-        console.warn('Cloudinary upload failed, falling back to mock URL. Error:', err);
-        // Clean up temp file
+        console.warn('Cloudinary upload failed, using Base64 data URL fallback. Error:', err);
         if (fs.existsSync(file.path)) {
+          const fileBuffer = fs.readFileSync(file.path);
+          const mimeType = file.mimetype || 'image/jpeg';
+          imageUrl = `data:${mimeType};base64,${fileBuffer.toString('base64')}`;
           fs.unlinkSync(file.path);
         }
       }
@@ -92,5 +93,9 @@ export class ProjectService {
   async deleteProject(id: string, userId: string): Promise<void> {
     await this.getProject(id, userId); // Verifies ownership
     await projectRepo.delete(id);
+  }
+
+  async deleteAllProjects(userId: string): Promise<number> {
+    return projectRepo.deleteAllByUserId(userId);
   }
 }

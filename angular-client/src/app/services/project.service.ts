@@ -18,7 +18,11 @@ export interface Project {
   providedIn: 'root'
 })
 export class ProjectService {
-  private apiUrl = 'https://wall-painter.onrender.com/api/projects';
+  private get apiUrl(): string {
+    return (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+      ? 'http://localhost:5000/api/projects'
+      : 'https://wall-painter.onrender.com/api/projects';
+  }
 
   constructor(private http: HttpClient, private authService: AuthService) {}
 
@@ -47,7 +51,6 @@ export class ProjectService {
       formData.append('image', imageFile);
     }
     
-    // Do not set Content-Type header manually when sending FormData
     const token = this.authService.getToken();
     const headers = new HttpHeaders({
       'Authorization': `Bearer ${token}`
@@ -74,5 +77,9 @@ export class ProjectService {
 
   deleteProject(id: string): Observable<any> {
     return this.http.delete(`${this.apiUrl}/${id}`, { headers: this.getHeaders() });
+  }
+
+  deleteAllProjects(): Observable<any> {
+    return this.http.delete(this.apiUrl, { headers: this.getHeaders() });
   }
 }

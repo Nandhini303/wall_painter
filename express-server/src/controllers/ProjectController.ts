@@ -125,4 +125,23 @@ export class ProjectController {
       res.status(400).json({ error: err.message });
     }
   }
+
+  async deleteAll(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const userId = req.user?.userId;
+      if (!userId) {
+        res.status(400).json({ error: 'User ID is required.' });
+        return;
+      }
+
+      const deletedCount = await projectService.deleteAllProjects(userId);
+
+      const clientIp = req.ip || 'unknown';
+      await adminService.logAction(userId, 'PROJECT_DELETE_ALL', clientIp, `Deleted all projects count=${deletedCount}`);
+
+      res.status(200).json({ message: 'All projects deleted successfully.', count: deletedCount });
+    } catch (err: any) {
+      res.status(400).json({ error: err.message });
+    }
+  }
 }

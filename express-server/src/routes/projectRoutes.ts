@@ -14,6 +14,7 @@ router.get('/', controller.list.bind(controller));
 router.get('/:id', controller.get.bind(controller));
 router.put('/:id', controller.update.bind(controller));
 router.put('/:id/publish', controller.publish.bind(controller));
+router.delete('/', controller.deleteAll.bind(controller));
 router.delete('/:id', controller.delete.bind(controller));
 
 export default router;

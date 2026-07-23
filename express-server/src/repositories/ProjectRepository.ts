@@ -106,4 +106,23 @@ export class ProjectRepository {
     }
     return existing || null;
   }
+
+  async deleteAllByUserId(userId: string): Promise<number> {
+    let deletedCount = 0;
+    try {
+      if (mongoose.connection.readyState === 1) {
+        const res = await Project.deleteMany({ userId });
+        deletedCount = res.deletedCount || 0;
+      }
+    } catch (e) {}
+
+    // Also clear in-memory matching projects
+    for (const [id, proj] of inMemoryProjects.entries()) {
+      if (proj.userId === userId || !proj.userId) {
+        inMemoryProjects.delete(id);
+        deletedCount++;
+      }
+    }
+    return deletedCount;
+  }
 }

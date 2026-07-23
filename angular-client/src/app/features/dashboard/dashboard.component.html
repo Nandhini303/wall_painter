@@ -1,4 +1,4 @@
-<div class="app-layout no-sidebar">
+<div class="app-layout with-sidebar">
   <!-- Global Command Palette (Ctrl + K) -->
   <app-command-palette></app-command-palette>
 
@@ -20,57 +20,106 @@
     }
   </div>
 
+  <!-- Left Sidebar (Excel Home / Linear / Vercel style) -->
+  <aside class="app-sidebar">
+    <div class="sidebar-brand" (click)="toggleWorkspaceDropdown()">
+      <div class="brand-logo">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+        </svg>
+      </div>
+      <div class="brand-info">
+        <span class="brand-name">Wall Painter</span>
+        <span class="workspace-label">{{ workspaceService.activeWorkspace().name }} ▾</span>
+      </div>
+    </div>
+
+    <!-- Workspace Selector Dropdown -->
+    @if (showWorkspaceDropdown()) {
+      <div class="sidebar-workspace-menu">
+        <div class="menu-label">Workspaces</div>
+        @for (ws of workspaceService.workspaces(); track ws.id) {
+          <button (click)="selectWorkspace(ws.id)" class="ws-item" [class.active]="ws.id === workspaceService.activeWorkspace().id">
+            <span class="ws-dot" [style.background]="ws.color"></span>
+            <span class="ws-name">{{ ws.name }}</span>
+          </button>
+        }
+        <button (click)="openCreateWorkspaceModal()" class="ws-item add-ws">
+          <span>+ Create Workspace</span>
+        </button>
+      </div>
+    }
+
+    <!-- Main Sidebar Navigation -->
+    <nav class="sidebar-nav">
+      <div class="nav-section">
+        <a class="nav-item active" routerLink="/dashboard">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+          <span>Dashboard</span>
+        </a>
+        <a class="nav-item" (click)="setFilter('all')">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+          <span>Projects</span>
+          <span class="nav-count">{{ projects().length }}</span>
+        </a>
+        <a class="nav-item" (click)="openCreateModal()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+          <span>Templates</span>
+        </a>
+        <a class="nav-item" (click)="toastService.info('Settings panel active')">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          <span>Settings</span>
+        </a>
+      </div>
+
+      <div class="nav-section bottom-section">
+        <a class="nav-item" (click)="showUserMenu.set(!showUserMenu())">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          <span>Account</span>
+        </a>
+        <a class="nav-item" (click)="toastService.info('Options menu active')">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>
+          <span>Options</span>
+        </a>
+      </div>
+    </nav>
+  </aside>
+
   <!-- Main Content Body -->
   <div class="main-wrapper">
     <!-- Top Navbar Header -->
     <header class="top-navbar">
       <div class="navbar-left">
-        <div class="breadcrumbs">
-          <span class="crumb">Home</span>
-          <span class="sep">/</span>
-          <span class="crumb active">Dashboard</span>
+        <div class="greeting-box">
+          <h2>{{ greeting() }}, {{ authService.currentUser()?.firstName || 'Designer' }}</h2>
+          <span class="sub-greeting">Manage and visualize room paint projects</span>
         </div>
       </div>
 
       <div class="navbar-right">
         <!-- Global Search Bar / Command Palette Trigger -->
-        <div class="search-box" (click)="paletteService.open()" title="Click or press Ctrl+K to search commands">
+        <div class="search-box" (click)="paletteService.open()" title="Click or press Ctrl+K to search">
           <span class="search-icon">🔍</span>
           <input 
             type="text" 
-            placeholder="Search commands or projects..." 
+            placeholder="Search projects..." 
             [ngModel]="searchQuery()" 
             (ngModelChange)="searchQuery.set($event)"
-            readonly
           />
           <span class="ctrl-k-badge">Ctrl K</span>
         </div>
 
-        <!-- Notifications Dropdown -->
-        <div class="relative">
-          <button (click)="showNotifications.set(!showNotifications())" class="icon-btn" title="Notifications">
-            🔔 <span class="badge">2</span>
-          </button>
+        <!-- Action Header Buttons -->
+        <button (click)="openCreateModal()" class="btn-primary-action">
+          <span>+</span> New Project
+        </button>
 
-          @if (showNotifications()) {
-            <div class="dropdown-panel notifications-dropdown">
-              <div class="dropdown-header">
-                <h3>Notifications</h3>
-                <span class="mark-read">Mark all as read</span>
-              </div>
-              <div class="notification-item">
-                <span class="notif-bullet"></span>
-                <p>Welcome to LuminaPaint Visualizer Enterprise!</p>
-              </div>
-              <div class="notification-item">
-                <span class="notif-bullet"></span>
-                <p>System models successfully seeded.</p>
-              </div>
-            </div>
-          }
-        </div>
+        <button (click)="deleteAllProjects()" class="btn-danger-action" title="Delete All Projects">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+          Delete All
+        </button>
 
-        <!-- User Avatar Menu Dropdown -->
+        <!-- User Profile Dropdown -->
         <div class="relative">
           <button (click)="showUserMenu.set(!showUserMenu())" class="user-avatar-btn">
             <div class="avatar-circle">{{ authService.currentUser()?.firstName?.charAt(0) || 'U' }}</div>
@@ -87,7 +136,7 @@
               </div>
               <div class="dropdown-divider"></div>
               <button (click)="logout()" class="dropdown-item logout-item">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
                 <span>Log Out</span>
               </button>
             </div>
@@ -98,48 +147,31 @@
 
     <!-- Main Content Container -->
     <main class="content-body">
-      <!-- Design Workspace Hero Banner -->
-      <section class="hero-workspace-banner">
-        <div class="hero-text">
-          <h1>Welcome Back to LuminaPaint Studio</h1>
-          <p>Design, visualize, and apply interior paint colors & textures in real-time.</p>
-        </div>
-        <div class="hero-actions">
-          <button (click)="openCreateModal()" class="primary-btn-hero">+ Create New Visualizer Project</button>
-        </div>
-      </section>
 
-      <!-- Analytics Stats Cards -->
-      <section class="stats-row">
-        <div class="stat-card">
-          <div class="stat-icon blue">📁</div>
-          <div class="stat-data">
-            <span class="stat-value">{{ totalCount() }}</span>
-            <span class="stat-label">Total Projects</span>
+      <!-- Excel Home style "New" Templates Rail -->
+      <section class="templates-rail">
+        <div class="rail-header">
+          3. New
+        </div>
+        <div class="templates-grid">
+          <div class="template-card blank" (click)="openCreateModal()">
+            <div class="card-icon">+</div>
+            <span class="template-title">Blank Canvas</span>
           </div>
-        </div>
 
-        <div class="stat-card">
-          <div class="stat-icon emerald">⭐</div>
-          <div class="stat-data">
-            <span class="stat-value">{{ favoritesCount() }}</span>
-            <span class="stat-label">Favorites</span>
+          <div class="template-card" (click)="openCreateModal()">
+            <img src="https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=400&q=80" alt="Living Room" (error)="onThumbnailError($event)" />
+            <span class="template-title">Living Room</span>
           </div>
-        </div>
 
-        <div class="stat-card">
-          <div class="stat-icon purple">🎨</div>
-          <div class="stat-data">
-            <span class="stat-value">120+</span>
-            <span class="stat-label">Color Swatches</span>
+          <div class="template-card" (click)="openCreateModal()">
+            <img src="https://images.unsplash.com/photo-1540518614846-7ede433c517a?auto=format&fit=crop&w=400&q=80" alt="Bedroom" (error)="onThumbnailError($event)" />
+            <span class="template-title">Modern Bedroom</span>
           </div>
-        </div>
 
-        <div class="stat-card">
-          <div class="stat-icon orange">⚡</div>
-          <div class="stat-data">
-            <span class="stat-value">Active</span>
-            <span class="stat-label">Socket.IO Sync</span>
+          <div class="template-card" (click)="openCreateModal()">
+            <img src="https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=400&q=80" alt="Kitchen" (error)="onThumbnailError($event)" />
+            <span class="template-title">Minimal Kitchen</span>
           </div>
         </div>
       </section>
@@ -168,38 +200,42 @@
         }
       </section>
 
-      <!-- Projects Section Header & Filters Toolbar -->
+      <!-- Projects Gallery Header & Filters Toolbar -->
       <section class="projects-section">
         <div class="section-toolbar">
           <div class="toolbar-left">
-            <h2>Projects Gallery</h2>
-            
-            <!-- Filter Tabs -->
+            <!-- Navigation Tabs (Excel Home / Notion / Linear style) -->
             <div class="filter-tabs">
               <button 
                 (click)="setFilter('all')" 
                 [class.active]="activeFilter() === 'all'" 
                 class="tab-btn"
-              >All Projects</button>
+              >
+                Recent
+              </button>
 
               <button 
                 (click)="setFilter('favorites')" 
                 [class.active]="activeFilter() === 'favorites'" 
                 class="tab-btn"
-              >Favorites</button>
+              >
+                Favorites ({{ favoritesCount() }})
+              </button>
 
               <button 
                 (click)="setFilter('recent')" 
                 [class.active]="activeFilter() === 'recent'" 
                 class="tab-btn"
-              >Recent</button>
+              >
+                Shared with Me
+              </button>
             </div>
           </div>
 
           <div class="toolbar-right">
-            <!-- Sort Dropdown -->
+            <!-- Sort Selector -->
             <div class="sort-selector">
-              <label for="sortSelect">Sort by:</label>
+              <label for="sortSelect">Sort:</label>
               <select id="sortSelect" [ngModel]="sortBy()" (ngModelChange)="sortBy.set($event)">
                 <option value="newest">Newest First</option>
                 <option value="oldest">Oldest First</option>
@@ -207,7 +243,7 @@
               </select>
             </div>
 
-            <!-- Grid vs List View Toggle -->
+            <!-- View Mode Switcher -->
             <div class="view-toggle">
               <button 
                 (click)="setViewMode('grid')" 
@@ -227,9 +263,8 @@
               </button>
             </div>
 
-            <!-- Create New Project CTA Button -->
-            <button (click)="openCreateModal()" class="primary-btn">
-              <span>+</span> New Project
+            <button (click)="deleteAllProjects()" class="btn-danger-outline" title="Delete All Projects">
+              Delete All
             </button>
           </div>
         </div>
@@ -240,17 +275,16 @@
             <div class="skeleton-card skeleton-box"></div>
             <div class="skeleton-card skeleton-box"></div>
             <div class="skeleton-card skeleton-box"></div>
-            <div class="skeleton-card skeleton-box"></div>
           </div>
         } 
-        <!-- Projects Render Grid / List -->
+        <!-- Projects Grid / List View -->
         @else if (filteredProjects().length === 0) {
           <!-- Empty State -->
           <div class="empty-state">
-            <div class="empty-icon">📁</div>
-            <h3>No projects found</h3>
-            <p>Get started by creating a new project or dragging a room photo onto the dropzone above!</p>
-            <button (click)="openCreateModal()" class="primary-btn mt-4">+ Create Your First Project</button>
+            <div class="empty-icon">📂</div>
+            <h3>No projects available</h3>
+            <p>Start a new project or select a template above to visualize wall paints.</p>
+            <button (click)="openCreateModal()" class="btn-primary-action mt-4">+ Create First Project</button>
           </div>
         } 
         @else {
@@ -260,9 +294,9 @@
                 [routerLink]="['/canvas', project._id]" 
                 class="project-card"
               >
-                <!-- Thumbnail -->
-                <div class="card-thumbnail" [style.background-image]="'url(' + project.originalImageUri + ')'">
-                  <!-- Favorite Star Toggle -->
+                <!-- Card Thumbnail -->
+                <div class="card-thumbnail">
+                  <img [src]="project.originalImageUri || fallbackImage" [alt]="project.name" (error)="onThumbnailError($event)" />
                   <button 
                     (click)="toggleFavorite(project._id, $event)" 
                     class="fav-star-btn" 
@@ -271,6 +305,7 @@
                   >
                     ★
                   </button>
+                  <span class="status-badge">Active</span>
                 </div>
 
                 <!-- Details Body -->
@@ -286,12 +321,12 @@
                   }
                   
                   <div class="card-meta">
-                    <span>Updated {{ project.updatedAt | date:'mediumDate' }}</span>
+                    <span class="meta-date">Modified {{ project.updatedAt | date:'shortDate' }}</span>
                     
                     <!-- Action Menu -->
                     <div class="card-actions">
-                      <button (click)="startRename(project, $event)" class="action-icon-btn" title="Rename Project">✏️</button>
-                      <button (click)="deleteProject(project._id, $event)" class="action-icon-btn delete" title="Delete Project">🗑️</button>
+                      <button (click)="startRename(project, $event)" class="action-icon-btn" title="Rename">✏️</button>
+                      <button (click)="deleteProject(project._id, $event)" class="action-icon-btn delete" title="Delete">🗑️</button>
                     </div>
                   </div>
                 </div>
@@ -384,7 +419,7 @@
           </div>
 
           <div class="form-group">
-            <label>ACCENT SWATCH COLOR</label>
+            <label>ACCENT COLOR</label>
             <div class="hex-picker-row">
               <input type="color" [(ngModel)]="newWsColor" class="color-picker-input" />
               <input type="text" [(ngModel)]="newWsColor" class="form-control" />

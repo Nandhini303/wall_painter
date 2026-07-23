@@ -335,6 +335,52 @@ export class DashboardComponent implements OnInit {
     }
   }
 
+  greeting = computed(() => {
+    const hour = new Date().getHours();
+    if (hour < 12) return 'Good morning';
+    if (hour < 18) return 'Good afternoon';
+    return 'Good evening';
+  });
+
+  fallbackImage = 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=1200&q=80';
+
+  onThumbnailError(event: any): void {
+    if (event && event.target) {
+      event.target.src = this.fallbackImage;
+    }
+  }
+
+  // Delete All Projects Action
+  async deleteAllProjects(): Promise<void> {
+    if (this.projects().length === 0) {
+      this.toastService.info('No projects to delete.');
+      return;
+    }
+
+    const confirmed = await this.modalService.confirm({
+      title: 'Delete All Projects?',
+      message: 'Are you sure you want to delete ALL projects in this workspace? This action is permanent and cannot be undone.',
+      confirmText: 'Delete All Projects',
+      cancelText: 'Cancel',
+      variant: 'danger'
+    });
+
+    if (confirmed) {
+      const original = this.projects();
+      this.projects.set([]); // Optimistic update
+
+      this.projectService.deleteAllProjects().subscribe({
+        next: (res) => {
+          this.toastService.success(res?.message || 'All projects deleted successfully.');
+        },
+        error: () => {
+          this.projects.set(original); // Rollback
+          this.toastService.error('Failed to delete all projects.');
+        }
+      });
+    }
+  }
+
   logout(): void {
     this.authService.logout();
     this.toastService.info('Logged out.');
