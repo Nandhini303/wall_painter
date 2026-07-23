@@ -1,4 +1,4 @@
-<div class="admin-shell">
+<div class="admin-shell" [class.dark-mode]="activeTheme() === 'dark'">
   <!-- Global Confirm Glassmorphic Dialog -->
   <app-confirm-dialog></app-confirm-dialog>
 
@@ -12,25 +12,25 @@
   </div>
 
   <!-- ============================================= -->
-  <!-- LEFT ADMIN SIDEBAR (Dark Navy #0f172a)       -->
+  <!-- LEFT ADMIN SIDEBAR (Linear / Vercel Style)    -->
   <!-- ============================================= -->
   <aside class="admin-sidebar" [class.collapsed]="sidebarCollapsed()">
     <!-- Sidebar Header -->
     <div class="sidebar-header">
       <div class="admin-brand">
         <div class="brand-mark">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
             <path d="m12 3-1.9 5.8a2 2 0 0 1-1.28 1.28L3 12l5.8 1.9a2 2 0 0 1 1.28 1.28L12 21l1.9-5.8a2 2 0 0 1 1.28-1.28L21 12l-5.8-1.9a2 2 0 0 1-1.28-1.28Z"/>
           </svg>
         </div>
         @if (!sidebarCollapsed()) {
           <div class="brand-text">
             <span class="brand-name">LuminaPaint</span>
-            <span class="admin-badge">Admin Portal</span>
+            <span class="admin-badge">Admin Portal v2.4</span>
           </div>
         }
       </div>
-      <button (click)="sidebarCollapsed.set(!sidebarCollapsed())" class="collapse-toggle">
+      <button (click)="sidebarCollapsed.set(!sidebarCollapsed())" class="collapse-toggle" title="Toggle Sidebar">
         <app-icon [name]="sidebarCollapsed() ? 'chevron-right' : 'chevron-left'" [size]="16"></app-icon>
       </button>
     </div>
@@ -41,32 +41,49 @@
         <div class="user-avatar-sm">{{ authService.currentUser()?.firstName?.charAt(0) || 'A' }}</div>
         <div class="user-badge-info">
           <span class="user-badge-name">{{ authService.currentUser()?.firstName }} {{ authService.currentUser()?.lastName }}</span>
-          <span class="user-badge-role">{{ authService.currentUser()?.role || 'Admin' }}</span>
+          <span class="user-badge-role">Super Admin</span>
         </div>
       </div>
     }
 
-    <!-- Navigation Items -->
-    <nav class="admin-nav">
-      @for (item of navItems; track item.id) {
-        <button
-          (click)="setSection(item.id)"
-          class="admin-nav-item"
-          [class.active]="activeSection() === item.id"
-          [title]="item.label"
-        >
-          <app-icon [name]="item.icon" [size]="18"></app-icon>
+    <!-- Navigation Groups -->
+    <nav class="admin-nav custom-scrollbar">
+      @for (group of navGroups; track group.title) {
+        <div class="nav-group-section">
           @if (!sidebarCollapsed()) {
-            <span>{{ item.label }}</span>
+            <div class="group-title">{{ group.title }}</div>
           }
-        </button>
+          @for (item of group.items; track item.id) {
+            <button
+              (click)="setSection(item.id)"
+              class="admin-nav-item"
+              [class.active]="activeSection() === item.id"
+              [title]="item.label"
+            >
+              <app-icon [name]="item.icon" [size]="16"></app-icon>
+              @if (!sidebarCollapsed()) {
+                <span class="item-label">{{ item.label }}</span>
+                @if (item.badge) {
+                  <span class="nav-badge">{{ item.badge }}</span>
+                }
+              }
+            </button>
+          }
+        </div>
       }
     </nav>
 
-    <!-- Sign Out -->
+    <!-- Sign Out & Theme Toggle -->
     <div class="sidebar-footer">
-      <button (click)="authService.logout()" class="back-to-site" style="width: 100%; border: none; cursor: pointer; text-align: left; font-family: inherit; background: transparent;">
-        <app-icon name="user" [size]="16"></app-icon>
+      <button (click)="toggleTheme()" class="theme-toggle-btn" title="Toggle Theme">
+        <app-icon [name]="activeTheme() === 'dark' ? 'sun' : 'moon'" [size]="16"></app-icon>
+        @if (!sidebarCollapsed()) {
+          <span>{{ activeTheme() === 'dark' ? 'Light Mode' : 'Dark Mode' }}</span>
+        }
+      </button>
+
+      <button (click)="authService.logout()" class="back-to-site" title="Sign Out">
+        <app-icon name="log-out" [size]="16"></app-icon>
         @if (!sidebarCollapsed()) {
           <span>Sign Out</span>
         }
@@ -78,22 +95,34 @@
   <!-- RIGHT CONTENT AREA                           -->
   <!-- ============================================= -->
   <div class="admin-content-area">
-    <!-- Top Admin Navbar -->
+    <!-- Sticky Top Admin Navbar -->
     <header class="admin-topbar">
       <div class="topbar-left">
-        <span class="breadcrumb-text">Home / Admin / <strong>{{ breadcrumbLabel() }}</strong></span>
+        <span class="breadcrumb-text">Admin Portal / <strong class="current-crumb">{{ breadcrumbLabel() }}</strong></span>
       </div>
       <div class="topbar-right">
         <div class="admin-search-box">
-          <app-icon name="search" [size]="16"></app-icon>
+          <app-icon name="search" [size]="15" color="#64748b"></app-icon>
           <input
             type="text"
-            placeholder="Filter records..."
+            placeholder="Global Search (Ctrl+K)..."
             [ngModel]="searchQuery()"
             (ngModelChange)="searchQuery.set($event)"
           />
+          <kbd class="search-kbd">⌘K</kbd>
         </div>
-        <div class="admin-avatar-badge">
+
+        <div class="system-status-indicator" title="Socket.IO Real-Time Engine Active">
+          <span class="status-pulse"></span>
+          <span>Realtime Sync</span>
+        </div>
+
+        <button (click)="setSection('notifications')" class="icon-btn-top" title="Notifications">
+          <app-icon name="bell" [size]="16"></app-icon>
+          <span class="dot-unread"></span>
+        </button>
+
+        <div class="admin-avatar-badge" (click)="setSection('profile')" title="Admin Profile">
           <div class="avatar-circle-sm">{{ authService.currentUser()?.firstName?.charAt(0) || 'A' }}</div>
         </div>
       </div>

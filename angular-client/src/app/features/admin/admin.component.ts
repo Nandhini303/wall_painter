@@ -15,21 +15,33 @@ import { io, Socket } from 'socket.io-client';
 
 export type AdminSection =
   | 'overview'
-  | 'storage'
+  | 'analytics'
+  | 'users'
+  | 'roles'
+  | 'workspaces'
+  | 'projects'
   | 'templates'
-  | 'collections'
-  | 'customColors'
+  | 'storage'
+  | 'colorLibrary'
   | 'textures'
   | 'brushes'
-  | 'users'
-  | 'settings'
+  | 'aiModels'
   | 'auditLogs'
-  | 'systemHealth';
+  | 'notifications'
+  | 'apiKeys'
+  | 'billing'
+  | 'settings'
+  | 'profile'
+  | 'help';
 
-export interface AdminNavItem {
-  id: AdminSection;
-  label: string;
-  icon: string;
+export interface AdminNavGroup {
+  title: string;
+  items: {
+    id: AdminSection;
+    label: string;
+    icon: string;
+    badge?: string;
+  }[];
 }
 
 export interface WallTemplate {
@@ -73,23 +85,61 @@ export interface SettingsSection {
   styleUrls: ['./admin.component.scss']
 })
 export class AdminComponent implements OnInit {
-  // --- Navigation ---
+  // --- Navigation & Theme ---
   activeSection = signal<AdminSection>('overview');
   sidebarCollapsed = signal(false);
+  activeTheme = signal<'light' | 'dark'>('light');
 
-  navItems: AdminNavItem[] = [
-    { id: 'overview', label: 'Overview', icon: 'dashboard' },
-    { id: 'storage', label: 'Storage & Assets', icon: 'grid' },
-    { id: 'templates', label: 'Template Manager', icon: 'grid' },
-    { id: 'collections', label: 'Color Collections', icon: 'canvas' },
-    { id: 'customColors', label: 'Custom Colors', icon: 'fill' },
-    { id: 'textures', label: 'Textures & Materials', icon: 'brush' },
-    { id: 'brushes', label: 'Brush Library', icon: 'select' },
-    { id: 'users', label: 'Users & Workspaces', icon: 'user' },
-    { id: 'settings', label: 'Platform Settings', icon: 'grid' },
-    { id: 'auditLogs', label: 'Audit Logs', icon: 'info' },
-    { id: 'systemHealth', label: 'System Health', icon: 'admin' }
+  navGroups: AdminNavGroup[] = [
+    {
+      title: 'Overview & Insights',
+      items: [
+        { id: 'overview', label: 'Dashboard', icon: 'activity' },
+        { id: 'analytics', label: 'Analytics', icon: 'activity', badge: 'Live' }
+      ]
+    },
+    {
+      title: 'Users & Workspaces',
+      items: [
+        { id: 'users', label: 'Users', icon: 'users' },
+        { id: 'roles', label: 'Roles & Permissions', icon: 'shield' },
+        { id: 'workspaces', label: 'Workspaces', icon: 'layers' },
+        { id: 'projects', label: 'Projects', icon: 'folder' }
+      ]
+    },
+    {
+      title: 'Content & Studio Assets',
+      items: [
+        { id: 'templates', label: 'Room Templates', icon: 'layout-grid' },
+        { id: 'storage', label: 'Storage & Assets', icon: 'download' },
+        { id: 'colorLibrary', label: 'Color Library', icon: 'palette' },
+        { id: 'textures', label: 'Textures & Surfaces', icon: 'copy' },
+        { id: 'brushes', label: 'Brush Library', icon: 'copy' }
+      ]
+    },
+    {
+      title: 'System & AI Engine',
+      items: [
+        { id: 'aiModels', label: 'AI Models (SAM 2)', icon: 'sparkles', badge: 'v2.1' },
+        { id: 'auditLogs', label: 'Audit Logs', icon: 'file-text' },
+        { id: 'notifications', label: 'Notifications Hub', icon: 'bell' },
+        { id: 'apiKeys', label: 'Developer API Keys', icon: 'key' }
+      ]
+    },
+    {
+      title: 'Admin Settings & Billing',
+      items: [
+        { id: 'billing', label: 'Billing & Plans', icon: 'credit-card' },
+        { id: 'settings', label: 'Platform Settings', icon: 'settings' },
+        { id: 'profile', label: 'My Admin Profile', icon: 'user' },
+        { id: 'help', label: 'Help & Docs', icon: 'help-circle' }
+      ]
+    }
   ];
+
+  toggleTheme() {
+    this.activeTheme.set(this.activeTheme() === 'light' ? 'dark' : 'light');
+  }
 
   // --- Data Signals ---
   users = signal<User[]>([]);

@@ -180,38 +180,67 @@
 /* Admin Navigation */
 .admin-nav {
   flex: 1;
-  padding: 12px 8px;
+  padding: 16px 12px;
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 16px;
   overflow-y: auto;
+
+  .nav-group-section {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+
+    .group-title {
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #64748b;
+      padding: 6px 10px 4px;
+    }
+  }
 }
 
 .admin-nav-item {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 10px 12px;
-  border-radius: 10px;
+  gap: 10px;
+  padding: 9px 12px;
+  border-radius: 8px;
   border: none;
   background: transparent;
   color: #94a3b8;
   font-size: 0.85rem;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.15s ease;
-  text-align: left;
   width: 100%;
+  text-align: left;
+  transition: all 0.15s ease;
+
+  .item-label {
+    flex: 1;
+  }
+
+  .nav-badge {
+    font-size: 0.68rem;
+    font-weight: 700;
+    background: rgba(16, 185, 129, 0.15);
+    color: #34d399;
+    padding: 2px 6px;
+    border-radius: 12px;
+  }
 
   &:hover {
-    background: rgba(255, 255, 255, 0.05);
-    color: #e2e8f0;
+    background: rgba(255, 255, 255, 0.06);
+    color: #f8fafc;
   }
 
   &.active {
-    background: rgba(37, 99, 235, 0.12);
-    color: #60a5fa;
+    background: #2563eb;
+    color: #ffffff;
     font-weight: 600;
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
   }
 }
 
