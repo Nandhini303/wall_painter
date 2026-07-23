@@ -3,12 +3,14 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ColorStudioService, StudioTexture } from '../../../../services/color-studio';
 
-import { LucideAngularModule, Check } from '@lucide/angular';
+import { LucideAngularModule, Check } from 'lucide-angular';
+
+import { importProvidersFrom } from '@angular/core';
 
 @Component({
   selector: 'app-texture-library-panel',
   standalone: true,
-  imports: [CommonModule, FormsModule, LucideAngularModule.pick({ Check })],
+  imports: [CommonModule, FormsModule, LucideAngularModule],
   templateUrl: './texture-library-panel.html',
   styleUrls: ['./texture-library-panel.scss']
 })
