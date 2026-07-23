@@ -431,6 +431,13 @@ export class CanvasEditorComponent implements OnInit, OnDestroy {
             node.fillPriority('pattern');
             node.fillPatternImage(texImgObj);
             node.fillPatternRepeat('repeat');
+            
+            // Apply scale & rotation from studio state
+            node.fillPatternScaleX(this.studio.textureScale());
+            node.fillPatternScaleY(this.studio.textureScale());
+            node.fillPatternRotation(this.studio.textureRotation());
+            node.opacity(this.studio.textureOpacity());
+
             node.stroke(activeColor);
             node.globalCompositeOperation(this.studio.activeBlendMode() as any);
           } else if (node instanceof Konva.Image) {
@@ -441,6 +448,9 @@ export class CanvasEditorComponent implements OnInit, OnDestroy {
         this.saveHistory();
         this.triggerUnsavedState();
         this.toastService.success(`Applied ${activeTex.name} texture to selected wall!`);
+      };
+      texImgObj.onerror = () => {
+        this.toastService.error(`Failed to load ${activeTex.name} texture. Please try again.`);
       };
     } else {
       targetNodes.forEach((node: any) => {
