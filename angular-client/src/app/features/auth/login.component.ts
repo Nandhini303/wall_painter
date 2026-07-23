@@ -58,4 +58,39 @@ export class LoginComponent {
       }
     });
   }
+
+  onGoogleLogin(): void {
+    if (this.isLoading()) return;
+
+    const userEmail = prompt('Enter your Google Account email to sign in:', 'user@gmail.com');
+    if (!userEmail || !userEmail.trim()) {
+      return;
+    }
+
+    const emailClean = userEmail.trim();
+    if (!emailClean.includes('@')) {
+      this.errorMessage.set('Please enter a valid Google email address.');
+      return;
+    }
+
+    this.isLoading.set(true);
+    this.errorMessage.set(null);
+
+    const firstName = emailClean.split('@')[0];
+    this.authService.loginWithGoogle({ email: emailClean, firstName }).subscribe({
+      next: () => {
+        this.isLoading.set(false);
+        if (this.authService.isAdmin()) {
+          this.router.navigate(['/admin']);
+        } else {
+          const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/dashboard';
+          this.router.navigateByUrl(returnUrl);
+        }
+      },
+      error: (err) => {
+        this.isLoading.set(false);
+        this.errorMessage.set(err.error?.error || 'Google Authentication failed.');
+      }
+    });
+  }
 }

@@ -46,6 +46,18 @@ export class AuthService {
     );
   }
 
+  loginWithGoogle(payload: { email: string; firstName?: string; lastName?: string }): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/google`, payload).pipe(
+      tap(res => {
+        if (res.token && res.user) {
+          localStorage.setItem('token', res.token);
+          localStorage.setItem('user', JSON.stringify(res.user));
+          this.currentUserSignal.set(res.user);
+        }
+      })
+    );
+  }
+
   logout(): void {
     localStorage.removeItem('token');
     localStorage.removeItem('user');

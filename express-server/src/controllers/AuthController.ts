@@ -62,4 +62,22 @@ export class AuthController {
       }
     }
   }
+
+  async googleLogin(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const { email, firstName, lastName } = req.body;
+      if (!email) {
+        res.status(400).json({ error: 'Email address is required for Google Sign-In.' });
+        return;
+      }
+
+      const { token, user } = await authService.googleLogin({ email, firstName, lastName });
+      const clientIp = req.ip || 'unknown';
+      await adminService.logAction(user._id?.toString() || 'unknown', 'GOOGLE_LOGIN', clientIp, `User logged in via Google email=${user.email}`);
+
+      res.status(200).json({ token, user });
+    } catch (err: any) {
+      res.status(500).json({ error: err.message || 'Google authentication failed.' });
+    }
+  }
 }
