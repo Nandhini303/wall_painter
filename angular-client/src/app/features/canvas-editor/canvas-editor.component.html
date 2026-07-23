@@ -28,16 +28,16 @@
       <div class="divider"></div>
 
       <!-- Undo / Redo Controls -->
-      <button (click)="undo()" [disabled]="!canUndo()" class="tool-btn" title="Undo"><app-icon name="undo" [size]="16"></app-icon></button>
-      <button (click)="redo()" [disabled]="!canRedo()" class="tool-btn" title="Redo"><app-icon name="redo" [size]="16"></app-icon></button>
+      <button (click)="undo()" [disabled]="!canUndo()" class="tool-btn" title="Undo"><lucide-icon name="undo-2" [size]="16" [strokeWidth]="1.75"></lucide-icon></button>
+      <button (click)="redo()" [disabled]="!canRedo()" class="tool-btn" title="Redo"><lucide-icon name="redo-2" [size]="16" [strokeWidth]="1.75"></lucide-icon></button>
       <div class="divider"></div>
       
       <!-- Zoom & View Controls -->
-      <button (click)="setZoom(-10)" class="tool-btn" title="Zoom Out"><app-icon name="zoom-out" [size]="16"></app-icon></button>
+      <button (click)="setZoom(-10)" class="tool-btn" title="Zoom Out"><lucide-icon name="zoom-out" [size]="16" [strokeWidth]="1.75"></lucide-icon></button>
       <span class="zoom-text">{{ zoomLevel() }}%</span>
-      <button (click)="setZoom(10)" class="tool-btn" title="Zoom In"><app-icon name="zoom-in" [size]="16"></app-icon></button>
-      <button (click)="toggleGrid()" [class.active]="showGrid()" class="tool-btn" title="Toggle Grid Overlay"><app-icon name="grid" [size]="16"></app-icon> Grid</button>
-      <button (click)="toggleCompareMode()" [class.active]="isCompareMode()" class="tool-btn" title="Compare Original vs Painted"><app-icon name="compare" [size]="16"></app-icon> Compare</button>
+      <button (click)="setZoom(10)" class="tool-btn" title="Zoom In"><lucide-icon name="zoom-in" [size]="16" [strokeWidth]="1.75"></lucide-icon></button>
+      <button (click)="toggleGrid()" [class.active]="showGrid()" class="tool-btn" title="Toggle Grid Overlay"><lucide-icon name="grid-2x2" [size]="16" [strokeWidth]="1.75"></lucide-icon> Grid</button>
+      <button (click)="toggleCompareMode()" [class.active]="isCompareMode()" class="tool-btn" title="Compare Original vs Painted"><lucide-icon name="split-square-horizontal" [size]="16" [strokeWidth]="1.75"></lucide-icon> Compare</button>
     </div>
 
     <div class="header-right">
@@ -50,7 +50,7 @@
       </div>
 
       <!-- Share CTA -->
-      <button (click)="openShareModal()" class="share-btn"><app-icon name="share" [size]="16"></app-icon> Share</button>
+      <button (click)="openShareModal()" class="share-btn"><lucide-icon name="share-2" [size]="16" [strokeWidth]="1.75"></lucide-icon> Share</button>
 
       <!-- Save & Publish Buttons -->
       <button (click)="saveDraft()" class="secondary-btn">Save Draft</button>
@@ -66,63 +66,63 @@
         [class.active]="activeTool() === 'select'" 
         class="palette-btn" 
         title="Select & Move (V)"
-      ><app-icon name="select" [size]="18"></app-icon></button>
+      ><lucide-icon name="mouse-pointer-2" [size]="18" [strokeWidth]="1.75"></lucide-icon></button>
 
       <button 
         (click)="setTool('ai-wand')" 
         [class.active]="activeTool() === 'ai-wand'" 
         class="palette-btn ai-btn" 
         title="1-Click AI Auto Wall Detection (A)"
-      >✨</button>
+      ><lucide-icon name="scan-search" [size]="18" [strokeWidth]="1.75"></lucide-icon></button>
 
       <button 
         (click)="setTool('wand')" 
         [class.active]="activeTool() === 'wand'" 
         class="palette-btn" 
         title="Magic Wand Flood Fill (W)"
-      >🪄</button>
+      ><lucide-icon name="sparkles" [size]="18" [strokeWidth]="1.75"></lucide-icon></button>
 
       <button 
         (click)="setTool('polygon')" 
         [class.active]="activeTool() === 'polygon'" 
         class="palette-btn" 
         title="Polygon Mask (P)"
-      ><app-icon name="polygon" [size]="18"></app-icon></button>
+      ><lucide-icon name="pentagon" [size]="18" [strokeWidth]="1.75"></lucide-icon></button>
 
       <button 
         (click)="setTool('lasso')" 
         [class.active]="activeTool() === 'lasso'" 
         class="palette-btn" 
         title="Freehand Lasso Mask (L)"
-      >✂️</button>
+      ><lucide-icon name="lasso-select" [size]="18" [strokeWidth]="1.75"></lucide-icon></button>
 
       <button 
         (click)="setTool('brush')" 
         [class.active]="activeTool() === 'brush'" 
         class="palette-btn" 
         title="Paint Brush (B)"
-      ><app-icon name="brush" [size]="18"></app-icon></button>
+      ><lucide-icon name="brush" [size]="18" [strokeWidth]="1.75"></lucide-icon></button>
 
       <button 
         (click)="setTool('eraser')" 
         [class.active]="activeTool() === 'eraser'" 
         class="palette-btn" 
         title="Eraser (E)"
-      ><app-icon name="eraser" [size]="18"></app-icon></button>
+      ><lucide-icon name="eraser" [size]="18" [strokeWidth]="1.75"></lucide-icon></button>
 
       <button 
         (click)="setTool('eyedropper')" 
         [class.active]="activeTool() === 'eyedropper'" 
         class="palette-btn" 
         title="Eyedropper Color Picker (I)"
-      >🧪</button>
+      ><lucide-icon name="palette" [size]="18" [strokeWidth]="1.75"></lucide-icon></button>
 
       <button 
         (click)="setTool('hand')" 
         [class.active]="activeTool() === 'hand'" 
         class="palette-btn" 
         title="Hand / Pan Canvas (H)"
-      >✋</button>
+      ><lucide-icon name="hand" [size]="18" [strokeWidth]="1.75"></lucide-icon></button>
     </aside>
 
     <!-- Canvas Center -->
@@ -165,20 +165,22 @@
               class="layer-item-row"
             >
               <button (click)="toggleVisibility(layer, $event)" class="layer-action-icon" [title]="layer.visible ? 'Hide Layer' : 'Show Layer'">
-                {{ layer.visible ? '👁️' : '🙈' }}
+                @if (layer.visible) { <lucide-icon name="eye" [size]="16" [strokeWidth]="1.75"></lucide-icon> }
+                @else { <lucide-icon name="eye-off" [size]="16" [strokeWidth]="1.75"></lucide-icon> }
               </button>
 
               <span class="layer-name">{{ layer.name }}</span>
 
               <div class="layer-actions">
                 <button (click)="toggleLock(layer, $event)" class="layer-action-icon" [title]="layer.locked ? 'Unlock Layer' : 'Lock Layer'">
-                  {{ layer.locked ? '🔒' : '🔓' }}
+                  @if (layer.locked) { <lucide-icon name="lock" [size]="16" [strokeWidth]="1.75"></lucide-icon> }
+                  @else { <lucide-icon name="unlock" [size]="16" [strokeWidth]="1.75"></lucide-icon> }
                 </button>
-                <button (click)="duplicateLayer(layer, $event)" class="layer-action-icon" title="Duplicate Layer">📋</button>
-                <button (click)="moveLayerUp(idx, $event)" [disabled]="idx <= 1" class="layer-action-icon" title="Move Up">↑</button>
-                <button (click)="moveLayerDown(idx, $event)" [disabled]="idx === 0 || idx >= layers().length - 1" class="layer-action-icon" title="Move Down">↓</button>
+                <button (click)="duplicateLayer(layer, $event)" class="layer-action-icon" title="Duplicate Layer"><lucide-icon name="copy" [size]="16" [strokeWidth]="1.75"></lucide-icon></button>
+                <button (click)="moveLayerUp(idx, $event)" [disabled]="idx <= 1" class="layer-action-icon" title="Move Up"><lucide-icon name="arrow-up" [size]="16" [strokeWidth]="1.75"></lucide-icon></button>
+                <button (click)="moveLayerDown(idx, $event)" [disabled]="idx === 0 || idx >= layers().length - 1" class="layer-action-icon" title="Move Down"><lucide-icon name="arrow-down" [size]="16" [strokeWidth]="1.75"></lucide-icon></button>
                 @if (layer.id !== 'base-layer') {
-                  <button (click)="deleteLayer(layer.id, $event)" class="layer-action-icon delete" title="Delete Layer">🗑️</button>
+                  <button (click)="deleteLayer(layer.id, $event)" class="layer-action-icon delete" title="Delete Layer"><lucide-icon name="trash-2" [size]="16" [strokeWidth]="1.75"></lucide-icon></button>
                 }
               </div>
             </div>

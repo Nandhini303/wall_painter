@@ -34,7 +34,7 @@
         >
           <div class="tex-thumb" [style.background-image]="'url(' + tex.imageUri + ')'">
             @if (studio.activeTexture()?.id === tex.id) {
-              <div class="check-overlay">✓</div>
+              <div class="check-overlay"><lucide-icon name="check" [size]="16" [strokeWidth]="2.5"></lucide-icon></div>
             }
           </div>
           <span class="tex-name">{{ tex.name }}</span>

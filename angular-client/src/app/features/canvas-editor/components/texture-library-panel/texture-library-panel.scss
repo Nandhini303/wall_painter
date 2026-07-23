@@ -1,10 +1,7 @@
 .panel-section {
-  background: var(--bg-surface);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-card);
+  background: transparent;
+  border: none;
   margin-bottom: 16px;
-  overflow: hidden;
-  box-shadow: var(--shadow-sm);
   display: flex;
   flex-direction: column;
 }
@@ -168,4 +165,59 @@
   color: var(--text-muted);
   font-size: 0.85rem;
   padding: 20px 0;
+}
+
+/* Modern Sliders and Controls */
+.texture-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(0,0,0,0.05);
+
+  .control-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+
+    label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      display: flex;
+      justify-content: space-between;
+    }
+
+    input[type="range"] {
+      -webkit-appearance: none;
+      width: 100%;
+      height: 4px;
+      background: rgba(0,0,0,0.1);
+      border-radius: 2px;
+      outline: none;
+
+      &::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: var(--accent-blue, #2563eb);
+        cursor: pointer;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+      }
+    }
+
+    select {
+      width: 100%;
+      padding: 6px 10px;
+      border-radius: 8px;
+      border: 1px solid rgba(0,0,0,0.1);
+      background: rgba(255,255,255,0.6);
+      font-size: 0.8rem;
+      outline: none;
+      &:focus { border-color: var(--accent-blue, #2563eb); }
+    }
+  }
 }

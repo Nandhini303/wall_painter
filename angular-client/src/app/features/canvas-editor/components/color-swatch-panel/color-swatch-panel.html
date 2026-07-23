@@ -30,7 +30,7 @@
                 (click)="selectColor(color)"
                 [title]="color.name || color.hex"
               ></div>
-              <button class="star-btn active" (click)="studio.toggleFavorite(color)">★</button>
+              <button class="star-btn active" (click)="studio.toggleFavorite(color)"><lucide-icon name="star" [size]="12"></lucide-icon></button>
             </div>
           }
         </div>
@@ -87,7 +87,7 @@
                 class="star-btn" 
                 [class.active]="studio.isFavorite(color.hex)" 
                 (click)="studio.toggleFavorite(color)"
-              >★</button>
+              ><lucide-icon name="star" [size]="12"></lucide-icon></button>
             </div>
           }
         </div>

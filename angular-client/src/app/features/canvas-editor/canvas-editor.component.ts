@@ -14,12 +14,16 @@ import { CustomColorPopoverComponent } from './components/custom-color-popover/c
 import { TextureLibraryPanelComponent } from './components/texture-library-panel/texture-library-panel';
 import { AssetLibraryPanelComponent } from './components/asset-library-panel/asset-library-panel.component';
 
-import { AppIconComponent } from '../../components/app-icon/app-icon.component';
+import { LucideAngularModule, MousePointer2, Brush, Eraser, Sparkles, LassoSelect, Pentagon, ScanSearch, ZoomIn, ZoomOut, Hand, Undo2, Redo2, Grid2x2, SplitSquareHorizontal, Download, Share2, Save, Rocket, UploadCloud, Search, Layers3, Lock, Unlock, Eye, EyeOff, Copy, Trash2, ArrowUp, ArrowDown, Palette, PaintBucket, Menu } from '@lucide/angular';
 
 @Component({
   selector: 'app-canvas-editor',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, AppIconComponent, ToolPropertiesComponent, ColorSwatchPanelComponent, CustomColorPopoverComponent, TextureLibraryPanelComponent, AssetLibraryPanelComponent],
+  imports: [
+    CommonModule, FormsModule, RouterModule, 
+    LucideAngularModule.pick({ MousePointer2, Brush, Eraser, Sparkles, LassoSelect, Pentagon, ScanSearch, ZoomIn, ZoomOut, Hand, Undo2, Redo2, Grid2x2, SplitSquareHorizontal, Download, Share2, Save, Rocket, UploadCloud, Search, Layers3, Lock, Unlock, Eye, EyeOff, Copy, Trash2, ArrowUp, ArrowDown, Palette, PaintBucket, Menu }),
+    ToolPropertiesComponent, ColorSwatchPanelComponent, CustomColorPopoverComponent, TextureLibraryPanelComponent, AssetLibraryPanelComponent
+  ],
   templateUrl: './canvas-editor.component.html',
   styleUrls: ['./canvas-editor.component.scss']
 })

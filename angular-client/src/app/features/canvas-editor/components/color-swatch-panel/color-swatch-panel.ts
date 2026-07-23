@@ -4,6 +4,8 @@ import { FormsModule } from '@angular/forms';
 import { ColorStudioService, StudioColor } from '../../../../services/color-studio';
 import { OpenColor } from '../../../../data/open-color';
 
+import { LucideAngularModule, Star } from '@lucide/angular';
+
 @Pipe({
   name: 'selectHue',
   standalone: true
@@ -18,7 +20,7 @@ export class SelectHuePipe implements PipeTransform {
 @Component({
   selector: 'app-color-swatch-panel',
   standalone: true,
-  imports: [CommonModule, FormsModule, TitleCasePipe, SelectHuePipe],
+  imports: [CommonModule, FormsModule, TitleCasePipe, SelectHuePipe, LucideAngularModule.pick({ Star })],
   templateUrl: './color-swatch-panel.html',
   styleUrls: ['./color-swatch-panel.scss']
 })

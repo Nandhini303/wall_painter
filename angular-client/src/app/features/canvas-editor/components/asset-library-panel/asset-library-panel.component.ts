@@ -6,10 +6,12 @@ import { UploadService, UploadProgress } from '../../../../services/upload.servi
 import { ToastService } from '../../../../services/toast.service';
 import { SocketService } from '../../../../services/socket.service';
 
+import { LucideAngularModule, Image, ChevronDown, ChevronUp, UploadCloud, Copy, Trash2 } from '@lucide/angular';
+
 @Component({
   selector: 'app-asset-library-panel',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, LucideAngularModule.pick({ Image, ChevronDown, ChevronUp, UploadCloud, Copy, Trash2 })],
   templateUrl: './asset-library-panel.html',
   styleUrls: ['./asset-library-panel.scss']
 })

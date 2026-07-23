@@ -1,11 +1,12 @@
 <div class="panel-container" [class.expanded]="isExpanded()">
   <div class="panel-header" (click)="isExpanded.set(!isExpanded())">
     <div class="panel-title">
-      <span class="icon">🖼️</span>
+      <lucide-icon name="image" [size]="16" [strokeWidth]="2" class="icon"></lucide-icon>
       <h3>Asset Library</h3>
     </div>
     <button class="toggle-btn">
-      <span class="icon">{{ isExpanded() ? '▼' : '▲' }}</span>
+      @if (isExpanded()) { <lucide-icon name="chevron-down" [size]="16"></lucide-icon> }
+      @else { <lucide-icon name="chevron-up" [size]="16"></lucide-icon> }
     </button>
   </div>
 
@@ -24,7 +25,7 @@
             </div>
           </div>
         } @else {
-          <span class="icon">📤</span>
+          <lucide-icon name="upload-cloud" [size]="24" class="icon"></lucide-icon>
           <span>Drag & Drop or Click</span>
         }
         <input #fileInput type="file" accept="image/png, image/jpeg, image/webp, image/svg+xml" style="display: none" (change)="onFileSelected($event)">
@@ -47,8 +48,8 @@
             <div class="asset-tile" draggable="true" (dragstart)="onDragStartAsset($event, asset)" [title]="asset.name">
               <div class="asset-thumb" [style.background-image]="'url(' + (asset.thumbnailUrl || asset.secureUrl) + ')'"></div>
               <div class="asset-overlay">
-                <button (click)="copyUrl(asset.secureUrl, $event)" title="Copy URL">📋</button>
-                <button (click)="deleteAsset(asset.publicId, $event)" class="danger" title="Delete">🗑️</button>
+                <button (click)="copyUrl(asset.secureUrl, $event)" title="Copy URL"><lucide-icon name="copy" [size]="14"></lucide-icon></button>
+                <button (click)="deleteAsset(asset.publicId, $event)" class="danger" title="Delete"><lucide-icon name="trash-2" [size]="14"></lucide-icon></button>
               </div>
             </div>
           }

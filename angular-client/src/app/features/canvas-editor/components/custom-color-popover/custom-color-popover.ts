@@ -3,10 +3,12 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ColorStudioService } from '../../../../services/color-studio';
 
+import { LucideAngularModule, Pipette } from '@lucide/angular';
+
 @Component({
   selector: 'app-custom-color-popover',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, LucideAngularModule.pick({ Pipette })],
   templateUrl: './custom-color-popover.html',
   styleUrls: ['./custom-color-popover.scss']
 })
