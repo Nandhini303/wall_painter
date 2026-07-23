@@ -22,11 +22,14 @@ export type AdminSection =
   | 'projects'
   | 'templates'
   | 'storage'
+  | 'collections'
   | 'colorLibrary'
+  | 'customColors'
   | 'textures'
   | 'brushes'
   | 'aiModels'
   | 'auditLogs'
+  | 'systemHealth'
   | 'notifications'
   | 'apiKeys'
   | 'billing'
@@ -242,8 +245,11 @@ export class AdminComponent implements OnInit {
 
   // --- Computed Breadcrumb ---
   breadcrumbLabel = computed(() => {
-    const item = this.navItems.find(n => n.id === this.activeSection());
-    return item ? item.label : 'Overview';
+    for (const group of this.navGroups) {
+      const item = group.items.find(n => n.id === this.activeSection());
+      if (item) return item.label;
+    }
+    return 'Overview';
   });
 
   // --- Computed Search Filters ---
