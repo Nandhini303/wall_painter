@@ -65,13 +65,13 @@ export class AuthController {
 
   async googleLogin(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const { email, firstName, lastName } = req.body;
-      if (!email) {
-        res.status(400).json({ error: 'Email address is required for Google Sign-In.' });
+      const { email, credential, firstName, lastName } = req.body;
+      if (!email && !credential) {
+        res.status(400).json({ error: 'Email address or Google ID token is required.' });
         return;
       }
 
-      const { token, user } = await authService.googleLogin({ email, firstName, lastName });
+      const { token, user } = await authService.googleLogin({ email, credential, firstName, lastName });
       const clientIp = req.ip || 'unknown';
       await adminService.logAction(user._id?.toString() || 'unknown', 'GOOGLE_LOGIN', clientIp, `User logged in via Google email=${user.email}`);
 

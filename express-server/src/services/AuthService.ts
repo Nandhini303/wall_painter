@@ -86,8 +86,32 @@ export class AuthService {
     return { token, user: userObj as any };
   }
 
-  async googleLogin(payload: { email: string; firstName?: string; lastName?: string }): Promise<{ token: string; user: any }> {
-    const email = payload.email.toLowerCase();
+  async googleLogin(payload: { email?: string; credential?: string; firstName?: string; lastName?: string }): Promise<{ token: string; user: any }> {
+    let email = payload.email?.toLowerCase();
+    let firstName = payload.firstName;
+    let lastName = payload.lastName;
+
+    // Verify Google ID Token directly with Google OAuth API if provided
+    if (payload.credential) {
+      try {
+        const response = await fetch(`https://oauth2.googleapis.com/tokeninfo?id_token=${payload.credential}`);
+        if (response.ok) {
+          const googleUserData: any = await response.json();
+          if (googleUserData && googleUserData.email) {
+            email = googleUserData.email.toLowerCase();
+            firstName = googleUserData.given_name || googleUserData.name?.split(' ')[0] || firstName;
+            lastName = googleUserData.family_name || googleUserData.name?.split(' ')[1] || lastName;
+          }
+        }
+      } catch (e) {
+        console.error('Google token verification fallback:', e);
+      }
+    }
+
+    if (!email) {
+      throw new Error('Valid Google email address is required.');
+    }
+
     let user: any = null;
 
     try {
@@ -105,8 +129,8 @@ export class AuthService {
         user = await userRepo.create({
           email,
           passwordHash,
-          firstName: payload.firstName || email.split('@')[0] || 'GoogleUser',
-          lastName: payload.lastName || 'User',
+          firstName: firstName || email.split('@')[0] || 'GoogleUser',
+          lastName: lastName || 'User',
           role: email.includes('admin') ? 'Admin' : 'User',
           isVerified: true
         });
@@ -115,8 +139,8 @@ export class AuthService {
         user = {
           _id: new mongoose.Types.ObjectId().toString(),
           email,
-          firstName: payload.firstName || 'GoogleUser',
-          lastName: payload.lastName || 'User',
+          firstName: firstName || 'GoogleUser',
+          lastName: lastName || 'User',
           role: email.includes('admin') ? 'Admin' : 'User',
           isVerified: true
         };

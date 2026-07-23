@@ -46,7 +46,7 @@ export class AuthService {
     );
   }
 
-  loginWithGoogle(payload: { email: string; firstName?: string; lastName?: string }): Observable<any> {
+  loginWithGoogle(payload: { email?: string; credential?: string; firstName?: string; lastName?: string }): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/google`, payload).pipe(
       tap(res => {
         if (res.token && res.user) {

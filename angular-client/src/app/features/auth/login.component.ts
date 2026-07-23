@@ -1,8 +1,10 @@
-import { Component, signal } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule, ActivatedRoute } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
+
+declare const google: any;
 
 @Component({
   selector: 'app-login',
@@ -11,7 +13,7 @@ import { AuthService } from '../../services/auth.service';
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss']
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit {
   email = '';
   password = '';
   showPassword = signal(false);
@@ -19,10 +21,69 @@ export class LoginComponent {
   errorMessage = signal<string | null>(null);
   isLoading = signal(false);
 
-  constructor(private authService: AuthService, private router: Router, private route: ActivatedRoute) {}
+  private readonly GOOGLE_CLIENT_ID = '609241189909-qin8vc0oeacsg51tb0re7jad69o9re1j.apps.googleusercontent.com';
+
+  constructor(
+    private authService: AuthService,
+    private router: Router,
+    private route: ActivatedRoute
+  ) {}
+
+  ngOnInit(): void {
+    this.initGoogleIdentity();
+  }
+
+  private initGoogleIdentity(): void {
+    if (typeof window !== 'undefined') {
+      const scriptId = 'google-jssdk';
+      if (!document.getElementById(scriptId)) {
+        const script = document.createElement('script');
+        script.id = scriptId;
+        script.src = 'https://accounts.google.com/gsi/client';
+        script.async = true;
+        script.defer = true;
+        script.onload = () => this.setupGoogleButton();
+        document.head.appendChild(script);
+      } else {
+        this.setupGoogleButton();
+      }
+    }
+  }
+
+  private setupGoogleButton(): void {
+    if (typeof google !== 'undefined' && google.accounts) {
+      google.accounts.id.initialize({
+        client_id: this.GOOGLE_CLIENT_ID,
+        callback: (response: any) => this.handleGoogleCredential(response)
+      });
+    }
+  }
+
+  private handleGoogleCredential(response: any): void {
+    if (response && response.credential) {
+      this.isLoading.set(true);
+      this.errorMessage.set(null);
+
+      this.authService.loginWithGoogle({ credential: response.credential }).subscribe({
+        next: () => {
+          this.isLoading.set(false);
+          if (this.authService.isAdmin()) {
+            this.router.navigate(['/admin']);
+          } else {
+            const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/dashboard';
+            this.router.navigateByUrl(returnUrl);
+          }
+        },
+        error: (err) => {
+          this.isLoading.set(false);
+          this.errorMessage.set(err.error?.error || 'Google ID token authentication failed.');
+        }
+      });
+    }
+  }
 
   onSubmit(): void {
-    if (this.isLoading()) return; // Guard duplicate submissions
+    if (this.isLoading()) return;
 
     if (!this.email || !this.password) {
       this.errorMessage.set('Please fill out all fields.');
@@ -49,7 +110,7 @@ export class LoginComponent {
         } else if (err.status === 400) {
           this.errorMessage.set(err.error?.error || 'Invalid request parameters.');
         } else if (err.status === 500) {
-          this.errorMessage.set(err.error?.error || 'Database service unavailable. Please replace <db_password> in .env.');
+          this.errorMessage.set(err.error?.error || 'Database service unavailable.');
         } else if (err.status === 0) {
           this.errorMessage.set('Network connection error. Please ensure the backend server is running on port 5000.');
         } else {
@@ -62,35 +123,21 @@ export class LoginComponent {
   onGoogleLogin(): void {
     if (this.isLoading()) return;
 
-    const userEmail = prompt('Enter your Google Account email to sign in:', 'user@gmail.com');
-    if (!userEmail || !userEmail.trim()) {
-      return;
-    }
-
-    const emailClean = userEmail.trim();
-    if (!emailClean.includes('@')) {
-      this.errorMessage.set('Please enter a valid Google email address.');
-      return;
-    }
-
-    this.isLoading.set(true);
-    this.errorMessage.set(null);
-
-    const firstName = emailClean.split('@')[0];
-    this.authService.loginWithGoogle({ email: emailClean, firstName }).subscribe({
-      next: () => {
-        this.isLoading.set(false);
-        if (this.authService.isAdmin()) {
-          this.router.navigate(['/admin']);
-        } else {
-          const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/dashboard';
-          this.router.navigateByUrl(returnUrl);
+    if (typeof google !== 'undefined' && google.accounts && google.accounts.id) {
+      google.accounts.id.prompt((notification: any) => {
+        if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
+          this.triggerGoogleOAuthRedirect();
         }
-      },
-      error: (err) => {
-        this.isLoading.set(false);
-        this.errorMessage.set(err.error?.error || 'Google Authentication failed.');
-      }
-    });
+      });
+    } else {
+      this.triggerGoogleOAuthRedirect();
+    }
+  }
+
+  private triggerGoogleOAuthRedirect(): void {
+    const redirectUri = encodeURIComponent(window.location.origin + '/auth/callback');
+    const scope = encodeURIComponent('email profile');
+    const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${this.GOOGLE_CLIENT_ID}&redirect_uri=${redirectUri}&response_type=token&scope=${scope}`;
+    window.location.href = authUrl;
   }
 }
