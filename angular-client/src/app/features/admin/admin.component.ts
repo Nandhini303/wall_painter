@@ -198,6 +198,42 @@ export class AdminComponent implements OnInit {
     { id: 't5', name: 'Exterior Facade', category: 'Exterior', status: 'Published', usageCount: 89, imageUri: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=400&q=80', tags: ['exterior', 'facade'], description: 'Exterior building facade' }
   ]);
 
+  // --- API Keys ---
+  apiKeys = signal([
+    { id: 'k1', name: 'Production Web App', key: 'pk_live_83921...4920', created: '2026-06-12', status: 'Active' },
+    { id: 'k2', name: 'Staging Inpainting Worker', key: 'pk_test_10492...8831', created: '2026-07-01', status: 'Active' },
+    { id: 'k3', name: 'Mobile App SDK Token', key: 'pk_live_99201...2214', created: '2026-07-15', status: 'Active' }
+  ]);
+
+  // --- AI Models ---
+  aiModels = signal([
+    { name: 'Segment Anything 2 (SAM 2.1)', status: 'Operational', latency: '42ms', gpu: 'NVIDIA A10G (8 GPUs)', workerCount: 8, memory: '16.4 GB / 24 GB' },
+    { name: 'Grounded-SAM Wall Detection', status: 'Operational', latency: '68ms', gpu: 'NVIDIA T4 (4 GPUs)', workerCount: 4, memory: '9.2 GB / 16 GB' },
+    { name: 'OpenCV Contour & Edge Refinement', status: 'Operational', latency: '12ms', gpu: 'CPU Cluster (16 Cores)', workerCount: 16, memory: '4.1 GB / 32 GB' }
+  ]);
+
+  // --- Billing & Invoices ---
+  billingInvoices = signal([
+    { id: 'INV-2026-007', date: 'Jul 01, 2026', amount: '$499.00', status: 'Paid', plan: 'Enterprise Pro Plan (Annual)' },
+    { id: 'INV-2026-006', date: 'Jun 01, 2026', amount: '$499.00', status: 'Paid', plan: 'Enterprise Pro Plan (Annual)' },
+    { id: 'INV-2026-005', date: 'May 01, 2026', amount: '$499.00', status: 'Paid', plan: 'Enterprise Pro Plan (Annual)' }
+  ]);
+
+  // --- Roles Matrix ---
+  rolesList = signal([
+    { name: 'Super Admin', membersCount: 3, description: 'Full root access to system settings, billing, and user roles' },
+    { name: 'Workspace Admin', membersCount: 12, description: 'Can manage workspace projects, templates, and team invites' },
+    { name: 'Color Specialist', membersCount: 8, description: 'Can curate paint swatches, texture libraries, and brand palettes' },
+    { name: 'Member', membersCount: 142, description: 'Can create canvas visualization projects and export masks' }
+  ]);
+
+  // --- Notifications Hub ---
+  notificationsList = signal([
+    { id: 'n1', title: 'New Enterprise Plan Subscribed', message: 'Acme Design Co upgraded to Enterprise Pro Plan.', time: '10 mins ago', type: 'billing' },
+    { id: 'n2', title: 'AI Model Worker Latency Alert', message: 'SAM 2 worker pool latency briefly touched 85ms.', time: '1 hour ago', type: 'system' },
+    { id: 'n3', title: 'New Custom Texture Approved', message: 'High Gloss Plaster texture published to gallery.', time: '3 hours ago', type: 'content' }
+  ]);
+
   // --- Brush Presets ---
   brushPresets = signal<BrushPreset[]>([
     { id: 'b1', name: 'Soft Round', type: 'Round', defaultSize: 24, defaultHardness: 50, defaultOpacity: 100 },
