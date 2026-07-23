@@ -1,143 +1,154 @@
-<div class="app-layout with-sidebar">
-  <!-- Global Command Palette (Ctrl + K) -->
-  <app-command-palette></app-command-palette>
-
-  <!-- Global Confirm Glassmorphic Dialog -->
-  <app-confirm-dialog></app-confirm-dialog>
-
+<div class="app-layout with-sidebar" [class.dark-mode]="activeTheme() === 'dark'">
   <!-- Toast Notification Stack -->
   <div class="toast-stack">
     @for (toast of toastService.toasts(); track toast.id) {
       <div class="toast-item" [class]="toast.type">
-        <span class="toast-icon">
-          @if (toast.type === 'success') { ✓ }
-          @else if (toast.type === 'error') { ✕ }
-          @else { ℹ }
-        </span>
+        <app-icon [name]="toast.type === 'success' ? 'check' : toast.type === 'error' ? 'warning' : 'info'" [size]="16"></app-icon>
         <span class="toast-text">{{ toast.message }}</span>
         <button (click)="toastService.remove(toast.id)" class="toast-close">&times;</button>
       </div>
     }
   </div>
 
-  <!-- Left Sidebar (Excel Home Dark Green / Office Style Sidebar) -->
+  <!-- Left Sidebar Navigation Shell -->
   <aside class="app-sidebar">
     <div class="sidebar-brand" (click)="toggleWorkspaceDropdown()">
       <div class="brand-logo">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-          <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
-        </svg>
+        <app-icon name="palette" [size]="20" color="#ffffff"></app-icon>
       </div>
       <div class="brand-info">
         <span class="brand-name">Wall Painter</span>
-        <span class="workspace-label">{{ workspaceService.activeWorkspace().name }} ▾</span>
+        <span class="workspace-label">{{ workspaceService.activeWorkspace().name }} • {{ workspaceService.activeWorkspace().type }} ▾</span>
       </div>
     </div>
 
-    <!-- Workspace Selector Dropdown -->
-    @if (showWorkspaceDropdown()) {
-      <div class="sidebar-workspace-menu">
-        <div class="menu-label">Workspaces</div>
-        @for (ws of workspaceService.workspaces(); track ws.id) {
-          <button (click)="selectWorkspace(ws.id)" class="ws-item" [class.active]="ws.id === workspaceService.activeWorkspace().id">
-            <span class="ws-dot" [style.background]="ws.color"></span>
-            <span class="ws-name">{{ ws.name }}</span>
-          </button>
-        }
-        <button (click)="openCreateWorkspaceModal()" class="ws-item add-ws">
-          <span>+ Create Workspace</span>
-        </button>
-      </div>
-    }
-
-    <!-- Main Sidebar Navigation -->
+    <!-- Sidebar Navigation Menu -->
     <nav class="sidebar-nav">
-      <div class="nav-section top-navs">
-        <a class="nav-item active" routerLink="/dashboard">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-          <span>Home</span>
+      <div class="nav-section">
+        <a (click)="activeTab.set('dashboard')" [class.active]="activeTab() === 'dashboard'" class="nav-item">
+          <app-icon name="dashboard" [size]="18"></app-icon>
+          <span>Dashboard</span>
         </a>
-        <a class="nav-item" (click)="setFilter('all')">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+
+        <a (click)="activeTab.set('projects')" [class.active]="activeTab() === 'projects'" class="nav-item">
+          <app-icon name="folder" [size]="18"></app-icon>
           <span>Projects</span>
-          <span class="nav-count">{{ projects().length }}</span>
+          <span class="nav-count">{{ totalCount() }}</span>
         </a>
-        <a class="nav-item" (click)="openCreateModal()">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 17 22 12"/></svg>
+
+        <a (click)="activeTab.set('templates')" [class.active]="activeTab() === 'templates'" class="nav-item">
+          <app-icon name="layout-grid" [size]="18"></app-icon>
           <span>Templates</span>
         </a>
-        <a class="nav-item" (click)="toastService.info('Settings panel active')">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-          <span>Settings</span>
+
+        <a [routerLink]="['/canvas', 'new']" class="nav-item ai-highlight">
+          <app-icon name="wand" [size]="18"></app-icon>
+          <span>AI Wall Selector</span>
+          <span class="nav-badge">SAM</span>
+        </a>
+
+        <a (click)="activeTab.set('paint-library')" [class.active]="activeTab() === 'paint-library'" class="nav-item">
+          <app-icon name="palette" [size]="18"></app-icon>
+          <span>Paint Library</span>
+        </a>
+
+        <a (click)="activeTab.set('uploads')" [class.active]="activeTab() === 'uploads'" class="nav-item">
+          <app-icon name="upload-cloud" [size]="18"></app-icon>
+          <span>Uploads</span>
+        </a>
+
+        <a (click)="activeTab.set('favorites')" [class.active]="activeTab() === 'favorites'" class="nav-item">
+          <app-icon name="heart" [size]="18"></app-icon>
+          <span>Favorites</span>
+          <span class="nav-count">{{ favoritesCount() }}</span>
+        </a>
+
+        <a (click)="activeTab.set('team')" [class.active]="activeTab() === 'team'" class="nav-item">
+          <app-icon name="users" [size]="18"></app-icon>
+          <span>Team Workspace</span>
+        </a>
+
+        <a (click)="activeTab.set('notifications')" [class.active]="activeTab() === 'notifications'" class="nav-item">
+          <app-icon name="bell" [size]="18"></app-icon>
+          <span>Notifications</span>
         </a>
       </div>
 
       <div class="nav-section bottom-navs">
-        <a class="nav-item" (click)="showUserMenu.set(!showUserMenu())">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-          <span>Account</span>
+        <a (click)="activeTab.set('account')" [class.active]="activeTab() === 'account'" class="nav-item">
+          <app-icon name="user" [size]="18"></app-icon>
+          <span>Account Profile</span>
         </a>
-        <a class="nav-item" (click)="toastService.info('Options menu active')">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>
-          <span>Options</span>
+
+        <a (click)="activeTab.set('settings')" [class.active]="activeTab() === 'settings'" class="nav-item">
+          <app-icon name="settings" [size]="18"></app-icon>
+          <span>Settings Studio</span>
         </a>
+
+        <a (click)="activeTab.set('help')" [class.active]="activeTab() === 'help'" class="nav-item">
+          <app-icon name="help-circle" [size]="18"></app-icon>
+          <span>Help & Support</span>
+        </a>
+
+        <!-- Theme Toggle -->
+        <button (click)="activeTheme.set(activeTheme() === 'light' ? 'dark' : 'light')" class="nav-item theme-toggle-btn">
+          <app-icon [name]="activeTheme() === 'light' ? 'moon' : 'sun'" [size]="18"></app-icon>
+          <span>{{ activeTheme() === 'light' ? 'Dark Mode' : 'Light Mode' }}</span>
+        </button>
       </div>
     </nav>
   </aside>
 
-  <!-- Main Wrapper -->
+  <!-- Main Viewport Wrapper -->
   <div class="main-wrapper">
-    <!-- Excel Home Top Header -->
+    <!-- Top Ribbon Navbar Header -->
     <header class="top-navbar">
-      <div class="navbar-left">
-        <div class="greeting-box">
-          <h2>{{ greeting() }}, {{ authService.currentUser()?.firstName || 'User' }}</h2>
-          <span class="sub-greeting">Smart Wall Paint Visualizer Enterprise Studio</span>
-        </div>
+      <div class="greeting-box">
+        <h2>{{ greeting() }}, {{ userName() }} 👋</h2>
+        <span class="sub-greeting">Enterprise Paint Visualizer Studio • {{ totalCount() }} Projects</span>
       </div>
 
       <div class="navbar-right">
-        <!-- Excel Style Search Box -->
-        <div class="search-box" (click)="paletteService.open()" title="Search commands or projects (Ctrl+K)">
-          <span class="search-icon">🔍</span>
-          <input 
-            type="text" 
-            placeholder="Search for a project..." 
-            [ngModel]="searchQuery()" 
-            (ngModelChange)="searchQuery.set($event)"
-          />
+        <!-- Search Input -->
+        <div class="search-box" (click)="paletteService.open()">
+          <app-icon name="search" [size]="16"></app-icon>
+          <input type="text" placeholder="Search projects or tools..." readonly />
           <span class="ctrl-k-badge">Ctrl K</span>
         </div>
 
-        <!-- Action Header Buttons -->
         <button (click)="openCreateModal()" class="btn-primary-action">
-          <span>+</span> New Project
+          <app-icon name="plus" [size]="16" color="#ffffff"></app-icon> New Project
         </button>
 
-        <button (click)="deleteAllProjects()" class="btn-danger-action" title="Delete All Projects">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
-          Delete All
+        <button (click)="deleteAllProjects()" class="btn-danger-action">
+          <app-icon name="trash" [size]="16" color="#ffffff"></app-icon> Delete All
         </button>
 
-        <!-- User Profile Dropdown -->
-        <div class="relative">
+        <!-- User Dropdown Menu -->
+        <div class="user-avatar-wrapper">
           <button (click)="showUserMenu.set(!showUserMenu())" class="user-avatar-btn">
-            <div class="avatar-circle">{{ authService.currentUser()?.firstName?.charAt(0) || 'U' }}</div>
+            <div class="avatar-circle">{{ userInitial() }}</div>
           </button>
 
           @if (showUserMenu()) {
             <div class="dropdown-panel user-dropdown">
               <div class="user-dropdown-header">
-                <div class="header-avatar">{{ authService.currentUser()?.firstName?.charAt(0) || 'U' }}</div>
+                <div class="header-avatar">{{ userInitial() }}</div>
                 <div class="header-details">
-                  <p class="name">{{ authService.currentUser()?.firstName }} {{ authService.currentUser()?.lastName }}</p>
+                  <p class="name">{{ userName() }}</p>
                   <p class="email">{{ authService.currentUser()?.email }}</p>
                 </div>
               </div>
               <div class="dropdown-divider"></div>
-              <button (click)="logout()" class="dropdown-item logout-item">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
-                <span>Log Out</span>
+              <button (click)="activeTab.set('account'); showUserMenu.set(false)" class="dropdown-item">
+                <app-icon name="user" [size]="16"></app-icon> My Profile
+              </button>
+              <button (click)="activeTab.set('settings'); showUserMenu.set(false)" class="dropdown-item">
+                <app-icon name="settings" [size]="16"></app-icon> Settings
+              </button>
+              <div class="dropdown-divider"></div>
+              <button (click)="logout()" class="dropdown-item text-danger">
+                <app-icon name="log-out" [size]="16"></app-icon> Log Out
               </button>
             </div>
           }
@@ -145,193 +156,368 @@
       </div>
     </header>
 
-    <!-- Content Body -->
+    <!-- Content Body View Switcher -->
     <main class="content-body">
-      <!-- Excel Home "New" Templates Rail -->
-      <section class="templates-rail">
-        <div class="rail-header">
-          New Project Templates
-        </div>
-        <div class="templates-grid">
-          <div class="template-card blank" (click)="openCreateModal()">
-            <div class="card-icon">+</div>
-            <span class="template-title">Blank Canvas</span>
-          </div>
+      <!-- 1. HOME DASHBOARD TAB -->
+      @if (activeTab() === 'dashboard') {
+        <!-- Redesigned Lucide Drag & Drop Upload Zone -->
+        <div class="dropzone-banner" 
+             (dragover)="onDragOver($event)" 
+             (dragleave)="onDragLeave($event)" 
+             (drop)="onDrop($event)"
+             [class.drag-over]="isDragOver()">
+          <div class="dropzone-content">
+            <div class="upload-icon-circle">
+              <app-icon name="upload-cloud" [size]="32" color="#107c41"></app-icon>
+            </div>
+            <h3>Drag & Drop room photos or paste image (Ctrl+V)</h3>
+            <p>Upload high-res PNG, JPG, or WEBP room photos up to 10MB to segment and paint walls.</p>
+            
+            <div class="upload-actions">
+              <label class="btn-primary-action browse-label">
+                <app-icon name="plus" [size]="16"></app-icon> Browse Files
+                <input type="file" (change)="onFileSelected($event); createProject()" accept="image/*" class="hidden-file-input" />
+              </label>
+            </div>
 
-          <div class="template-card" (click)="openCreateModal()">
-            <img src="https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=400&q=80" alt="Living Room" (error)="onThumbnailError($event)" />
-            <span class="template-title">Living Room</span>
+            @if (uploadProgress() > 0) {
+              <div class="upload-progress-bar">
+                <div class="progress-fill" [style.width.%]="uploadProgress()"></div>
+              </div>
+            }
           </div>
-
-          <div class="template-card" (click)="openCreateModal()">
-            <img src="https://images.unsplash.com/photo-1540518614846-7ede433c517a?auto=format&fit=crop&w=400&q=80" alt="Bedroom" (error)="onThumbnailError($event)" />
-            <span class="template-title">Modern Bedroom</span>
-          </div>
-
-          <div class="template-card" (click)="openCreateModal()">
-            <img src="https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=400&q=80" alt="Kitchen" (error)="onThumbnailError($event)" />
-            <span class="template-title">Minimal Kitchen</span>
-          </div>
-        </div>
-      </section>
-
-      <!-- Desktop Drag & Drop Upload Banner -->
-      <section 
-        class="dropzone-banner" 
-        [class.drag-over]="isDragOver()"
-        (dragover)="onDragOver($event)"
-        (dragleave)="onDragLeave($event)"
-        (drop)="onDrop($event)"
-      >
-        <div class="dropzone-content">
-          <div class="drop-icon">📤</div>
-          <div class="drop-text">
-            <h3>Drag & Drop room images from desktop to create a project</h3>
-            <p>Supports PNG, JPG, and WEBP formats</p>
-          </div>
-          <button (click)="openCreateModal()" class="browse-btn">Or Browse Files</button>
         </div>
 
-        @if (uploadProgress() > 0) {
-          <div class="upload-progress-bar">
-            <div class="progress-fill" [style.width.%]="uploadProgress()"></div>
+        <!-- Quick Templates Rail -->
+        <div class="templates-rail">
+          <div class="rail-header">
+            <span>Quick Start Templates</span>
           </div>
-        }
-      </section>
+          <div class="templates-grid">
+            <div (click)="openCreateModal()" class="template-card blank">
+              <div class="card-icon">+</div>
+              <span class="template-title">Blank Canvas</span>
+            </div>
+            <div (click)="openCreateModal()" class="template-card">
+              <img src="https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=400&q=80" alt="Living Room" />
+              <span class="template-title">Cozy Living Room</span>
+            </div>
+            <div (click)="openCreateModal()" class="template-card">
+              <img src="https://images.unsplash.com/photo-1540518614846-7ede433c517a?auto=format&fit=crop&w=400&q=80" alt="Bedroom" />
+              <span class="template-title">Modern Bedroom</span>
+            </div>
+            <div (click)="openCreateModal()" class="template-card">
+              <img src="https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=400&q=80" alt="Kitchen" />
+              <span class="template-title">Minimalist Kitchen</span>
+            </div>
+          </div>
+        </div>
 
-      <!-- Projects Section -->
-      <section class="projects-section">
-        <div class="section-toolbar">
-          <div class="toolbar-left">
-            <!-- Tabs -->
+        <!-- Projects Grid Section -->
+        <div class="projects-section">
+          <div class="section-toolbar">
             <div class="filter-tabs">
-              <button 
-                (click)="setFilter('all')" 
-                [class.active]="activeFilter() === 'all'" 
-                class="tab-btn"
-              >
-                Recent
-              </button>
+              <button (click)="setFilter('all')" [class.active]="activeFilter() === 'all'" class="tab-btn">All Projects ({{ totalCount() }})</button>
+              <button (click)="setFilter('favorites')" [class.active]="activeFilter() === 'favorites'" class="tab-btn">Favorites ({{ favoritesCount() }})</button>
+              <button (click)="setFilter('recent')" [class.active]="activeFilter() === 'recent'" class="tab-btn">Recently Edited</button>
+            </div>
 
-              <button 
-                (click)="setFilter('favorites')" 
-                [class.active]="activeFilter() === 'favorites'" 
-                class="tab-btn"
-              >
-                Favorites ({{ favoritesCount() }})
-              </button>
+            <div class="toolbar-right">
+              <div class="sort-selector">
+                <label>Sort:</label>
+                <select [ngModel]="sortBy()" (ngModelChange)="sortBy.set($event)">
+                  <option value="newest">Newest First</option>
+                  <option value="oldest">Oldest First</option>
+                  <option value="name">Project Name</option>
+                </select>
+              </div>
 
-              <button 
-                (click)="setFilter('recent')" 
-                [class.active]="activeFilter() === 'recent'" 
-                class="tab-btn"
-              >
-                Shared with Me
-              </button>
+              <div class="view-toggle">
+                <button (click)="setViewMode('grid')" [class.active]="viewMode() === 'grid'" class="view-btn"><app-icon name="layout-grid" [size]="16"></app-icon></button>
+                <button (click)="setViewMode('list')" [class.active]="viewMode() === 'list'" class="view-btn"><app-icon name="list" [size]="16"></app-icon></button>
+              </div>
             </div>
           </div>
 
-          <div class="toolbar-right">
-            <div class="sort-selector">
-              <label for="sortSelect">Sort:</label>
-              <select id="sortSelect" [ngModel]="sortBy()" (ngModelChange)="sortBy.set($event)">
-                <option value="newest">Newest First</option>
-                <option value="oldest">Oldest First</option>
-                <option value="name">Name (A-Z)</option>
-              </select>
+          <!-- Grid Display -->
+          @if (isLoading()) {
+            <div class="loading-skeleton-grid">
+              <div class="skeleton-card"></div>
+              <div class="skeleton-card"></div>
+              <div class="skeleton-card"></div>
             </div>
-
-            <div class="view-toggle">
-              <button 
-                (click)="setViewMode('grid')" 
-                [class.active]="viewMode() === 'grid'" 
-                class="view-btn" 
-                title="Grid View"
-              >
-                ⊞
-              </button>
-              <button 
-                (click)="setViewMode('list')" 
-                [class.active]="viewMode() === 'list'" 
-                class="view-btn" 
-                title="List View"
-              >
-                ☰
-              </button>
+          } @else if (filteredProjects().length === 0) {
+            <div class="empty-state">
+              <app-icon name="folder" [size]="48" color="#9ca3af"></app-icon>
+              <h3>No projects found</h3>
+              <p>Start a new project or upload a room photo to visualize wall colors.</p>
+              <button (click)="openCreateModal()" class="btn-primary-action margin-top">Create Project</button>
             </div>
+          } @else {
+            <div class="projects-grid" [class.list-view]="viewMode() === 'list'">
+              @for (proj of filteredProjects(); track proj._id) {
+                <div [routerLink]="['/canvas', proj._id]" class="project-card">
+                  <div class="card-thumbnail">
+                    <img [src]="proj.originalImageUri || fallbackImage" (error)="onThumbnailError($event)" [alt]="proj.name" />
+                    <button (click)="toggleFavorite(proj._id, $event)" [class.is-fav]="favoritesSet().has(proj._id)" class="fav-star-btn">
+                      <app-icon name="star" [size]="14"></app-icon>
+                    </button>
+                    <span class="status-badge">{{ proj.status === 'published' ? 'Published' : 'Draft' }}</span>
+                  </div>
 
-            <button (click)="deleteAllProjects()" class="btn-danger-outline" title="Delete All Projects">
-              Delete All
-            </button>
-          </div>
-        </div>
+                  <div class="card-info">
+                    @if (editingProjectId() === proj._id) {
+                      <div class="rename-inline-box" (click)="$event.stopPropagation()">
+                        <input type="text" [(ngModel)]="editingName" class="rename-input" />
+                        <button (click)="saveRename(proj._id, $event)" class="btn-save-sm">Save</button>
+                        <button (click)="cancelRename($event)" class="btn-cancel-sm">X</button>
+                      </div>
+                    } @else {
+                      <h4 class="card-title">{{ proj.name }}</h4>
+                    }
 
-        <!-- Skeleton Loading Shimmer State -->
-        @if (isLoading()) {
-          <div class="projects-grid" [class.list-view]="viewMode() === 'list'">
-            <div class="skeleton-card skeleton-box"></div>
-            <div class="skeleton-card skeleton-box"></div>
-            <div class="skeleton-card skeleton-box"></div>
-          </div>
-        } 
-        <!-- Projects Grid / List View -->
-        @else if (filteredProjects().length === 0) {
-          <!-- Empty State -->
-          <div class="empty-state">
-            <div class="empty-icon">📁</div>
-            <h3>No projects available</h3>
-            <p>Start a new project or select a template above to visualize wall paints.</p>
-            <button (click)="openCreateModal()" class="btn-primary-action mt-4">+ Create First Project</button>
-          </div>
-        } 
-        @else {
-          <div class="projects-grid" [class.list-view]="viewMode() === 'list'">
-            @for (project of filteredProjects(); track project._id) {
-              <div 
-                [routerLink]="['/canvas', project._id]" 
-                class="project-card"
-              >
-                <!-- Card Thumbnail -->
-                <div class="card-thumbnail">
-                  <img [src]="project.originalImageUri || fallbackImage" [alt]="project.name" (error)="onThumbnailError($event)" />
-                  <button 
-                    (click)="toggleFavorite(project._id, $event)" 
-                    class="fav-star-btn" 
-                    [class.is-fav]="favoritesSet().has(project._id)"
-                    title="Toggle Favorite"
-                  >
-                    ★
-                  </button>
-                  <span class="status-badge">Active</span>
-                </div>
-
-                <!-- Details Body -->
-                <div class="card-info">
-                  @if (editingProjectId() === project._id) {
-                    <div class="rename-box" (click)="$event.stopPropagation()">
-                      <input type="text" [(ngModel)]="editingName" (keyup.enter)="saveRename(project._id, $event)" />
-                      <button (click)="saveRename(project._id, $event)" class="save-rename-btn">✓</button>
-                      <button (click)="cancelRename($event)" class="cancel-rename-btn">✕</button>
-                    </div>
-                  } @else {
-                    <h3 class="card-title">{{ project.name }}</h3>
-                  }
-                  
-                  <div class="card-meta">
-                    <span class="meta-date">Modified {{ project.updatedAt | date:'shortDate' }}</span>
-                    
-                    <!-- Action Menu -->
-                    <div class="card-actions">
-                      <button (click)="startRename(project, $event)" class="action-icon-btn" title="Rename">✏️</button>
-                      <button (click)="deleteProject(project._id, $event)" class="action-icon-btn delete" title="Delete">🗑️</button>
+                    <div class="card-meta">
+                      <span class="meta-date">Edited {{ proj.updatedAt | date:'shortDate' }}</span>
+                      <div class="card-actions">
+                        <button (click)="startRename(proj, $event)" class="action-icon-btn" title="Rename"><app-icon name="copy" [size]="12"></app-icon></button>
+                        <button (click)="deleteProject(proj._id, $event)" class="action-icon-btn danger" title="Delete"><app-icon name="trash" [size]="12"></app-icon></button>
+                      </div>
                     </div>
                   </div>
+                </div>
+              }
+            </div>
+          }
+        </div>
+      }
+
+      <!-- 2. PROJECTS TAB -->
+      @else if (activeTab() === 'projects') {
+        <div class="tab-page-container">
+          <div class="page-header-row">
+            <h2>Projects Gallery</h2>
+            <button (click)="openCreateModal()" class="btn-primary-action">+ New Project</button>
+          </div>
+          <div class="projects-grid">
+            @for (proj of projects(); track proj._id) {
+              <div [routerLink]="['/canvas', proj._id]" class="project-card">
+                <div class="card-thumbnail">
+                  <img [src]="proj.originalImageUri || fallbackImage" (error)="onThumbnailError($event)" [alt]="proj.name" />
+                </div>
+                <div class="card-info">
+                  <h4 class="card-title">{{ proj.name }}</h4>
+                  <span class="meta-date">Edited {{ proj.updatedAt | date:'shortDate' }}</span>
                 </div>
               </div>
             }
           </div>
-        }
-      </section>
+        </div>
+      }
+
+      <!-- 3. TEMPLATES TAB -->
+      @else if (activeTab() === 'templates') {
+        <div class="tab-page-container">
+          <h2>Interior & Exterior Room Templates</h2>
+          <div class="templates-grid big">
+            <div (click)="openCreateModal()" class="template-card">
+              <img src="https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=600&q=80" alt="Living Room" />
+              <span class="template-title">Cozy Living Room</span>
+            </div>
+            <div (click)="openCreateModal()" class="template-card">
+              <img src="https://images.unsplash.com/photo-1540518614846-7ede433c517a?auto=format&fit=crop&w=600&q=80" alt="Bedroom" />
+              <span class="template-title">Modern Master Bedroom</span>
+            </div>
+            <div (click)="openCreateModal()" class="template-card">
+              <img src="https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=600&q=80" alt="Kitchen" />
+              <span class="template-title">Minimalist Open Kitchen</span>
+            </div>
+            <div (click)="openCreateModal()" class="template-card">
+              <img src="https://images.unsplash.com/photo-1524758631624-e2822e304c36?auto=format&fit=crop&w=600&q=80" alt="Office" />
+              <span class="template-title">Executive Office Suite</span>
+            </div>
+          </div>
+        </div>
+      }
+
+      <!-- 4. PAINT LIBRARY TAB -->
+      @else if (activeTab() === 'paint-library') {
+        <div class="tab-page-container">
+          <h2>Paint Library & Color Swatches</h2>
+          <div class="swatch-collections-grid">
+            <div class="swatch-card" style="background:#84a98c; color:#fff;">
+              <h4>Soft Sage</h4>
+              <span>#84A98C</span>
+            </div>
+            <div class="swatch-card" style="background:#e07a5f; color:#fff;">
+              <h4>Terracotta Warmth</h4>
+              <span>#E07A5F</span>
+            </div>
+            <div class="swatch-card" style="background:#1d3557; color:#fff;">
+              <h4>Obsidian Navy</h4>
+              <span>#1D3557</span>
+            </div>
+            <div class="swatch-card" style="background:#f1faee; color:#111;">
+              <h4>Ethereal Gray</h4>
+              <span>#F1FAEE</span>
+            </div>
+            <div class="swatch-card" style="background:#6c757d; color:#fff;">
+              <h4>Raw Concrete</h4>
+              <span>#6C757D</span>
+            </div>
+          </div>
+        </div>
+      }
+
+      <!-- 5. UPLOADS TAB -->
+      @else if (activeTab() === 'uploads') {
+        <div class="tab-page-container">
+          <h2>Uploaded Room Photos Gallery</h2>
+          <div class="storage-bar">
+            <span>Storage Quota: <strong>1.2 GB of 10 GB used</strong></span>
+            <div class="progress-bar"><div class="fill" style="width: 12%;"></div></div>
+          </div>
+          <div class="uploads-grid">
+            @for (proj of projects(); track proj._id) {
+              <div class="upload-item-card">
+                <img [src]="proj.originalImageUri || fallbackImage" (error)="onThumbnailError($event)" [alt]="proj.name" />
+                <span class="file-name">{{ proj.name }}.png</span>
+              </div>
+            }
+          </div>
+        </div>
+      }
+
+      <!-- 6. FAVORITES TAB -->
+      @else if (activeTab() === 'favorites') {
+        <div class="tab-page-container">
+          <h2>Bookmarked Favorites</h2>
+          <p>Projects and swatches you starred for quick access.</p>
+        </div>
+      }
+
+      <!-- 7. TEAM WORKSPACE TAB -->
+      @else if (activeTab() === 'team') {
+        <div class="tab-page-container">
+          <h2>Team Workspace & Members</h2>
+          <div class="team-member-list">
+            <div class="team-item">
+              <div class="avatar">{{ userInitial() }}</div>
+              <div class="info">
+                <h4>{{ userName() }} (You)</h4>
+                <span>Workspace Owner • {{ authService.currentUser()?.email }}</span>
+              </div>
+              <span class="role-badge admin">Owner</span>
+            </div>
+          </div>
+        </div>
+      }
+
+      <!-- 8. NOTIFICATIONS TAB -->
+      @else if (activeTab() === 'notifications') {
+        <div class="tab-page-container">
+          <h2>Notifications Hub</h2>
+          <div class="notifications-list">
+            <div class="notification-item unread">
+              <app-icon name="bell" [size]="18"></app-icon>
+              <div>
+                <h4>Project Published</h4>
+                <p>Your living room paint visualizer project was published to gallery.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      }
+
+      <!-- 9. WHATSAPP-STYLE ACCOUNT PROFILE TAB -->
+      @else if (activeTab() === 'account') {
+        <div class="tab-page-container account-page">
+          <div class="profile-header-banner">
+            <div class="cover-photo"></div>
+            <div class="avatar-box">
+              <div class="avatar-large">{{ userInitial() }}</div>
+              <button class="edit-avatar-btn" title="Change Profile Photo">📷</button>
+            </div>
+          </div>
+
+          <div class="profile-body flex-col gap-16">
+            <div class="user-main-info">
+              <h2>{{ userName() }}</h2>
+              <span class="user-tag">&#64;{{ userName().toLowerCase().replace(' ', '') }} • Enterprise Pro</span>
+            </div>
+
+            <div class="profile-card-section">
+              <h3>Personal Details</h3>
+              <div class="detail-row">
+                <label>Display Name:</label>
+                <input type="text" [value]="userName()" class="form-control-sm" />
+              </div>
+              <div class="detail-row">
+                <label>Email Address:</label>
+                <input type="email" [value]="authService.currentUser()?.email" readonly class="form-control-sm" />
+              </div>
+              <div class="detail-row">
+                <label>Phone Number:</label>
+                <input type="text" value="+1 (555) 234-5678" class="form-control-sm" />
+              </div>
+              <div class="detail-row">
+                <label>About / Bio:</label>
+                <textarea class="form-control-sm">Passionate interior color designer & wall visualizer artist.</textarea>
+              </div>
+            </div>
+
+            <div class="profile-card-section">
+              <h3>Account & Storage Quota</h3>
+              <p>Plan: <strong>Enterprise Pro Plan</strong> (Unlimited Projects & Cloud Storage)</p>
+              <p>Storage Used: <strong>1.2 GB / 10.0 GB</strong></p>
+            </div>
+          </div>
+        </div>
+      }
+
+      <!-- 10. SETTINGS STUDIO TAB -->
+      @else if (activeTab() === 'settings') {
+        <div class="tab-page-container">
+          <h2>Settings Studio</h2>
+          <div class="settings-grid">
+            <div class="settings-card">
+              <h3>Appearance & Theme</h3>
+              <div class="setting-item">
+                <label>Interface Theme:</label>
+                <button (click)="activeTheme.set(activeTheme() === 'light' ? 'dark' : 'light')" class="btn-primary-action">
+                  Toggle {{ activeTheme() === 'light' ? 'Dark' : 'Light' }} Mode
+                </button>
+              </div>
+            </div>
+
+            <div class="settings-card">
+              <h3>Keyboard Shortcuts Cheatsheet</h3>
+              <ul>
+                <li><code>A</code> - AI Auto Wall Wand</li>
+                <li><code>W</code> - Magic Wand Flood Fill</li>
+                <li><code>L</code> - Freehand Lasso Tool</li>
+                <li><code>P</code> - Polygon Mask Tool</li>
+                <li><code>B</code> - Paint Brush</li>
+                <li><code>E</code> - Eraser</li>
+                <li><code>Ctrl + V</code> - Paste Clipboard Image</li>
+                <li><code>Ctrl + K</code> - Command Palette</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      }
+
+      <!-- 11. HELP & SUPPORT TAB -->
+      @else if (activeTab() === 'help') {
+        <div class="tab-page-container">
+          <h2>Help & Support Documentation</h2>
+          <div class="faq-list">
+            <div class="faq-item">
+              <h4>How does 1-click AI Wall Selection work?</h4>
+              <p>Click any wall area on your room photo with the AI Wand tool. The computer-vision algorithm samples color gradients to isolate wall surfaces while preserving doors and furniture contours.</p>
+            </div>
+          </div>
+        </div>
+      }
     </main>
   </div>
 
@@ -340,38 +526,25 @@
     <div class="modal-backdrop">
       <div class="modal-card">
         <div class="modal-header">
-          <h2>Create New Visualizer Project</h2>
+          <h2>Create New Wall Painter Project</h2>
           <button (click)="closeCreateModal()" class="close-btn">&times;</button>
         </div>
 
         <div class="modal-body">
+          <div class="form-group">
+            <label>PROJECT NAME</label>
+            <input type="text" [(ngModel)]="newProjectName" placeholder="e.g. Living Room Redesign" class="form-control" />
+          </div>
+
+          <div class="form-group">
+            <label>ROOM IMAGE PHOTO (OPTIONAL)</label>
+            <input type="file" (change)="onFileSelected($event)" accept="image/*" class="file-control" />
+            <span class="help-text">Leave blank to use a default sample living room template.</span>
+          </div>
+
           @if (errorMessage()) {
-            <div class="error-alert">{{ errorMessage() }}</div>
+            <div class="error-badge">{{ errorMessage() }}</div>
           }
-
-          <div class="form-group">
-            <label for="projName">PROJECT NAME</label>
-            <input 
-              type="text" 
-              id="projName" 
-              [(ngModel)]="newProjectName" 
-              placeholder="e.g., Living Room Wall Palette" 
-              required
-              class="form-control"
-            />
-          </div>
-
-          <div class="form-group">
-            <label for="projImage">ROOM IMAGE UPLOAD (OPTIONAL)</label>
-            <input 
-              type="file" 
-              id="projImage" 
-              (change)="onFileSelected($event)" 
-              accept="image/*"
-              class="file-control"
-            />
-            <small class="help-text">Select a photo from your device or leave empty for default interior room.</small>
-          </div>
         </div>
 
         <div class="modal-footer">
@@ -379,54 +552,6 @@
           <button (click)="createProject()" [disabled]="isSubmitting()" class="btn-submit">
             {{ isSubmitting() ? 'Creating...' : 'Create Project' }}
           </button>
-        </div>
-      </div>
-    </div>
-  }
-
-  <!-- Create New Workspace Modal -->
-  @if (showCreateWorkspaceModal()) {
-    <div class="modal-backdrop">
-      <div class="modal-card">
-        <div class="modal-header">
-          <h2>Create New Workspace</h2>
-          <button (click)="closeCreateWorkspaceModal()" class="close-btn">&times;</button>
-        </div>
-
-        <div class="modal-body">
-          <div class="form-group">
-            <label for="wsName">WORKSPACE NAME</label>
-            <input 
-              type="text" 
-              id="wsName" 
-              [(ngModel)]="newWsName" 
-              placeholder="e.g., Client Design Studio" 
-              required
-              class="form-control"
-            />
-          </div>
-
-          <div class="form-group">
-            <label for="wsType">WORKSPACE TYPE</label>
-            <select id="wsType" [(ngModel)]="newWsType" class="form-control">
-              <option value="Personal">Personal Workspace</option>
-              <option value="Team">Enterprise Team Workspace</option>
-              <option value="Client">Client Project Studio</option>
-            </select>
-          </div>
-
-          <div class="form-group">
-            <label>ACCENT COLOR</label>
-            <div class="hex-picker-row">
-              <input type="color" [(ngModel)]="newWsColor" class="color-picker-input" />
-              <input type="text" [(ngModel)]="newWsColor" class="form-control" />
-            </div>
-          </div>
-        </div>
-
-        <div class="modal-footer">
-          <button (click)="closeCreateWorkspaceModal()" class="btn-cancel">Cancel</button>
-          <button (click)="submitCreateWorkspace()" class="btn-submit">+ Create Workspace</button>
         </div>
       </div>
     </div>

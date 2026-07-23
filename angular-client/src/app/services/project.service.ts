@@ -10,6 +10,7 @@ export interface Project {
   processedMasksUri?: string;
   layers: any[];
   canvasConfig: any;
+  status?: 'draft' | 'published';
   createdAt: string;
   updatedAt: string;
 }

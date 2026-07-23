@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, computed } from '@angular/core';
+import { Component, OnInit, signal, computed, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
@@ -17,7 +17,7 @@ import { WorkspaceService, Workspace } from '../../services/workspace.service';
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, CommandPaletteComponent, ConfirmDialogComponent],
+  imports: [CommonModule, FormsModule, RouterModule, CommandPaletteComponent, ConfirmDialogComponent, AppIconComponent],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss']
 })
@@ -26,6 +26,10 @@ export class DashboardComponent implements OnInit {
   isLoading = signal(true);
   errorMessage = signal<string | null>(null);
 
+
+  // Active Nav Sidebar View Tab
+  activeTab = signal<'dashboard' | 'projects' | 'templates' | 'paint-library' | 'uploads' | 'favorites' | 'team' | 'notifications' | 'account' | 'settings' | 'help'>('dashboard');
+  activeTheme = signal<'light' | 'dark'>('light');
 
   showWorkspaceDropdown = signal(false);
   showCreateWorkspaceModal = signal(false);
@@ -95,6 +99,20 @@ export class DashboardComponent implements OnInit {
   // Analytics Stats Computed
   totalCount = computed(() => this.projects().length);
   favoritesCount = computed(() => this.favoritesSet().size);
+
+  userName = computed(() => {
+    const user = this.authService.currentUser();
+    if (!user) return 'User';
+    if (user.firstName || user.lastName) {
+      return `${user.firstName || ''} ${user.lastName || ''}`.trim();
+    }
+    return user.email.split('@')[0];
+  });
+
+  userInitial = computed(() => {
+    const name = this.userName();
+    return name ? name[0].toUpperCase() : 'U';
+  });
 
   constructor(
     private projectService: ProjectService,
@@ -203,6 +221,23 @@ export class DashboardComponent implements OnInit {
   cancelRename(event: Event): void {
     event.stopPropagation();
     this.editingProjectId.set(null);
+  }
+
+  // Clipboard Ctrl+V Image Paste Listener
+  @HostListener('window:paste', ['$event'])
+  handlePaste(event: ClipboardEvent): void {
+    const items = event.clipboardData?.items;
+    if (!items) return;
+    for (let i = 0; i < items.length; i++) {
+      if (items[i].type.startsWith('image/')) {
+        const file = items[i].getAsFile();
+        if (file) {
+          this.toastService.info('Pasted image from clipboard!');
+          this.handleDirectFileUpload(file);
+          break;
+        }
+      }
+    }
   }
 
   // Drag & Drop Desktop Upload Handlers

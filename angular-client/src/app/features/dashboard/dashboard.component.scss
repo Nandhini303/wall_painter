@@ -1,5 +1,5 @@
 /* ====================================================
-   Excel Home White-Theme Layout Fixes
+   Wall Painter Enterprise SaaS Design System & Layout
    ==================================================== */
 
 .app-layout {
@@ -9,11 +9,75 @@
   background-color: #f8f9fa;
   color: #1f2937;
   overflow: hidden;
-  font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Inter', Roboto, sans-serif;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  transition: background-color 0.25s ease, color 0.25s ease;
 
   &.with-sidebar {
     display: flex;
     flex-direction: row;
+  }
+
+  &.dark-mode {
+    background-color: #0b0f19;
+    color: #f3f4f6;
+
+    .main-wrapper {
+      background: #0b0f19;
+    }
+
+    .top-navbar {
+      background: #111827;
+      border-color: #1f2937;
+
+      .greeting-box h2 { color: #ffffff; }
+      .greeting-box .sub-greeting { color: #9ca3af; }
+    }
+
+    .search-box {
+      background: #1f2937;
+      border-color: #374151;
+      input { color: #fff; }
+    }
+
+    .dropzone-banner {
+      background: #111827;
+      border-color: #374151;
+      h3 { color: #fff; }
+      p { color: #9ca3af; }
+    }
+
+    .templates-rail {
+      background: #111827;
+      border-color: #1f2937;
+      .rail-header { color: #fff; }
+      .template-card {
+        background: #1f2937;
+        border-color: #374151;
+        .template-title { color: #e5e7eb; }
+      }
+    }
+
+    .projects-section {
+      .section-toolbar {
+        border-color: #1f2937;
+        .tab-btn { color: #9ca3af; &.active { color: #107c41; } }
+      }
+    }
+
+    .project-card {
+      background: #111827;
+      border-color: #1f2937;
+      .card-info .card-title { color: #ffffff; }
+    }
+
+    .tab-page-container {
+      h2 { color: #ffffff; }
+      .swatch-card, .upload-item-card, .settings-card, .faq-item, .profile-card-section {
+        background: #111827;
+        border-color: #1f2937;
+        color: #e5e7eb;
+      }
+    }
   }
 }
 
@@ -36,7 +100,7 @@
   gap: 12px;
   padding: 12px 18px;
   background: #ffffff;
-  border-radius: 8px;
+  border-radius: 12px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
   border: 1px solid #e5e7eb;
   font-size: 0.9rem;
@@ -87,10 +151,10 @@
     flex-shrink: 0;
 
     .brand-logo {
-      width: 32px;
-      height: 32px;
-      border-radius: 6px;
-      background: #107c41; // Excel Green Mark
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      background: #107c41;
       color: #ffffff;
       display: flex;
       align-items: center;
@@ -123,61 +187,6 @@
     }
   }
 
-  .sidebar-workspace-menu {
-    position: absolute;
-    top: 60px;
-    left: 10px;
-    right: 10px;
-    background: #1e293b;
-    border: 1px solid #334155;
-    border-radius: 8px;
-    padding: 8px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-    z-index: 50;
-
-    .menu-label {
-      font-size: 0.68rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      color: #94a3b8;
-      padding: 4px 8px;
-    }
-
-    .ws-item {
-      width: 100%;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 8px 10px;
-      background: none;
-      border: none;
-      color: #e2e8f0;
-      font-size: 0.82rem;
-      border-radius: 6px;
-      cursor: pointer;
-      text-align: left;
-
-      &:hover, &.active {
-        background: #334155;
-        color: #fff;
-      }
-
-      .ws-dot {
-        width: 8px;
-        height: 8px;
-        border-radius: 50%;
-      }
-    }
-
-    .add-ws {
-      color: #107c41;
-      border-top: 1px solid #334155;
-      margin-top: 4px;
-      padding-top: 8px;
-      font-weight: 600;
-    }
-  }
-
   .sidebar-nav {
     padding: 12px 8px;
     display: flex;
@@ -203,13 +212,17 @@
       align-items: center;
       gap: 12px;
       padding: 9px 12px;
-      border-radius: 6px;
+      border-radius: 8px;
       color: #94a3b8;
       font-size: 0.88rem;
       font-weight: 500;
       cursor: pointer;
       text-decoration: none;
       transition: all 0.15s ease;
+      background: transparent;
+      border: none;
+      width: 100%;
+      text-align: left;
 
       svg {
         stroke: #94a3b8;
@@ -227,9 +240,25 @@
         background: #1e293b;
         color: #ffffff;
         font-weight: 600;
-        border-left: 4px solid #107c41; // Excel Green border accent
+        border-left: 4px solid #107c41;
 
         svg { stroke: #107c41; }
+      }
+
+      &.ai-highlight {
+        background: rgba(16, 124, 65, 0.15);
+        color: #4ade80;
+        font-weight: 600;
+        svg { stroke: #4ade80; }
+
+        .nav-badge {
+          margin-left: auto;
+          font-size: 0.65rem;
+          background: #107c41;
+          color: #ffffff;
+          padding: 2px 6px;
+          border-radius: 6px;
+        }
       }
 
       .nav-count {
@@ -251,7 +280,7 @@
   display: flex;
   flex-direction: column;
   min-width: 0;
-  background: #f8f9fa; // Clean light background
+  background: #f8f9fa;
 }
 
 /* ----------------------------------------------------
@@ -290,14 +319,14 @@
   }
 }
 
-/* Excel Style Search Box */
+/* Search Box */
 .search-box {
   display: flex;
   align-items: center;
   gap: 8px;
   background: #f3f4f6;
   border: 1px solid #d1d5db;
-  border-radius: 6px;
+  border-radius: 8px;
   padding: 7px 12px;
   width: 280px;
   cursor: text;
@@ -309,11 +338,6 @@
     box-shadow: 0 0 0 3px rgba(16, 124, 65, 0.1);
   }
 
-  .search-icon {
-    font-size: 0.85rem;
-    color: #6b7280;
-  }
-
   input {
     border: none;
     outline: none;
@@ -322,9 +346,7 @@
     font-size: 0.85rem;
     color: #111827;
 
-    &::placeholder {
-      color: #9ca3af;
-    }
+    &::placeholder { color: #9ca3af; }
   }
 
   .ctrl-k-badge {
@@ -338,11 +360,11 @@
 }
 
 .btn-primary-action {
-  background: #107c41; // Excel Green Button
+  background: #107c41;
   color: #ffffff;
   border: none;
   padding: 8px 18px;
-  border-radius: 6px;
+  border-radius: 8px;
   font-weight: 600;
   font-size: 0.88rem;
   cursor: pointer;
@@ -363,7 +385,7 @@
   color: #ffffff;
   border: none;
   padding: 8px 14px;
-  border-radius: 6px;
+  border-radius: 8px;
   font-weight: 600;
   font-size: 0.85rem;
   cursor: pointer;
@@ -372,26 +394,11 @@
   gap: 6px;
   transition: all 0.15s ease;
 
-  &:hover {
-    background: #b91c1c;
-  }
+  &:hover { background: #b91c1c; }
 }
 
-.btn-danger-outline {
-  background: #ffffff;
-  color: #dc2626;
-  border: 1px solid #fca5a5;
-  padding: 6px 14px;
-  border-radius: 6px;
-  font-weight: 600;
-  font-size: 0.8rem;
-  cursor: pointer;
-  transition: all 0.15s ease;
-
-  &:hover {
-    background: #fee2e2;
-    border-color: #dc2626;
-  }
+.user-avatar-wrapper {
+  position: relative;
 }
 
 .user-avatar-btn {
@@ -401,30 +408,30 @@
   padding: 0;
 
   .avatar-circle {
-    width: 34px;
-    height: 34px;
+    width: 36px;
+    height: 36px;
     border-radius: 50%;
     background: #107c41;
     color: #ffffff;
     font-weight: 700;
-    font-size: 0.9rem;
+    font-size: 0.95rem;
     display: flex;
     align-items: center;
     justify-content: center;
+    box-shadow: 0 2px 8px rgba(16, 124, 65, 0.3);
   }
 }
 
-/* User Dropdown Panel */
-.dropdown-panel {
+.user-dropdown {
   position: absolute;
-  top: 48px;
+  top: 46px;
   right: 0;
-  width: 250px;
+  width: 240px;
   background: #ffffff;
   border: 1px solid #e5e7eb;
-  border-radius: 8px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.12);
-  z-index: 100;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+  z-index: 1000;
   padding: 8px 0;
 
   .user-dropdown-header {
@@ -475,19 +482,87 @@
       background: #f3f4f6;
       color: #111827;
     }
+
+    &.text-danger {
+      color: #dc2626;
+      &:hover { background: #fee2e2; }
+    }
   }
 }
 
-/* Content Body */
-.content-body {
-  flex: 1;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
+/* ----------------------------------------------------
+ * Lucide Redesigned Drag & Drop Upload Zone (16px radius)
+ * ---------------------------------------------------- */
+.dropzone-banner {
+  margin: 24px 28px;
+  background: #ffffff;
+  border: 2px dashed #d1d5db;
+  border-radius: 16px;
+  padding: 32px 24px;
+  text-align: center;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+
+  &:hover, &.drag-over {
+    border-color: #107c41;
+    background: #f0fdf4;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(16, 124, 65, 0.1);
+  }
+
+  .dropzone-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+
+    .upload-icon-circle {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: #e8f5e9;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 4px;
+    }
+
+    h3 { margin: 0; font-size: 1.1rem; font-weight: 700; color: #111827; }
+    p { margin: 0; font-size: 0.85rem; color: #6b7280; max-width: 480px; }
+
+    .browse-label {
+      cursor: pointer;
+      margin-top: 8px;
+      position: relative;
+
+      .hidden-file-input {
+        position: absolute;
+        inset: 0;
+        opacity: 0;
+        cursor: pointer;
+      }
+    }
+
+    .upload-progress-bar {
+      width: 100%;
+      max-width: 360px;
+      height: 6px;
+      background: #e5e7eb;
+      border-radius: 3px;
+      overflow: hidden;
+      margin-top: 10px;
+
+      .progress-fill {
+        height: 100%;
+        background: #107c41;
+        transition: width 0.15s ease;
+      }
+    }
+  }
 }
 
 /* ----------------------------------------------------
- * Excel "New" Templates Rail Section
+ * Templates Rail Section
  * ---------------------------------------------------- */
 .templates-rail {
   padding: 20px 28px 16px 28px;
@@ -495,7 +570,7 @@
   border-bottom: 1px solid #e5e7eb;
 
   .rail-header {
-    font-size: 1.1rem;
+    font-size: 1.05rem;
     font-weight: 700;
     color: #111827;
     margin-bottom: 14px;
@@ -518,10 +593,16 @@
     grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
     gap: 14px;
 
+    &.big {
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 20px;
+      .template-card img { height: 160px; }
+    }
+
     .template-card {
       background: #ffffff;
       border: 1px solid #e5e7eb;
-      border-radius: 8px;
+      border-radius: 12px;
       padding: 10px;
       cursor: pointer;
       display: flex;
@@ -556,13 +637,13 @@
 
       img {
         width: 100%;
-        height: 85px;
+        height: 90px;
         object-fit: cover;
-        border-radius: 6px;
+        border-radius: 8px;
       }
 
       .template-title {
-        font-size: 0.82rem;
+        font-size: 0.85rem;
         font-weight: 600;
         color: #1f2937;
         text-align: center;
@@ -571,51 +652,11 @@
   }
 }
 
-/* Drag & Drop Banner */
-.dropzone-banner {
-  margin: 20px 28px;
-  background: #ffffff;
-  border: 2px dashed #cbd5e1;
-  border-radius: 10px;
-  padding: 20px;
-  text-align: center;
-  transition: all 0.2s ease;
-
-  &.drag-over {
-    border-color: #107c41;
-    background: #f0fdf4;
-  }
-
-  .dropzone-content {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 6px;
-
-    .drop-icon { font-size: 1.8rem; }
-    h3 { margin: 0; font-size: 0.95rem; font-weight: 700; color: #1f2937; }
-    p { margin: 0; font-size: 0.8rem; color: #6b7280; }
-
-    .browse-btn {
-      margin-top: 6px;
-      background: #f3f4f6;
-      border: 1px solid #d1d5db;
-      color: #374151;
-      padding: 5px 14px;
-      border-radius: 6px;
-      font-size: 0.82rem;
-      font-weight: 600;
-      cursor: pointer;
-      &:hover { background: #e5e7eb; color: #111827; }
-    }
-  }
-}
-
 /* ----------------------------------------------------
- * Projects Gallery Tabs & Toolbar
+ * Projects Section & Grid Layouts
  * ---------------------------------------------------- */
 .projects-section {
-  padding: 0 28px 28px 28px;
+  padding: 20px 28px 28px 28px;
 
   .section-toolbar {
     display: flex;
@@ -639,9 +680,7 @@
         position: relative;
         transition: color 0.15s ease;
 
-        &:hover {
-          color: #111827;
-        }
+        &:hover { color: #111827; }
 
         &.active {
           color: #107c41;
@@ -654,7 +693,7 @@
             left: 0;
             right: 0;
             height: 3px;
-            background: #107c41; // Excel tab underline
+            background: #107c41;
             border-radius: 3px 3px 0 0;
           }
         }
@@ -713,38 +752,35 @@
   }
 }
 
-/* ----------------------------------------------------
- * Project Grid & Cards
- * ---------------------------------------------------- */
 .projects-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
-  gap: 18px;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 20px;
 
   &.list-view {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 10px;
 
     .project-card {
       flex-direction: row;
       align-items: center;
-      height: 65px;
+      height: 70px;
 
       .card-thumbnail {
-        width: 85px;
+        width: 100px;
         height: 100%;
-        border-radius: 8px 0 0 8px;
+        border-radius: 12px 0 0 12px;
       }
 
       .card-info {
         flex: 1;
-        padding: 0 14px;
+        padding: 0 16px;
         display: flex;
         align-items: center;
         justify-content: space-between;
 
-        .card-title { margin: 0; font-size: 0.9rem; }
+        .card-title { margin: 0; font-size: 0.95rem; }
         .card-meta { margin: 0; }
       }
     }
@@ -754,7 +790,7 @@
 .project-card {
   background: #ffffff;
   border: 1px solid #e5e7eb;
-  border-radius: 8px;
+  border-radius: 16px;
   overflow: hidden;
   text-decoration: none;
   color: inherit;
@@ -765,14 +801,14 @@
 
   &:hover {
     border-color: #107c41;
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
     transform: translateY(-2px);
   }
 
   .card-thumbnail {
     position: relative;
     width: 100%;
-    height: 140px;
+    height: 145px;
     background: #f3f4f6;
     overflow: hidden;
 
@@ -790,8 +826,8 @@
       background: rgba(255, 255, 255, 0.9);
       backdrop-filter: blur(4px);
       border: none;
-      width: 26px;
-      height: 26px;
+      width: 28px;
+      height: 28px;
       border-radius: 50%;
       font-size: 0.85rem;
       color: #9ca3af;
@@ -800,9 +836,7 @@
       align-items: center;
       justify-content: center;
 
-      &.is-fav {
-        color: #f59e0b;
-      }
+      &.is-fav { color: #f59e0b; }
     }
 
     .status-badge {
@@ -813,19 +847,19 @@
       color: #ffffff;
       font-size: 0.68rem;
       font-weight: 700;
-      padding: 2px 7px;
+      padding: 2px 8px;
       border-radius: 8px;
     }
   }
 
   .card-info {
-    padding: 12px 14px;
+    padding: 14px 16px;
     display: flex;
     flex-direction: column;
     gap: 6px;
 
     .card-title {
-      font-size: 0.9rem;
+      font-size: 0.95rem;
       font-weight: 700;
       color: #111827;
       margin: 0;
@@ -839,10 +873,7 @@
       align-items: center;
       justify-content: space-between;
 
-      .meta-date {
-        font-size: 0.75rem;
-        color: #6b7280;
-      }
+      .meta-date { font-size: 0.75rem; color: #6b7280; }
 
       .card-actions {
         display: flex;
@@ -851,35 +882,146 @@
         .action-icon-btn {
           background: #f3f4f6;
           border: none;
-          padding: 3px 6px;
-          border-radius: 4px;
+          padding: 4px 6px;
+          border-radius: 6px;
           cursor: pointer;
           font-size: 0.78rem;
           &:hover { background: #e5e7eb; }
+          &.danger:hover { background: #fee2e2; color: #dc2626; }
         }
       }
     }
   }
 }
 
-/* Empty State */
-.empty-state {
-  background: #ffffff;
-  border: 1px dashed #d1d5db;
-  border-radius: 10px;
-  padding: 40px;
-  text-align: center;
+/* ----------------------------------------------------
+ * Tab Page Containers (Dedicated Views)
+ * ---------------------------------------------------- */
+.tab-page-container {
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 
-  .empty-icon { font-size: 2.8rem; margin-bottom: 10px; }
-  h3 { margin: 0; font-size: 1.05rem; font-weight: 700; color: #111827; }
-  p { margin: 4px 0 0 0; color: #6b7280; font-size: 0.85rem; }
+  h2 {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #111827;
+    margin: 0;
+  }
+}
+
+/* Swatch Collections Grid */
+.swatch-collections-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+
+  .swatch-card {
+    height: 120px;
+    border-radius: 16px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+
+    h4 { margin: 0; font-size: 1.1rem; font-weight: 700; }
+    span { font-size: 0.85rem; font-family: monospace; opacity: 0.9; }
+  }
+}
+
+/* WhatsApp-Style Account Profile Styling */
+.account-page {
+  padding: 0 0 40px 0;
+
+  .profile-header-banner {
+    position: relative;
+    height: 180px;
+
+    .cover-photo {
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #107c41 0%, #0f172a 100%);
+    }
+
+    .avatar-box {
+      position: absolute;
+      bottom: -40px;
+      left: 36px;
+      display: flex;
+      align-items: flex-end;
+      gap: 12px;
+
+      .avatar-large {
+        width: 96px;
+        height: 96px;
+        border-radius: 50%;
+        background: #107c41;
+        color: #ffffff;
+        font-weight: 700;
+        font-size: 2.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 4px solid #ffffff;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+      }
+
+      .edit-avatar-btn {
+        background: #ffffff;
+        border: 1px solid #d1d5db;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        cursor: pointer;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      }
+    }
+  }
+
+  .profile-body {
+    padding: 50px 36px 0 36px;
+
+    .user-main-info {
+      h2 { margin: 0; font-size: 1.4rem; font-weight: 700; color: #111827; }
+      .user-tag { font-size: 0.85rem; color: #6b7280; }
+    }
+
+    .profile-card-section {
+      background: #ffffff;
+      border: 1px solid #e5e7eb;
+      border-radius: 16px;
+      padding: 20px;
+      margin-top: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+
+      h3 { margin: 0; font-size: 1.05rem; font-weight: 700; color: #111827; }
+
+      .detail-row {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        label { font-size: 0.8rem; font-weight: 600; color: #374151; }
+        .form-control-sm {
+          padding: 8px 12px;
+          border: 1px solid #d1d5db;
+          border-radius: 8px;
+          font-size: 0.88rem;
+          outline: none;
+        }
+      }
+    }
+  }
 }
 
 /* Modals */
 .modal-backdrop {
   position: fixed;
   inset: 0;
-  z-index: 1000;
+  z-index: 10000;
   background: rgba(0,0,0,0.5);
   backdrop-filter: blur(4px);
   display: flex;
@@ -889,45 +1031,45 @@
 
 .modal-card {
   background: #ffffff;
-  border-radius: 10px;
-  width: 460px;
+  border-radius: 16px;
+  width: 480px;
   max-width: 90vw;
   box-shadow: 0 20px 40px rgba(0,0,0,0.2);
   overflow: hidden;
 
   .modal-header {
-    padding: 14px 18px;
+    padding: 16px 20px;
     background: #f9fafb;
     border-bottom: 1px solid #e5e7eb;
     display: flex;
     align-items: center;
     justify-content: space-between;
 
-    h2 { margin: 0; font-size: 1.05rem; font-weight: 700; color: #111827; }
+    h2 { margin: 0; font-size: 1.1rem; font-weight: 700; color: #111827; }
     .close-btn { background: none; border: none; font-size: 1.3rem; cursor: pointer; color: #6b7280; }
   }
 
   .modal-body {
-    padding: 18px;
+    padding: 20px;
 
     .form-group {
-      margin-bottom: 14px;
-      label { display: block; font-size: 0.72rem; font-weight: 700; color: #374151; margin-bottom: 5px; letter-spacing: 0.05em; }
-      .form-control { width: 100%; padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 0.88rem; outline: none; &:focus { border-color: #107c41; } }
-      .file-control { width: 100%; font-size: 0.82rem; }
-      .help-text { font-size: 0.72rem; color: #6b7280; margin-top: 3px; display: block; }
+      margin-bottom: 16px;
+      label { display: block; font-size: 0.72rem; font-weight: 700; color: #374151; margin-bottom: 6px; letter-spacing: 0.05em; }
+      .form-control { width: 100%; padding: 10px 14px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 0.9rem; outline: none; &:focus { border-color: #107c41; } }
+      .file-control { width: 100%; font-size: 0.85rem; }
+      .help-text { font-size: 0.75rem; color: #6b7280; margin-top: 4px; display: block; }
     }
   }
 
   .modal-footer {
-    padding: 12px 18px;
+    padding: 14px 20px;
     background: #f9fafb;
     border-top: 1px solid #e5e7eb;
     display: flex;
     justify-content: flex-end;
-    gap: 8px;
+    gap: 10px;
 
-    .btn-cancel { background: #ffffff; border: 1px solid #d1d5db; padding: 7px 14px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 0.85rem; }
-    .btn-submit { background: #107c41; color: #fff; border: none; padding: 7px 16px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 0.85rem; }
+    .btn-cancel { background: #ffffff; border: 1px solid #d1d5db; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.88rem; }
+    .btn-submit { background: #107c41; color: #fff; border: none; padding: 8px 18px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.88rem; }
   }
 }
