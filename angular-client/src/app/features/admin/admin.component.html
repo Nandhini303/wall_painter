@@ -82,7 +82,7 @@
         }
       </button>
 
-      <button (click)="authService.logout()" class="back-to-site" title="Sign Out">
+      <button (click)="logout()" type="button" class="back-to-site" title="Sign Out">
         <app-icon name="log-out" [size]="16"></app-icon>
         @if (!sidebarCollapsed()) {
           <span>Sign Out</span>

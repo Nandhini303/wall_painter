@@ -50,7 +50,7 @@ export class AuthService {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     this.currentUserSignal.set(null);
-    this.router.navigate(['/login']);
+    window.location.href = '/login';
   }
 
   getToken(): string | null {

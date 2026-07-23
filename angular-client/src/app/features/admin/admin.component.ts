@@ -578,4 +578,9 @@ export class AdminComponent implements OnInit {
       this.settingsSections[idx].hasChanges = true;
     }
   }
+
+  logout(): void {
+    this.authService.logout();
+    this.toastService.info('Logged out.');
+  }
 }

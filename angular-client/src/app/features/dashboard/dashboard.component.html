@@ -95,6 +95,12 @@
           <app-icon [name]="activeTheme() === 'light' ? 'moon' : 'sun'" [size]="18"></app-icon>
           <span>{{ activeTheme() === 'light' ? 'Dark Mode' : 'Light Mode' }}</span>
         </button>
+
+        <!-- Sign Out Button -->
+        <button (click)="logout()" type="button" class="nav-item logout-btn" style="color: #ef4444; margin-top: 8px;">
+          <app-icon name="log-out" [size]="18"></app-icon>
+          <span>Sign Out</span>
+        </button>
       </div>
     </nav>
   </aside>
