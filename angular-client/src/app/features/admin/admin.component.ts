@@ -210,14 +210,6 @@ export class AdminComponent implements OnInit {
     { id: 'b5', name: 'Smooth Blend', type: 'Blend', defaultSize: 20, defaultHardness: 40, defaultOpacity: 60 }
   ]);
 
-  // --- System Health ---
-  healthChecks = signal<HealthCheck[]>([
-    { name: 'Express API Server', status: 'operational', latency: '12ms' },
-    { name: 'MongoDB Atlas Database', status: 'operational', latency: '45ms' },
-    { name: 'Socket.IO Real-Time Sync', status: 'operational', latency: '8ms' },
-    { name: 'Cloud Storage Service', status: 'operational', latency: '120ms' }
-  ]);
-
   // --- Settings Sections ---
   settingsSections: SettingsSection[] = [
     { id: 'general', label: 'General', description: 'Platform name, default units, default color format', hasChanges: false },
