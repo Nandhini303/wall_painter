@@ -117,7 +117,7 @@
           <span>Realtime Sync</span>
         </div>
 
-        <button (click)="setSection('notifications')" class="icon-btn-top" title="Notifications">
+        <button class="icon-btn-top" title="Notifications">
           <app-icon name="bell" [size]="16"></app-icon>
           <span class="dot-unread"></span>
         </button>
@@ -312,94 +312,6 @@
                 }
               </tbody>
             </table>
-          </div>
-        </section>
-      }
-
-      <!-- ========== COLOR COLLECTIONS ========== -->
-      @if (activeSection() === 'collections') {
-        <section class="admin-section">
-          <div class="section-header-row">
-            <div>
-              <h1 class="section-heading">Color Collections</h1>
-              <p class="section-subtext">Manage curated color palette collections.</p>
-            </div>
-            <button class="primary-action-btn">+ Create New Collection</button>
-          </div>
-
-          <div class="admin-table-card">
-            <div class="colors-cms-grid">
-              @for (color of filteredColors(); track color._id) {
-                <div class="color-cms-tile">
-                  <div class="color-preview-box" [style.background-color]="color.hexCode || color.hex || '#2563eb'"></div>
-                  <div class="color-cms-info">
-                    <h4>{{ color.name }}</h4>
-                    <p>{{ color.brandName }} • {{ color.colorCode }}</p>
-                    <span class="hex-lbl">{{ color.hexCode || color.hex }}</span>
-                  </div>
-                </div>
-              }
-              @if (filteredColors().length === 0) {
-                <div class="empty-state-inline">No colors loaded from catalog API.</div>
-              }
-            </div>
-          </div>
-        </section>
-      }
-
-      <!-- ========== CUSTOM COLORS ========== -->
-      @if (activeSection() === 'customColors') {
-        <section class="admin-section">
-          <div class="section-header-row">
-            <div>
-              <h1 class="section-heading">Custom Colors</h1>
-              <p class="section-subtext">Define and approve platform-wide custom paint colors.</p>
-            </div>
-          </div>
-
-          <div class="admin-two-col">
-            <!-- Add Color Form -->
-            <div class="admin-form-card">
-              <h3>+ Add Custom Color</h3>
-              <div class="form-group">
-                <label>BRAND / MANUFACTURER</label>
-                <input type="text" [(ngModel)]="newColor.brandName" placeholder="Sherwin-Williams" class="form-control" />
-              </div>
-              <div class="form-group">
-                <label>COLOR CODE</label>
-                <input type="text" [(ngModel)]="newColor.colorCode" placeholder="SW-7005" class="form-control" />
-              </div>
-              <div class="form-group">
-                <label>COLOR NAME</label>
-                <input type="text" [(ngModel)]="newColor.name" placeholder="Pure White" class="form-control" />
-              </div>
-              <div class="form-group">
-                <label>HEX COLOR</label>
-                <div class="hex-picker-row">
-                  <input type="color" [(ngModel)]="newColor.hexCode" (change)="onHexChange()" class="color-picker-input" />
-                  <input type="text" [(ngModel)]="newColor.hexCode" (keyup)="onHexChange()" class="form-control" />
-                </div>
-              </div>
-              <button (click)="addColor()" class="primary-action-btn">+ Add Paint Color</button>
-            </div>
-
-            <!-- Colors Table -->
-            <div class="admin-table-card">
-              <div class="table-header-row">
-                <h3>Catalog Colors ({{ filteredColors().length }})</h3>
-              </div>
-              <div class="colors-cms-grid">
-                @for (color of filteredColors(); track color._id) {
-                  <div class="color-cms-tile">
-                    <div class="color-preview-box" [style.background-color]="color.hexCode || color.hex || '#2563eb'"></div>
-                    <div class="color-cms-info">
-                      <h4>{{ color.name }}</h4>
-                      <p>{{ color.brandName }} • {{ color.colorCode }}</p>
-                    </div>
-                  </div>
-                }
-              </div>
-            </div>
           </div>
         </section>
       }
