@@ -33,7 +33,6 @@ export type AdminSection =
   | 'notifications'
   | 'apiKeys'
   | 'billing'
-  | 'settings'
   | 'profile'
   | 'help';
 
@@ -133,7 +132,6 @@ export class AdminComponent implements OnInit {
       title: 'Admin Settings & Billing',
       items: [
         { id: 'billing', label: 'Billing & Plans', icon: 'credit-card' },
-        { id: 'settings', label: 'Platform Settings', icon: 'settings' },
         { id: 'profile', label: 'My Admin Profile', icon: 'user' },
         { id: 'help', label: 'Help & Docs', icon: 'help-circle' }
       ]

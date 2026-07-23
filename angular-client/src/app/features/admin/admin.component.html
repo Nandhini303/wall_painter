@@ -580,29 +580,6 @@
         </section>
       }
 
-      <!-- ========== PLATFORM SETTINGS ========== -->
-      @if (activeSection() === 'settings') {
-        <section class="admin-section">
-          <h1 class="section-heading">Platform Settings</h1>
-          <p class="section-subtext">Configure LuminaPaint platform preferences and policies.</p>
-
-          <div class="settings-cards-grid">
-            @for (section of settingsSections; track section.id) {
-              <div class="settings-card" [class.has-changes]="section.hasChanges">
-                <div class="settings-card-header">
-                  <h3>{{ section.label }}</h3>
-                  @if (section.hasChanges) {
-                    <span class="unsaved-dot"></span>
-                  }
-                </div>
-                <p class="settings-desc">{{ section.description }}</p>
-                <button (click)="saveSettings(section.id)" class="settings-save-btn" [disabled]="!section.hasChanges">Save Changes</button>
-              </div>
-            }
-          </div>
-        </section>
-      }
-
       <!-- ========== AUDIT LOGS ========== -->
       @if (activeSection() === 'auditLogs') {
         <section class="admin-section">
