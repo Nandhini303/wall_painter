@@ -1,0 +1,10 @@
+{
+  "name": "lumina-wall-painter-monorepo",
+  "version": "2.4.0",
+  "private": true,
+  "scripts": {
+    "build": "npm --prefix angular-client run build",
+    "start": "npm --prefix angular-client start",
+    "server": "npm --prefix express-server run dev"
+  }
+}
