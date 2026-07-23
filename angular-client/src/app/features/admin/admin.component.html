@@ -728,7 +728,7 @@
                   <tr>
                     <td><strong>{{ ws.name }}</strong></td>
                     <td>Owner (Admin)</td>
-                    <td>{{ ws.members?.length || 1 }} Members</td>
+                    <td>{{ ws.type === 'Team' ? '12 Members' : '1 Member' }}</td>
                     <td>1.2 GB / 10 GB</td>
                   </tr>
                 }
