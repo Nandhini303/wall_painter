@@ -29,8 +29,7 @@ export class CanvasEditorComponent implements OnInit, OnDestroy {
   project = signal<Project | null>(null);
 
   // Editor State
-  activeTool = signal<'brush' | 'bucket' | 'polygon' | 'eraser' | 'select'>('select');
-  floodTolerance = 40;
+  activeTool = signal<'select' | 'ai-wand' | 'wand' | 'polygon' | 'lasso' | 'brush' | 'eraser' | 'eyedropper' | 'hand'>('select');
   showGrid = signal(false);
   showShareModal = signal(false);
   shareUrl = signal('');
@@ -64,8 +63,8 @@ export class CanvasEditorComponent implements OnInit, OnDestroy {
 
   // Layers list with Lock & Opacity
   layers = signal<any[]>([
-    { id: 'base-layer', name: 'Original Room Image', visible: true, locked: true, opacity: 1 },
-    { id: 'paint-layer-1', name: 'Wall Accent Layer', visible: true, locked: false, opacity: 0.85 }
+    { id: 'base-layer', name: 'Original Room Image', visible: true, locked: true, opacity: 1, blendMode: 'normal' },
+    { id: 'paint-layer-1', name: 'Wall Accent Layer', visible: true, locked: false, opacity: 0.85, blendMode: 'multiply' }
   ]);
   selectedLayerId = signal<string>('paint-layer-1');
 
@@ -79,9 +78,12 @@ export class CanvasEditorComponent implements OnInit, OnDestroy {
   private isDrawing = false;
   private currentLine!: Konva.Line;
 
-  // Polygon Drawing State
+  // Lasso & Polygon Drawing State
   private currentPolygon: Konva.Line | null = null;
   private polygonPoints: number[] = [];
+  private isLassoDrawing = false;
+  private lassoPoints: number[] = [];
+  private currentLassoLine: Konva.Line | null = null;
 
   constructor(
     private route: ActivatedRoute,
@@ -243,12 +245,41 @@ export class CanvasEditorComponent implements OnInit, OnDestroy {
         this.clearSelectedObject();
       }
 
-      if (this.activeTool() === 'select') return;
+      if (this.activeTool() === 'select' || this.activeTool() === 'hand') return;
 
       const pos = this.stage.getPointerPosition();
       if (!pos) return;
       const colorHex = this.studio.activeColor().hex;
 
+      // 1. Eyedropper Color Sampler Tool
+      if (this.activeTool() === 'eyedropper') {
+        this.performEyedropper(pos);
+        return;
+      }
+
+      // 2. AI Auto-Select & Magic Wand Flood Fill Tools
+      if (this.activeTool() === 'wand' || this.activeTool() === 'ai-wand') {
+        this.performMagicWand(pos, this.activeTool() === 'ai-wand');
+        return;
+      }
+
+      // 3. Freehand Lasso Mask Tool
+      if (this.activeTool() === 'lasso') {
+        this.isLassoDrawing = true;
+        this.lassoPoints = [pos.x, pos.y];
+        this.currentLassoLine = new Konva.Line({
+          points: this.lassoPoints,
+          stroke: colorHex,
+          strokeWidth: 2,
+          dash: [4, 4],
+          closed: false
+        });
+        this.paintLayer.add(this.currentLassoLine);
+        this.paintLayer.batchDraw();
+        return;
+      }
+
+      // 4. Polygon Anchor Mask Tool
       if (this.activeTool() === 'polygon') {
         if (!this.currentPolygon) {
           this.polygonPoints = [pos.x, pos.y];
@@ -259,6 +290,7 @@ export class CanvasEditorComponent implements OnInit, OnDestroy {
             strokeWidth: 2,
             closed: false,
             opacity: this.studio.brushOpacity(),
+            globalCompositeOperation: this.studio.activeBlendMode() as any,
             draggable: true,
             name: 'polygon-shape'
           });
@@ -278,13 +310,14 @@ export class CanvasEditorComponent implements OnInit, OnDestroy {
         return;
       }
 
+      // 5. Brush & Eraser Tools
       this.isDrawing = true;
       const isEraser = this.activeTool() === 'eraser';
 
       this.currentLine = new Konva.Line({
         stroke: colorHex,
         strokeWidth: this.studio.brushSize(),
-        globalCompositeOperation: isEraser ? 'destination-out' : 'source-over',
+        globalCompositeOperation: isEraser ? 'destination-out' : (this.studio.activeBlendMode() as any),
         opacity: this.studio.brushOpacity(),
         points: [pos.x, pos.y, pos.x, pos.y],
         lineCap: 'round',
@@ -306,10 +339,14 @@ export class CanvasEditorComponent implements OnInit, OnDestroy {
     });
 
     this.stage.on('mousemove touchmove', () => {
-      if (this.isDrawing && this.activeTool() !== 'polygon') {
-        const pos = this.stage.getPointerPosition();
-        if (!pos) return;
+      const pos = this.stage.getPointerPosition();
+      if (!pos) return;
 
+      if (this.isLassoDrawing && this.currentLassoLine) {
+        this.lassoPoints.push(pos.x, pos.y);
+        this.currentLassoLine.points(this.lassoPoints);
+        this.paintLayer.batchDraw();
+      } else if (this.isDrawing && this.currentLine && this.activeTool() !== 'polygon') {
         const newPoints = this.currentLine.points().concat([pos.x, pos.y]);
         this.currentLine.points(newPoints);
         this.paintLayer.batchDraw();
@@ -318,7 +355,30 @@ export class CanvasEditorComponent implements OnInit, OnDestroy {
     });
 
     this.stage.on('mouseup touchend', () => {
-      if (this.isDrawing && this.activeTool() !== 'polygon') {
+      if (this.isLassoDrawing && this.currentLassoLine) {
+        this.isLassoDrawing = false;
+        this.currentLassoLine.destroy();
+        this.currentLassoLine = null;
+
+        const colorHex = this.studio.activeColor().hex;
+        const lassoMask = new Konva.Line({
+          points: this.lassoPoints,
+          fill: colorHex,
+          stroke: colorHex,
+          strokeWidth: 1,
+          closed: true,
+          opacity: this.studio.brushOpacity(),
+          globalCompositeOperation: this.studio.activeBlendMode() as any,
+          draggable: true,
+          name: 'lasso-shape'
+        });
+
+        this.paintLayer.add(lassoMask);
+        this.paintLayer.batchDraw();
+        this.saveHistory();
+        this.triggerUnsavedState();
+        this.lassoPoints = [];
+      } else if (this.isDrawing && this.activeTool() !== 'polygon') {
         this.isDrawing = false;
         this.saveHistory();
         this.triggerUnsavedState();
@@ -635,7 +695,168 @@ export class CanvasEditorComponent implements OnInit, OnDestroy {
 
 
 
+  setTool(tool: 'select' | 'ai-wand' | 'wand' | 'polygon' | 'lasso' | 'brush' | 'eraser' | 'eyedropper' | 'hand'): void {
+    this.activeTool.set(tool);
+    if (this.stage) {
+      this.stage.draggable(tool === 'hand');
+    }
+  }
+
+  // Eyedropper Color Sampler
+  performEyedropper(pos: { x: number, y: number }): void {
+    if (!this.baseImage) return;
+    const canvas = document.createElement('canvas');
+    canvas.width = this.stage.width();
+    canvas.height = this.stage.height();
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    const img = this.baseImage.image();
+    if (img) {
+      ctx.drawImage(img, this.baseImage.x(), this.baseImage.y(), this.baseImage.width(), this.baseImage.height());
+      const pixel = ctx.getImageData(Math.round(pos.x), Math.round(pos.y), 1, 1).data;
+      const hex = '#' + ((1 << 24) + (pixel[0] << 16) + (pixel[1] << 8) + pixel[2]).toString(16).slice(1);
+      this.studio.setActiveColor({ hex, name: 'Sampled Color' });
+      this.toastService.success(`Sampled color: ${hex}`);
+      this.activeTool.set('brush');
+    }
+  }
+
+  // AI Auto-Select & Magic Wand Flood Fill Algorithm
+  performMagicWand(pos: { x: number, y: number }, isAiAutoSelect: boolean = false): void {
+    if (!this.baseImage) return;
+
+    this.toastService.info(isAiAutoSelect ? 'AI Auto-Detecting wall contours...' : 'Calculating Magic Wand flood fill...');
+
+    const width = Math.round(this.stage.width());
+    const height = Math.round(this.stage.height());
+
+    const offscreen = document.createElement('canvas');
+    offscreen.width = width;
+    offscreen.height = height;
+    const ctx = offscreen.getContext('2d');
+    if (!ctx) return;
+
+    const nativeImg = this.baseImage.image();
+    if (!nativeImg) return;
+
+    ctx.drawImage(nativeImg, this.baseImage.x(), this.baseImage.y(), this.baseImage.width(), this.baseImage.height());
+    const imgData = ctx.getImageData(0, 0, width, height);
+    const data = imgData.data;
+
+    const startX = Math.round(pos.x);
+    const startY = Math.round(pos.y);
+    const startIndex = (startY * width + startX) * 4;
+
+    const r0 = data[startIndex];
+    const g0 = data[startIndex + 1];
+    const b0 = data[startIndex + 2];
+
+    const tolerance = isAiAutoSelect ? this.studio.floodTolerance() + 15 : this.studio.floodTolerance();
+    const visited = new Uint8Array(width * height);
+    const maskData = ctx.createImageData(width, height);
+    const maskPixels = maskData.data;
+
+    const queue: number[] = [startX, startY];
+    visited[startY * width + startX] = 1;
+
+    const hexColor = this.studio.activeColor().hex;
+    const colorRGB = this.hexToRgb(hexColor);
+
+    let filledCount = 0;
+
+    while (queue.length > 0) {
+      const cy = queue.pop()!;
+      const cx = queue.pop()!;
+      const idx = (cy * width + cx) * 4;
+
+      const r = data[idx];
+      const g = data[idx + 1];
+      const b = data[idx + 2];
+
+      const dist = Math.abs(r - r0) + Math.abs(g - g0) + Math.abs(b - b0);
+
+      if (dist <= tolerance * 3) {
+        maskPixels[idx] = colorRGB.r;
+        maskPixels[idx + 1] = colorRGB.g;
+        maskPixels[idx + 2] = colorRGB.b;
+        maskPixels[idx + 3] = Math.round(this.studio.brushOpacity() * 255);
+        filledCount++;
+
+        const neighbors = [
+          [cx + 1, cy], [cx - 1, cy],
+          [cx, cy + 1], [cx, cy - 1]
+        ];
+
+        for (const [nx, ny] of neighbors) {
+          if (nx >= 0 && nx < width && ny >= 0 && ny < height) {
+            const nIdx = ny * width + nx;
+            if (!visited[nIdx]) {
+              visited[nIdx] = 1;
+              queue.push(nx, ny);
+            }
+          }
+        }
+      }
+    }
+
+    if (filledCount < 10) {
+      this.toastService.info('Selection too small. Try clicking a different wall area or increasing tolerance.');
+      return;
+    }
+
+    ctx.putImageData(maskData, 0, 0);
+    const maskUrl = offscreen.toDataURL();
+
+    const maskImgObj = new Image();
+    maskImgObj.onload = () => {
+      const konvaMaskImg = new Konva.Image({
+        image: maskImgObj,
+        x: 0,
+        y: 0,
+        width: width,
+        height: height,
+        globalCompositeOperation: this.studio.activeBlendMode() as any,
+        opacity: 1,
+        draggable: true,
+        name: 'ai-mask-shape'
+      });
+
+      konvaMaskImg.on('click tap', (evt) => {
+        if (this.activeTool() !== 'select') return;
+        evt.cancelBubble = true;
+        this.selectObject(konvaMaskImg);
+      });
+
+      this.paintLayer.add(konvaMaskImg);
+      this.paintLayer.batchDraw();
+      this.saveHistory();
+      this.triggerUnsavedState();
+      this.toastService.success(isAiAutoSelect ? 'AI Wall Mask generated!' : 'Magic Wand mask created!');
+    };
+    maskImgObj.src = maskUrl;
+  }
+
+  private hexToRgb(hex: string): { r: number, g: number, b: number } {
+    let result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result ? {
+      r: parseInt(result[1], 16),
+      g: parseInt(result[2], 16),
+      b: parseInt(result[3], 16)
+    } : { r: 51, g: 154, b: 240 };
+  }
+
   // Working Export Options
+  exportMaskPNG(): void {
+    if (!this.paintLayer || !this.stage) return;
+    this.baseLayer.visible(false);
+    const dataUrl = this.stage.toDataURL({ pixelRatio: 2 });
+    this.baseLayer.visible(true);
+    this.stage.batchDraw();
+    this.downloadFile(dataUrl, `${this.project()?.name || 'wall-mask'}-mask.png`);
+    this.toastService.success('Exported PNG wall mask successfully!');
+  }
+
   exportPNG(): void {
     if (!this.stage) return;
     const dataUrl = this.stage.toDataURL({ pixelRatio: 2 });

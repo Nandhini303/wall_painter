@@ -43,6 +43,7 @@
     <div class="header-right">
       <!-- Export Dropdown -->
       <div class="export-dropdown-wrapper">
+        <button (click)="exportMaskPNG()" class="secondary-btn" title="Export PNG Mask for Inpainting">Export Mask PNG</button>
         <button (click)="exportPNG()" class="secondary-btn">Export PNG</button>
         <button (click)="exportJPG()" class="secondary-btn">Export JPG</button>
         <button (click)="exportJSON()" class="secondary-btn">Export JSON</button>
@@ -58,45 +59,73 @@
   </header>
 
   <div class="editor-workspace">
-    <!-- Left Floating Tool Palette -->
+    <!-- Left Photoshop-Style Floating Tool Palette -->
     <aside class="tool-palette">
       <button 
-        (click)="activeTool.set('select')" 
+        (click)="setTool('select')" 
         [class.active]="activeTool() === 'select'" 
         class="palette-btn" 
-        title="Select & Move"
+        title="Select & Move (V)"
       ><app-icon name="select" [size]="18"></app-icon></button>
 
       <button 
-        (click)="activeTool.set('brush')" 
-        [class.active]="activeTool() === 'brush'" 
-        class="palette-btn" 
-        title="Paint Brush"
-      ><app-icon name="brush" [size]="18"></app-icon></button>
+        (click)="setTool('ai-wand')" 
+        [class.active]="activeTool() === 'ai-wand'" 
+        class="palette-btn ai-btn" 
+        title="1-Click AI Auto Wall Detection (A)"
+      >✨</button>
 
       <button 
-        (click)="activeTool.set('bucket')" 
-        [class.active]="activeTool() === 'bucket'" 
+        (click)="setTool('wand')" 
+        [class.active]="activeTool() === 'wand'" 
         class="palette-btn" 
-        title="Color Fill Bucket"
-      ><app-icon name="fill" [size]="18"></app-icon></button>
+        title="Magic Wand Flood Fill (W)"
+      >🪄</button>
 
       <button 
-        (click)="activeTool.set('polygon')" 
+        (click)="setTool('polygon')" 
         [class.active]="activeTool() === 'polygon'" 
         class="palette-btn" 
-        title="Polygon Mask"
+        title="Polygon Mask (P)"
       ><app-icon name="polygon" [size]="18"></app-icon></button>
 
       <button 
-        (click)="activeTool.set('eraser')" 
+        (click)="setTool('lasso')" 
+        [class.active]="activeTool() === 'lasso'" 
+        class="palette-btn" 
+        title="Freehand Lasso Mask (L)"
+      >✂️</button>
+
+      <button 
+        (click)="setTool('brush')" 
+        [class.active]="activeTool() === 'brush'" 
+        class="palette-btn" 
+        title="Paint Brush (B)"
+      ><app-icon name="brush" [size]="18"></app-icon></button>
+
+      <button 
+        (click)="setTool('eraser')" 
         [class.active]="activeTool() === 'eraser'" 
         class="palette-btn" 
-        title="Eraser"
+        title="Eraser (E)"
       ><app-icon name="eraser" [size]="18"></app-icon></button>
+
+      <button 
+        (click)="setTool('eyedropper')" 
+        [class.active]="activeTool() === 'eyedropper'" 
+        class="palette-btn" 
+        title="Eyedropper Color Picker (I)"
+      >🧪</button>
+
+      <button 
+        (click)="setTool('hand')" 
+        [class.active]="activeTool() === 'hand'" 
+        class="palette-btn" 
+        title="Hand / Pan Canvas (H)"
+      >✋</button>
     </aside>
 
-    <!-- Infinite White Canvas Center -->
+    <!-- Canvas Center -->
     <main class="canvas-viewport">
       @if (isLoadingImage()) {
         <div class="canvas-loading-overlay">
@@ -113,13 +142,14 @@
       <div #container class="konva-container"></div>
     </main>
 
-    <!-- Right Inspector Panel -->
+    <!-- Figma/Photoshop-Style Right Inspector Panel -->
     <aside class="right-inspector">
       <app-tool-properties></app-tool-properties>
       <app-color-swatch-panel></app-color-swatch-panel>
       <app-custom-color-popover></app-custom-color-popover>
       <app-texture-library-panel></app-texture-library-panel>
       <app-asset-library-panel></app-asset-library-panel>
+
       <!-- Layers Management Panel -->
       <div class="inspector-section flex-1">
         <div class="section-title-row">

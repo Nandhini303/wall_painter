@@ -21,9 +21,12 @@ export class ColorStudioService {
   activeColor = signal<StudioColor>({ hex: '#339af0', name: 'Blue 5', ocName: 'blue-5' }); // default --oc-blue-5
   activeTexture = signal<StudioTexture | null>(null);
   
-  // Brush Properties
+  // Brush & Selection Properties
   brushSize = signal<number>(24);
   brushOpacity = signal<number>(0.85);
+  featherRadius = signal<number>(4);
+  floodTolerance = signal<number>(35);
+  activeBlendMode = signal<string>('multiply');
 
   // Texture Properties
   textureScale = signal<number>(1);
